@@ -1,6 +1,8 @@
 <template>
   <div id="header">
-
+    <div class="nav">
+      header
+    </div>
   </div>
 </template>
 <script>
@@ -11,7 +13,7 @@ export default {
 
     }
   }
-}
+};
 </script>
 <style>
 </style>
