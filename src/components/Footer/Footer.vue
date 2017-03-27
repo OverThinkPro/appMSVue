@@ -1,9 +1,9 @@
 <template>
   <div id="footer">
-
+      <p>&copy; 2017 WebLeader Team</p>
   </div>
 </template>
-<script>
+<script type="text/ecmascript-6">
 export default {
   name: "footer",
   data: function data() {
@@ -13,5 +13,6 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped type="stylesheet/css">
+
 </style>

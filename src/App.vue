@@ -1,23 +1,39 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
+  <div id="app" class="my-container">
+    <v-header class="head"></v-header>
     <router-view></router-view>
+    <v-footer class="foot"></v-footer>
   </div>
 </template>
 
 <script>
+import VHeader from './components/Header/Header.vue';
+import VFooter from './components/Footer/Footer.vue';
+
 export default {
-  name: 'app'
-}
+  name: 'app',
+  data () {
+    return {
+
+    }
+  },
+  components: {
+    VHeader, VFooter
+  }
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+.my-container {
+  flex: auto;
+}
+
+#app .head {
+
+}
+
+#app .foot {
+  position: fixed;
+  bottom: 0;
 }
 </style>
