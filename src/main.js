@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
+import axios from 'axios';
 import vuex from 'vuex';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min';
