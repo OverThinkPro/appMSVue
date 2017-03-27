@@ -26,6 +26,7 @@ export default {
 <style>
 .my-container {
   flex: auto;
+  text-align: center;
 }
 
 #app .head {
