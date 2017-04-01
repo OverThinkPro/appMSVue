@@ -32,23 +32,23 @@ export default {
         },
         {'module_id': '11', 'module_name': '查询统计', 'up_module_id': '1', "url": "/",
          'children': [
-            {'module_id': '1101', 'module_name': '实时查询',  'up_module_id': '11',"url": "/",
+            {'module_id': '1101', 'module_name': '实时查询',  'up_module_id': '11',"url": "/Insearch",
              'children': [],
             },
-            {'module_id': '1102', 'module_name': '历史报警查询',  'up_module_id': '11',"url": "/",
+            {'module_id': '1102', 'module_name': '历史报警查询',  'up_module_id': '11',"url": "/Alarm",
              'children': [],
             },
-            {'module_id': '1103', 'module_name': '历史轨迹回放',  'up_module_id': '11',"url": "/",
+            {'module_id': '1103', 'module_name': '历史轨迹回放',  'up_module_id': '11',"url": "/Replay",
              'children': [],
             },
           ]
         },
         {'module_id': '12', 'module_name': '考勤管理', 'up_module_id': '1', "url": "/",
          'children': [
-            {'module_id': '1201', 'module_name': '日考勤报表',  'up_module_id': '12',"url": "/",
+            {'module_id': '1201', 'module_name': '日考勤报表',  'up_module_id': '12',"url": "/Daily",
              'children': [],
             },
-            {'module_id': '1202', 'module_name': '月考勤详情报表',  'up_module_id': '12',"url": "/",
+            {'module_id': '1202', 'module_name': '月考勤详情报表',  'up_module_id': '12',"url": "/Monthly",
              'children': [],
             },
             {'module_id': '1203', 'module_name': '月考勤统计报表',  'up_module_id': '12',"url": "/",
@@ -108,7 +108,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 #nav {
   line-height: 50px;
   height: 50px;
@@ -130,7 +130,7 @@ export default {
   height: 100%;
   line-height: 100%;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 400;
   color: white;
 }
 

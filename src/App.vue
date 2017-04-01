@@ -10,6 +10,7 @@
 
 <script>
 import 'bootstrap/dist/js/bootstrap.min';
+// import 'bootstrap-table/dist/bootstrap-table.min';
 import VHeader from './components/Header/Header.vue';
 import VFooter from './components/Footer/Footer.vue';
 import './assets/script/common';
@@ -35,6 +36,7 @@ export default {
 
 <style>
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+/*@import "../node_modules/bootstrap-table/dist/bootstrap-table.min.css";*/
 @import "./assets/style/reset.css";
 @import "./assets/style/common.css";
 
@@ -53,7 +55,7 @@ export default {
 .content-wrap {
   position: relative;
   background-color: #EEE;
-  min-height: 700px;
+  min-height: 600px;
   font-size: 14px;
   color: #333;
 }

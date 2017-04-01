@@ -38,7 +38,7 @@
       </div>
       <div class="main-right fl content-box">
         <div class="wrap-info coalmine-wrap">
-          <div class="title-box">
+          <div class="s-title-box">
             <h5>基本信息</h5>
           </div>
           <div class="document-line">
@@ -59,7 +59,7 @@
           </div>
         </div>
         <div class="wrap-info onduty-wrap">
-          <div class="title-box">
+          <div class="s-title-box">
             <h5>当班人数</h5>
           </div>
           <div class="document-line">
@@ -92,7 +92,7 @@
           </div>
         </div>
         <div class="wrap-info region-wrap">
-          <div class="title-box">
+          <div class="s-title-box">
             <h5>区域人数</h5>
           </div>
           <div class="document-line">
@@ -146,7 +146,7 @@
           </div>
         </div>
         <div class="wrap-info alarm-wrap">
-          <div class="title-box">
+          <div class="s-title-box">
             <h5>实时报警信息</h5>
           </div>
           <div class="document-line">
@@ -955,6 +955,7 @@ export default {
 
 main {
   overflow: hidden;
+  zoom: 1;
 }
 
 .main-left {
@@ -987,7 +988,7 @@ main {
 
 .wrap-info .label-line-right {
   color: red;
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .label-line-right a {

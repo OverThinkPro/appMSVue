@@ -6,6 +6,7 @@
 /* 通用样式设置 */
 main {
   margin: 0 15px;
+  /*border: 2px solid #337AB7;*/
 }
 
 /* 内容包装盒样式 */
@@ -41,12 +42,14 @@ main {
 /* 面包片专用 */
 .bread-box {
   text-align: left;
-  font-weight: bold;
+  font-weight: 400;
 }
-
 .breadcrumb {
   border-radius: 0;
   margin-bottom: 0;
+}
+.breadcrumb a {
+  text-decoration: none;
 }
 
 /* 分割线 */
@@ -108,16 +111,34 @@ select {
 .label-right {}
 
 /* 外部包装盒背景色 */
-.outside-box {background-color: #FFF;}
+.outside-box {
+  background-color: #FFF;
+  overflow: hidden;
+  zoom: 1;
+}
 
+/* 可清空值的标记 */
+.refresh {}
 /* 页面查询条件组合样式设置（不可用于模态框中） */
+.search-bar-box {
+  width: 100%;
+  overflow: hidden;
+  zoom: 1;
+}
 .search-bar {
-  margin: 20px 30px;
+  margin: 10px 0px;
   padding: 10px;
   background-color: white;
   overflow: hidden;
   zoom: 1;
 }
+/* 当查询条件过多存在多行时使用 */
+.search-bar-line {
+  margin: 10px 0;
+  overflow: hidden;
+  zoom: 1;
+}
+/* 组合查询条件包装盒 */
 .search-bar-input {
   width: 20%;
   margin: 0 10px;
@@ -127,8 +148,8 @@ select {
   margin: 0 10px;
 }
 .search-bar-button {
-  /*width: 20%;
-  margin: 0 10px;*/
+  /*width: 20%;*/
+  margin: 0 10px;
 }
 
 /* 模态框样式统一设置 */
@@ -197,14 +218,16 @@ select {
 }
 
 /* 针对使用大标题性文字的统一样式设置 */
-.h1 {}
-.h2 {}
-.h3 {}
-.h4 {
-  font-size: 22px;
-  font-weight: bolder;
+.h1, h1 {}
+.h2, h2 {}
+.h3, h3 {
+  font-weight: 400;
 }
-.h5 {
+.h4, h4 {
+  font-size: 22px;
+  font-weight: 400;
+}
+.h5, h5 {
   font-size: 15px;
   font-weight: bold;
 }
@@ -223,10 +246,19 @@ select {
 /* 大标题包装盒样式 */
 .title-box {
   width: 100%;
+  padding: 15px 0;
+  background: #337AB7;
+  color: white;
 }
 /* 大标题居中样式 */
 .title-center {
   text-align: center;
+}
+
+/* 小标题包装盒 */
+.s-title-box {
+  width: 100%;
+  padding: 5px 0;
 }
 
 /* 左右组合展示数据（包含左右的一行）*/
@@ -256,17 +288,17 @@ select {
   background-color: #337AB7;
 	color: white;
 }
-.modal-btn-width {
-  width: 100px;
-}
+.modal-btn-width {width: 100px;}
 
 /* 按钮包装盒 */
 .btn-box {
   margin: 10px 5px 10px 10px;
+  overflow: hidden;
+  zoom: 1;
 }
 .btn-box button {
   margin-right: 5px;
-  font-weight: bold;
+  font-weight: 400;
 }
 .btn-box select {
   height: 34px;
@@ -286,15 +318,20 @@ select {
 .map-box {
   margin: 10px;
   border: 1px solid #DDD;
+  min-height: 600px;
 }
 
 /* 页面主体部分包装盒样式（不包含查询条件） */
 .table-box {
-  margin: 10px 30px 0 30px;
+  margin: 10px 0;
   padding: 10px;
 }
 /* 真正的表格数据包装盒样式 */
-.data-box {}
+.data-box {
+  margin: 0 0 20px 0;
+  overflow: hidden;
+  zoom: 1;
+}
 
 /* 表格样式（不区分页面和模态框，通用样式） */
 table {}
@@ -313,8 +350,59 @@ table tbody {
 
 /* 分页样式设置 */
 .pagination-box {
-  height: 34px;
+  height: 44px;
 }
 .pagination {
   margin: 0;
+  padding: 5px 0;
+}
+
+/* 侧边栏的组合查询条件 */
+.sidebar {
+  position: absolute;
+  top: 0;
+  width: 340px;
+  overflow: auto;
+  transition: all 0.2s ease 0s;
+  z-index: 5;
+}
+.sidebar-right {left: 0;}
+.sidebar-left {left: -340px;}
+.sidebar_toggle_box {
+  position: fixed;
+  top: 300px;
+  left: 0;
+  z-index: 10;
+}
+.sidebar_toggle_box a {
+  color: #337AB7;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  font-size: 25px;
+}
+.sidebar_toggle_box a:hover {
+  cursor: pointer;
+}
+/* 当查询条件过多存在多行时使用 */
+.ss-bar-line {
+  margin: 20px 0;
+  overflow: hidden;
+  zoom: 1;
+}
+/* 组合查询条件包装盒 */
+.ss-bar-input {
+  width: 90%;
+  margin: 0 10px;
+}
+.ss-bar-select {
+  width: 90%;
+  margin: 0 10px;
+}
+.ss-bar-button {
+  width: 90%;
+  margin: 0 10px;
+}
+.ss-bar-button button {
+  width: 100%;
 }
