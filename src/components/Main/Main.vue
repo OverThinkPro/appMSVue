@@ -237,22 +237,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">关闭</button>
           </div>
         </div>
       </div>
@@ -332,22 +332,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -403,22 +403,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -488,22 +488,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -522,19 +522,19 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="show-info-group">
+              <div class="show-info-group" style="border-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
                 <div class="s-group-left">区域</div>
                 <div class="s-group-right">D11084工作面</div>
               </div>
-              <div class="show-info-group">
+              <div class="show-info-group" style="border-bottom: 0; border-radius: 0;">
                 <div class="s-group-left">人数</div>
                 <div class="s-group-right">4人</div>
               </div>
-              <div class="show-info-group">
+              <div class="show-info-group" style="border-bottom: 0; border-radius: 0;">
                 <div class="s-group-left">已呼叫</div>
                 <div class="s-group-right">1人</div>
               </div>
-              <div class="show-info-group">
+              <div class="show-info-group" style="border-top-left-radius: 0; border-top-right-radius: 0;">
                 <div class="s-group-left">正在呼叫</div>
                 <div class="s-group-right">张启龙</div>
               </div>
@@ -548,55 +548,36 @@
                       <th>入井时间</th>
                       <th>工种</th>
                       <th>班组</th>
+                      <th>呼叫状态</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
-                    </tr>
-                    <tr>
-                      <td>4</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
+                    <tr v-for="(elem, index) in evacuateStateList" :key="elem.key">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ elem.name }}</td>
+                      <td>{{ elem.time }}</td>
+                      <td>{{ elem.job }}</td>
+                      <td>{{ elem.unit }}</td>
+                      <td>{{ elem.state }}</td>
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -640,22 +621,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -696,22 +677,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -741,22 +722,22 @@
                   </thead>
                   <tbody></tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -797,22 +778,22 @@
                     </tr>
                   </tbody>
                 </table>
+                <nav class="pagination-box">
+                  <ul class="pagination">
+                      <li><a href="#">&laquo;</a></li>
+                      <li><a href="#">1</a></li>
+                      <li><a href="#">2</a></li>
+                      <li><a href="#">3</a></li>
+                      <li><a href="#">4</a></li>
+                      <li><a href="#">5</a></li>
+                      <li><a href="#">&raquo;</a></li>
+                  </ul>
+                </nav>
               </div>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-              </nav>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -827,7 +808,36 @@ export default {
   name: "main",
   data() {
     return {
-
+      evacuateStateList: [
+        {
+          name: '张三',
+          time: '8:00',
+          job: '掘进',
+          unit: '掘进1队',
+          state: '未呼叫'
+        },
+        {
+          name: '张三',
+          time: '8:00',
+          job: '掘进',
+          unit: '掘进1队',
+          state: '未呼叫'
+        },
+        {
+          name: '张三',
+          time: '8:00',
+          job: '掘进',
+          unit: '掘进1队',
+          state: '未呼叫'
+        },
+        {
+          name: '张启龙',
+          time: '8:00',
+          job: '掘进',
+          unit: '掘进1队',
+          state: '已呼叫'
+        }
+      ]
     }
   },
   mounted () {
@@ -951,6 +961,7 @@ export default {
   width: 100%;
   min-height: 700px;
   overflow: hidden;
+  zoom: 1;
 }
 
 main {

@@ -102,8 +102,12 @@ export default {
   margin-right: 80px;
 }
 
+.system-user-right label {
+  font-size: 16px;
+}
+
 .system-user-right .user-name {
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .system-user-manage {
@@ -114,7 +118,7 @@ export default {
 .system-user-manage a {
   text-decoration: none;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 400;
   color: grey;
 }
 

@@ -72,7 +72,7 @@
       <div class="table-box outside-box">
         <ul class="nav nav-tabs" role="tablist">
 			    <li role="presentation" class="active"><a href="javascript: void(0);" data-target="#staff_map_tab" aria-controls="staff_map_tab" role="tab" data-toggle="tab">地图</a></li>
-			    <li role="presentation"><a @click="initStyle()" href="javascript: void(0);" data-target="#staff_list_tab" aria-controls="staff_list_tab" role="tab" data-toggle="tab">列表</a></li>
+			    <li role="presentation"><a href="javascript: void(0);" data-target="#staff_list_tab" aria-controls="staff_list_tab" role="tab" data-toggle="tab">列表</a></li>
         </ul>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="staff_map_tab">
@@ -88,16 +88,16 @@
               <button class="btn btn-primary fl" type="button"><i class="glyphicon glyphicon-print"></i>&nbsp;打印</button>
             </div>
             <div class="data-box">
-              <table data-toggle="table" data-url="data/staff.json" data-pagination="true">
+              <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th data-field="state">序号</th>
-                    <th data-field="name">姓名</th>
-                    <th data-field="no" data-sortable="true">编号</th>
-                    <th data-field="cardId">卡号</th>
-                    <th data-field="unit">部门</th>
-                    <th data-field="region">区域</th>
-                    <th data-field="reader">分站</th>
+                    <th>序号</th>
+                    <th>姓名</th>
+                    <th>编号</th>
+                    <th>卡号</th>
+                    <th>部门</th>
+                    <th>区域</th>
+                    <th>分站</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -112,18 +112,18 @@
                   </tr>
                 </tbody>
               </table>
+              <nav class="pagination-box">
+                <ul class="pagination">
+                  <li><a href="#">&laquo;</a></li>
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">&raquo;</a></li>
+                </ul>
+              </nav>
             </div>
-            <nav class="pagination-box">
-              <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">&raquo;</a></li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
@@ -194,14 +194,9 @@ export default {
     };
   },
   mounted () {
-    this.initStyle();
     this.loadMap();
   },
   methods: {
-    initStyle () {
-      $("table").addClass('table table-bordered table-hover');
-      $("table").css({'margin-bottom': '0'});
-    },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);

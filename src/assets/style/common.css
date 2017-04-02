@@ -58,6 +58,11 @@ main {
   margin: 20px auto;
   width: 100%;
 }
+.search-hr {
+  border: 5px solid #EEE;
+  margin: 20px auto;
+  width: 100%;
+}
 
 /* 下拉选择框同步样式 */
 select {
@@ -162,6 +167,9 @@ select {
 }
 .modal-title {}
 /* 模态框modal-body内使用的内容包装盒样式 */
+.modal-body {
+  /*background-color: #EEE;*/
+}
 .modal-table-box {
   padding: 10px;
 }
@@ -208,14 +216,6 @@ select {
   width: 25%;
   /*margin: 0 10px;*/
 }
-.ms-bar-button button {
-  /*margin: 0;*/
-}
-.ms-bar-button:first-child {
-  border-right: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
 
 /* 针对使用大标题性文字的统一样式设置 */
 .h1, h1 {}
@@ -229,7 +229,7 @@ select {
 }
 .h5, h5 {
   font-size: 15px;
-  font-weight: bold;
+  font-weight: 400;
 }
 
 /* 旁白信息展示块（比如首页的右侧实时信息展示块），为通用样式 */
@@ -275,7 +275,7 @@ select {
 .label-line-left {
   text-align: right;
   margin-right: 5%;
-  font-weight: bold;
+  font-weight: 400;
 }
 .label-line-right {
   text-align: left;
@@ -283,12 +283,12 @@ select {
 }
 
 /* 不同button的专用样式 */
-.btn-save-width {
+.btn-save {
   width: 100px;
-  background-color: #337AB7;
-	color: white;
+  /*background-color: #337AB7;
+	color: white;*/
 }
-.modal-btn-width {width: 100px;}
+.modal-btn {width: 100px;}
 
 /* 按钮包装盒 */
 .btn-box {
@@ -326,6 +326,12 @@ select {
   margin: 10px 0;
   padding: 10px;
 }
+.table-box-left {
+  width: 21%;
+}
+.table-box-right {
+  width: 78%;
+}
 /* 真正的表格数据包装盒样式 */
 .data-box {
   margin: 0 0 20px 0;
@@ -359,8 +365,8 @@ table tbody {
 
 /* 侧边栏的组合查询条件 */
 .sidebar {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 100px;
   width: 340px;
   overflow: auto;
   transition: all 0.2s ease 0s;

@@ -11,6 +11,14 @@ import Replay from '@/components/Replay/Replay';
 import Daily from '@/components/Daily/Daily';
 import Monthly from '@/components/Monthly/Monthly';
 
+import Unit from '@/components/Unit/Unit';
+import Staff from '@/components/Staff/Staff';
+import Job from '@/components/Job/Job';
+import Schedule from '@/components/Schedule/Schedule';
+
+import Card from '@/components/Card/Card';
+import Reader from '@/components/Reader/Reader';
+
 Vue.use(Router);
 
 export default new Router({
@@ -59,6 +67,36 @@ export default new Router({
       path: '/Monthly',
       name: 'Monthly',
       component: Monthly
+    },
+    {
+      path: '/Unit',
+      name: 'Unit',
+      component: Unit
+    },
+    {
+      path: '/Staff',
+      name: 'Staff',
+      component: Staff
+    },
+    {
+      path: '/Job',
+      name: 'Job',
+      component: Job
+    },
+    {
+      path: '/Schedule',
+      name: 'Schedule',
+      component: Schedule
+    },
+    {
+      path: '/Card',
+      name: 'Card',
+      component: Card
+    },
+    {
+      path: '/Reader',
+      name: 'Reader',
+      component: Reader
     }
   ]
 });

@@ -1,9 +1,7 @@
 <template>
   <div id="app" class="my-container">
     <v-header class="header-wrap"></v-header>
-    <div class="content-wrap">
-      <router-view></router-view>
-    </div>
+    <router-view class="content-wrap"></router-view>
     <v-footer class="footer-wrap"></v-footer>
   </div>
 </template>
@@ -43,26 +41,20 @@ export default {
 .my-container {
   text-align: center;
   width: 100%;
-  /*height: 935px;*/
   height: 100%;
   font-family: arial;
 }
-
-.header-wrap {
-  /*position: relative;*/
-}
-
+.header-wrap {}
 .content-wrap {
   position: relative;
   background-color: #EEE;
-  min-height: 600px;
+  min-height: 700px;
   font-size: 14px;
   color: #333;
+  overflow: hidden;
+  zoom: 1;
 }
-
 .footer-wrap {
-  /*position: fixed;*/
   height: 120px;
-  /*bottom: 0;*/
 }
 </style>
