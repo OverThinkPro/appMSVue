@@ -108,13 +108,24 @@
                 <td>{{ elem.powerSupply }}</td>
                 <td>{{ elem.readerIP }}</td>
                 <td>
-                  <a href="javascript: void(0);" title="参数配置"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
-                  <a href="javascript: void(0);" title="地图标注"><i class="glyphicon glyphicon-screenshot"></i></a>&nbsp;|
+                  <a href="javascript: void(0);" title="参数配置" data-toggle="modal" data-target="#set_reader_parameter_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
+                  <a href="javascript: void(0);" title="地图标注" data-toggle="modal" data-target="#mark_reader_modal"><i class="glyphicon glyphicon-screenshot"></i></a>&nbsp;|
                   <a href="javascript: void(0);" title="地图查看"><i class="glyphicon glyphicon-globe"></i></a>
                 </td>
               </tr>
             </tbody>
           </table>
+          <nav class="pagination-box">
+            <ul class="pagination">
+              <li><a href="#">&laquo;</a></li>
+              <li><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+              <li><a href="#">4</a></li>
+              <li><a href="#">5</a></li>
+              <li><a href="#">&raquo;</a></li>
+            </ul>
+          </nav>
         </div>
       </div>
     </main>
@@ -290,12 +301,344 @@
       </div>
     </div>
 
+    <!-- 参数配置模态框 -->
+    <div class="modal fade" id="set_reader_parameter_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width: 750px;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">分站参数配置</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="show-info-group clear-bottom clear-radius-bottom">
+                <div class="group-left">分站ID</div>
+                <div class="group-right">FZ001</div>
+                <div class="group-left">分站名称</div>
+                <div class="group-right">井口分站</div>
+              </div>
+              <div class="show-info-group clear-bottom clear-border-radius">
+                <div class="group-left">位置坐标</div>
+                <div class="group-right">(100, 200.2)</div>
+                <div class="group-left">位置类型</div>
+                <div class="group-right">井口</div>
+              </div>
+              <div class="show-info-group clear-bottom clear-border-radius">
+                <div class="group-left">分站状态</div>
+                <div class="group-right">正常</div>
+                <div class="group-left">供电方式</div>
+                <div class="group-right">电源</div>
+              </div>
+              <div class="show-info-group clear-radius-top ">
+                <div class="group-left">电池电量</div>
+                <div class="group-right">220V</div>
+                <div class="group-left">分站IP</div>
+                <div class="group-right">192.168.1.1</div>
+              </div>
+            </div>
+            <div class="table-box content-box">
+              <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="javascript: void(0);" aria-control="#one" data-toggle="tab" data-target="#one" role="tab">系统参数</a></li>
+                <li role="presentation"><a href="javascript: void(0);" aria-control="#two" data-toggle="tab" data-target="#two" role="tab">射频参数</a></li>
+                <li role="presentation"><a href="javascript: void(0);" aria-control="#three" data-toggle="tab" data-target="#three" role="tab">网络参数</a></li>
+              </ul>
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="one">
+                  <div class="table-box">
+                    <div class="input-group-line">
+                      <div class="group-left">设备名称</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">密码</div>
+                      <div class="group-right">
+                        <input class="form-control" type="password" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">信息打印级别</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">modbus端口</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="two">
+                  <div class="table-box">
+                    <div class="data-box">
+                      <div class="show-info-group clear-bottom clear-radius-bottom">
+                        <div class="group-left">空闲设备移除时间</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">时隙刷新时间</div>
+                        <div class="group-right"></div>
+                      </div>
+                      <div class="show-info-group clear-bottom clear-border-radius">
+                        <div class="group-left">定位卡测距时间间隔</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">分站天线间距</div>
+                        <div class="group-right"></div>
+                      </div>
+                      <div class="show-info-group clear-radius-top">
+                        <div class="group-left">天线信号重叠距离</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">天线个数</div>
+                        <div class="group-right"></div>
+                      </div>
+                    </div>
+                    <div class="data-box">
+                      <div class="show-info-group clear-bottom clear-radius-bottom">
+                        <div class="group-left">模块MAC地址</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">射频发射频率</div>
+                        <div class="group-right"></div>
+                      </div>
+                      <div class="show-info-group clear-radius-top">
+                        <div class="group-left">射频通道</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">通信模式</div>
+                        <div class="group-right"></div>
+                      </div>
+                    </div>
+                    <div class="data-box">
+                      <div class="show-info-group clear-bottom clear-radius-bottom">
+                        <div class="group-left">模块MAC地址</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">射频发射频率</div>
+                        <div class="group-right"></div>
+                      </div>
+                      <div class="show-info-group clear-radius-top">
+                        <div class="group-left">射频通道</div>
+                        <div class="group-right"></div>
+                        <div class="group-left">通信模式</div>
+                        <div class="group-right"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="three">
+                  <div class="table-box">
+                    <div class="input-group-line">
+                      <div class="group-left">MAC地址</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">IP地址</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">子网掩码</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">网关</div>
+                      <div class="group-right">
+                        <input class="form-control" type="text" name="">
+                      </div>
+                    </div>
+                    <div class="input-group-line">
+                      <div class="group-left">是否使用DHCP</div>
+                      <div class="group-right">
+                          <input class="" style="margin-left: 20%;" type="radio" name="dhcp" value="是">
+                          <span>是</span>
+                          <input class="" style="margin-left: 20%;" type="radio" name="dhcp" value="否">
+                          <span>否</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分站地图标注模态框 -->
+    <div class="modal fade" id="mark_reader_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width: 80%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">分站地图标注</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="table-box-right fl">
+                <div class="map-box">
+                  <div id="map"></div>
+                </div>
+              </div>
+              <div class="table-box-left fr">
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button" disabled="disabled">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+                <div class="document">
+                  <div class="document-line">
+                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">名称:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <label class="label-line-left">位置:</label>
+                    <label class="label-line-right"></label>
+                  </div>
+                  <div class="document-line">
+                    <button class="btn btn-primary" type="button">标注</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
 import bootbox from 'bootbox';
 import initLoad from '../../assets/script/sidemenu';
+import ol from 'openlayers/dist/ol';
 
 export default {
   name: 'reader',
@@ -368,6 +711,7 @@ export default {
   },
   mounted () {
     initLoad();
+    this.loadMap();
   },
   methods: {
     clearSearch () {
@@ -387,6 +731,33 @@ export default {
         readerIP: '192.168.2.113'
       };
     },
+    loadMap () {
+      $("#mark_reader_modal").on('shown.bs.modal', function() {
+        var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
+        taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
+        beijing = ol.proj.fromLonLat([12950000, 4860000]);
+        var view = new ol.View({
+          center: taiyuan,
+          minZoom: 8,
+          zoom: 3
+        });
+        var map = new ol.Map({
+          target: 'map',
+          layers: [
+            new ol.layer.Tile({
+              source: new ol.source.OSM()
+            })
+          ],
+          view: new ol.View({
+            center: taiyuan,
+            zoom: 8,
+            minZoom: 6,
+            maxZoom: 12,
+            rotation: Math.PI / 6
+          })
+        });
+      });
+    },
     deleteReader () {
       bootbox.confirm({
         message: "分站一旦删除，不可恢复！是否确定删除当前所选分站？",
@@ -405,7 +776,7 @@ export default {
         }
       });
     }
-  }
+  },
 };
 </script>
 
@@ -413,4 +784,25 @@ export default {
 #reader {
   width: 100%;
 }
+
+.table-box-left, .table-box-right {zoom: 1;}
+.table-box-left {width: 24%; height: 550px;overflow: scroll;}
+.table-box-right {width: 75%;}
+.map-box, #map {
+  margin: 0;
+  min-height: 555px;
+  max-height: 555px;
+}
+
+.document {
+  overflow: hidden;
+  zoom: 1;
+  border: 1px solid #E5E5E5;
+  margin-bottom: 5px;
+}
+.document-line i {color: #337ab7; font-size: 16px;}
+.document-line button {width: 80%; float: right;}
+.label-line-left, .label-line-right {text-align: center;}
+.label-line-left {width: 20%;}
+.label-line-right {width: 80%;}
 </style>

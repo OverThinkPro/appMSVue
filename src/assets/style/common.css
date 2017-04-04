@@ -187,6 +187,8 @@ select {
 }
 .modal-table-box {
   padding: 10px;
+  overflow: hidden;
+  zoom: 1;
 }
 /* 模态框中展示信息时使用的组合样式 */
 .show-info-group {
@@ -210,6 +212,18 @@ select {
 .s-group-right {
   width: 60%;
 }
+
+.show-info-group .group-left {
+  width: 20%;
+  margin-right: 0;
+  text-align: center;
+  background-color: #EEE;
+}
+.show-info-group .group-right {
+  width: 30%;
+  text-align: center;
+}
+
 /* 模态框中组合查询条件样式设置（模态框专用） */
 .modal-search-bar {
   width: 100%;
@@ -278,7 +292,6 @@ select {
 
 /* 左右组合展示数据（包含左右的一行）*/
 .document-line {
-  width: 100%;
   margin: 10px 5px;
   overflow: hidden;
   zoom: 1;
@@ -340,6 +353,8 @@ select {
 .table-box {
   margin: 10px 0;
   padding: 10px;
+  overflow: hidden;
+  zoom: 1;
 }
 .table-box-left {
   width: 21%;
@@ -353,7 +368,6 @@ select {
   overflow: hidden;
   zoom: 1;
 }
-
 /* 表格样式（不区分页面和模态框，通用样式） */
 table {}
 table thead {
@@ -428,7 +442,10 @@ table tbody {
   width: 100%;
 }
 
-/* 警告框统一样式 */
+/*
+   警告框统一样式
+   目前暂不使用
+ */
 .alert {
   position: absolute;
   top: 0;
@@ -437,3 +454,11 @@ table tbody {
   margin-bottom: 0;
   z-index: 2000;
 }
+
+/* 清除边框 */
+.clear-border {border: 0;}
+.clear-top {border-top: 0;}
+.clear-bottom {border-bottom: 0;}
+.clear-border-radius {border-radius: 0;}
+.clear-radius-top {border-top-left-radius: 0; border-top-right-radius: 0;}
+.clear-radius-bottom {border-bottom-left-radius: 0; border-bottom-right-radius: 0;}

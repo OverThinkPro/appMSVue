@@ -437,11 +437,11 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="show-info-group" style="border-bottom: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0;">
+              <div class="show-info-group clear-bottom clear-radius-bottom" >
                 <div class="s-group-left">区域</div>
                 <div class="s-group-right">D11084工作面</div>
               </div>
-              <div class="show-info-group" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+              <div class="show-info-group clear-radius-top">
                 <div class="s-group-left">人数</div>
                 <div class="s-group-right">20人</div>
               </div>
@@ -522,19 +522,19 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="show-info-group" style="border-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+              <div class="show-info-group clear-bottom clear-radius-bottom">
                 <div class="s-group-left">区域</div>
                 <div class="s-group-right">D11084工作面</div>
               </div>
-              <div class="show-info-group" style="border-bottom: 0; border-radius: 0;">
+              <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="s-group-left">人数</div>
                 <div class="s-group-right">4人</div>
               </div>
-              <div class="show-info-group" style="border-bottom: 0; border-radius: 0;">
+              <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="s-group-left">已呼叫</div>
                 <div class="s-group-right">1人</div>
               </div>
-              <div class="show-info-group" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+              <div class="show-info-group clear-radius-top">
                 <div class="s-group-left">正在呼叫</div>
                 <div class="s-group-right">张启龙</div>
               </div>
