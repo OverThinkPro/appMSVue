@@ -69,9 +69,9 @@
       <div class="table-box outside-box">
         <div class="btn-box">
           <div class="fl">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_reader_modal">添加</button>
-            <button type="button" class="btn btn-primary">修改</button>
-            <button type="button" class="btn btn-primary">删除</button>
+            <button type="button" class="btn btn-primary" @click="loadDateToModal()" data-toggle="modal" data-target="#add_reader_modal">添加</button>
+            <button type="button" class="btn btn-primary" @click="loadDateToModal()" data-toggle="modal" data-target="#update_reader_modal">修改</button>
+            <button type="button" class="btn btn-primary" @click="deleteReader()">删除</button>
           </div>
           <div class="fr">
             <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -127,32 +127,191 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
               <span aria-hidden="true">&times;</span>
               <span class="sr-only"></span>
             </button>
-            <h4 class="modal-title">添加分站</h4>
+            <h4 class="modal-title">添加分站信息</h4>
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-
+              <div class="input-group-line">
+                <div class="group-left">分站ID</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">分站名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">位置坐标</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerLocation">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">位置类型</div>
+                <div class="group-right">
+                  <select class="form-control refresh" name="" v-model="reader.locationType">
+                    <option value="">- 请选择位置类型 -</option>
+                    <option value="井口区">井口区</option>
+                    <option value="重点区域">重点区域</option>
+                    <option value="危险区域">危险区域</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">分站状态</div>
+                <div class="group-right">
+                  <select class="form-control refresh" name="" v-model="reader.readerState">
+                    <option value="">- 请选择分站状态 -</option>
+                    <option value="正常">正常</option>
+                    <option value="异常">异常</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">供电方式</div>
+                <div class="group-right">
+                  <select class="form-control refresh" name="" v-model="reader.powerSupply">
+                    <option value="">- 请选择供电方式 -</option>
+                    <option value="直流电">直流电</option>
+                    <option value="交流电">交流电</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">电池电量</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.battery_v">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">分站IP</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerIP">
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary modal-btn">保存</button>
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 修改分站模态框 -->
+    <div class="modal fade" id="update_reader_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">修改分站信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">分站ID</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disable" type="text" name="" v-model="reader.readerId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">分站名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">位置坐标</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerLocation">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">位置类型</div>
+                <div class="group-right">
+                  <select class="form-control refresh" name="" v-model="reader.locationType">
+                    <option value="">- 请选择位置类型 -</option>
+                    <option value="井口区">井口区</option>
+                    <option value="重点区域">重点区域</option>
+                    <option value="危险区域">危险区域</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">分站状态</div>
+                <div class="group-right">
+                  <select class="form-control refresh" name="" v-model="reader.readerState">
+                    <option value="">- 请选择分站状态 -</option>
+                    <option value="正常">正常</option>
+                    <option value="异常">异常</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">供电方式</div>
+                <div class="group-right">
+                  <select class="form-control refresh" name="" v-model="reader.powerSupply">
+                    <option value="">- 请选择供电方式 -</option>
+                    <option value="直流电">直流电</option>
+                    <option value="交流电">交流电</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">电池电量</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.battery_v">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">分站IP</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerIP">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
+import bootbox from 'bootbox';
+import initLoad from '../../assets/script/sidemenu';
+
 export default {
   name: 'reader',
   data () {
     return {
+      reader: {
+        readerId: '10001',
+        readerName: '分站1',
+        readerLocation: '区域1',
+        readerPosition: '(120.38, 130.49)',
+        locationType: '重点区域',
+        readerState: '正常',
+        powerSupply: '交流电',
+        battery_v: '3.8v',
+        readerIP: '192.168.2.113'
+      },
       readerList: [
         {
           readerId: '10001',
@@ -208,12 +367,43 @@ export default {
     };
   },
   mounted () {
-
+    initLoad();
   },
   methods: {
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+    },
+    loadDateToModal () {
+      this.reader = {
+        readerId: '10001',
+        readerName: '分站1',
+        readerLocation: '区域1',
+        readerPosition: '(120.38, 130.49)',
+        locationType: '重点区域',
+        readerState: '正常',
+        powerSupply: '交流电',
+        battery_v: '3.8v',
+        readerIP: '192.168.2.113'
+      };
+    },
+    deleteReader () {
+      bootbox.confirm({
+        message: "分站一旦删除，不可恢复！是否确定删除当前所选分站？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function () {
+          bootbox.alert({
+            message: "删除成功",
+          });
+        }
+      });
     }
   }
 };

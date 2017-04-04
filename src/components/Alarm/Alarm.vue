@@ -246,6 +246,8 @@
 </template>
 
 <script>
+import initLoad from '../../assets/script/sidemenu';
+
 export default {
   name: 'alarm',
   data () {
@@ -357,6 +359,7 @@ export default {
   },
   mounted () {
     this.checkType();
+    initLoad();
   },
   methods: {
     checkType() {

@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import initLoad from '../../assets/script/sidemenu';
 import ol from 'openlayers';
 
 export default {
@@ -149,6 +150,7 @@ export default {
   },
   mounted () {
     this.loadMap();
+    initLoad();
   },
   methods: {
     clearSearch () {
