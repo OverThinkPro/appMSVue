@@ -28,7 +28,7 @@
               </div>
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">部门编号</span>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control refresh">
               </div>
               <div class="input-group btn-group fr">
                 <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
@@ -39,9 +39,9 @@
           <div class="search-hr"></div>
           <div class="btn-box" style="margin-bottom: 0;">
             <div class="fl">
-              <button type="button" class="btn btn-primary">添加</button>
-              <button type="button" class="btn btn-primary">修改</button>
-              <button type="button" class="btn btn-primary">删除</button>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_unit_modal">添加</button>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_unit_modal">修改</button>
+              <button type="button" class="btn btn-primary" @click="deleteUnit()">删除</button>
             </div>
             <div class="fr">
               <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -88,14 +88,129 @@
         </div>
       </div>
     </main>
+
+    <!-- 添加部门模态框 -->
+    <div class="modal fade" id="add_unit_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">添加部门信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">上级部门编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">上级部门名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">部门编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">部门名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="unit.unitName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">备注</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="unit.remark">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 修改部门模态框 -->
+    <div class="modal fade" id="update_unit_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">修改部门信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">上级部门编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">上级部门名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">部门编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">部门名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="unit.unitName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">备注</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="unit.remark">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import bootbox from 'bootbox/bootbox.min';
+
 export default {
   name: 'unit',
   data () {
     return {
+      unit: {
+        upUnitId: '001',
+        upUnitName: '屯兰煤矿',
+        unitId: '001001',
+        unitName: '掘进1队',
+        remark: '机电科机电科机电科机电科机电科'
+      },
       unitList: [
         {
           unitId: '1000001',
@@ -129,12 +244,40 @@ export default {
     }
   },
   mounted () {
-
+    this.initEvent();
   },
   methods: {
+    initEvent () {
+      var self = this;
+      $("#add_unit_modal, #update_unit_modal").on('show.bs.modal', function() {
+        self.unit = {
+          upUnitId: '001',
+          upUnitName: '屯兰煤矿',
+          unitId: '001001',
+          unitName: '掘进1队',
+          remark: '机电科机电科机电科机电科机电科'
+        };
+      });
+    },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+    },
+    deleteUnit () {
+      bootbox.confirm({
+        message: '部门一旦删除，不可恢复，是否确定删除？',
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function() {
+          bootbox.alert("删除成功!");
+        }
+      })
     }
   }
 }

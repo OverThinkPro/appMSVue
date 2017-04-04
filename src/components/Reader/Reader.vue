@@ -351,25 +351,25 @@
                     <div class="input-group-line">
                       <div class="group-left">设备名称</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">密码</div>
                       <div class="group-right">
-                        <input class="form-control" type="password" name="">
+                        <input class="form-control refresh" type="password" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">信息打印级别</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">modbus端口</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                   </div>
@@ -431,33 +431,33 @@
                     <div class="input-group-line">
                       <div class="group-left">MAC地址</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">IP地址</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">子网掩码</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">网关</div>
                       <div class="group-right">
-                        <input class="form-control" type="text" name="">
+                        <input class="form-control refresh" type="text" name="">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">是否使用DHCP</div>
                       <div class="group-right">
-                          <input class="" style="margin-left: 20%;" type="radio" name="dhcp" value="是">
+                          <input class="refresh" style="margin-left: 20%;" checked="checked" type="radio" name="dhcp" value="是">
                           <span>是</span>
-                          <input class="" style="margin-left: 20%;" type="radio" name="dhcp" value="否">
+                          <input class="refresh" style="margin-left: 20%;" type="radio" name="dhcp" value="否">
                           <span>否</span>
                       </div>
                     </div>
@@ -715,8 +715,11 @@ export default {
   },
   methods: {
     clearSearch () {
-      $("input.refresh").val("");
+      $("input.refresh:not(:radio)").val("");
+      $("input.refresh:radio").eq(0).prop('checked', true);
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+      $(".nav-tabs li.active").removeClass('active');
+      $(".nav-tabs li:eq(0)").addClass('active');
     },
     loadDateToModal () {
       this.reader = {

@@ -50,9 +50,9 @@
             <div class="search-hr"></div>
             <div class="btn-box" style="margin-bottom: 0;">
               <div class="fl">
-                <button type="button" class="btn btn-primary">添加</button>
-                <button type="button" class="btn btn-primary">修改</button>
-                <button type="button" class="btn btn-primary">删除</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_staff_modal">添加</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_staff_modal">修改</button>
+                <button type="button" class="btn btn-primary" @click="deleteStaff()">删除</button>
               </div>
               <div class="fr">
                 <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -101,14 +101,196 @@
         </div>
       </div>
     </main>
+
+    <!-- 添加员工信息模态框 -->
+    <div class="modal fade" id="add_staff_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">添加员工信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">姓名</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">工号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="staff.no">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">身份证号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.cardId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">出生年月</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.birthday">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">籍贯</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.origin">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">职务/工种</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.job">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">职称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.title">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">部门</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.unitId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">联系电话</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.telephone">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">参加工作时间</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.workTime">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 修改员工信息模态框 -->
+    <div class="modal fade" id="update_staff_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">修改员工信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">姓名</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">工号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="staff.no">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">身份证号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.cardId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">出生年月</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.birthday">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">籍贯</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.origin">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">职务/工种</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.job">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">职称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.title">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">部门</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.unitId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">联系电话</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.telephone">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">参加工作时间</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.workTime">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
+import bootbox from 'bootbox/bootbox.min';
+
 export default {
   name: 'staff',
   data () {
     return {
+      staff: {
+        staffName: '李权良',
+        no: '001001',
+        cardId: '411082199411010633',
+        birthday: '1876-10-23',
+        origin: '山西太原',
+        sex: '男',
+        job: '检修工',
+        title: '高级检修工',
+        unitId: '机电科',
+        telephone: '18435156270',
+        workTime: '2017-10-20 8:00'
+      },
       staffList: [
         {
           staffName: '李权良',
@@ -146,12 +328,46 @@ export default {
     };
   },
   mounted () {
-
+    this.initEvent();
   },
   methods: {
+    initEvent () {
+      var self = this;
+      $("#add_staff_modal, #update_staff_modal").on('show.bs.modal', function() {
+        self.staff = {
+          staffName: '李权良',
+          no: '001001',
+          cardId: '411082199411010633',
+          birthday: '1876-10-23',
+          origin: '山西太原',
+          sex: '男',
+          job: '检修工',
+          title: '高级检修工',
+          unitId: '机电科',
+          telephone: '18435156270',
+          workTime: '2017-10-20 8:00'
+        };
+      });
+    },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+    },
+    deleteStaff () {
+      bootbox.confirm({
+        message: '员工信息一旦删除，不可恢复，是否确定删除？',
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function() {
+          bootbox.alert("删除成功!");
+        }
+      })
     }
   }
 };
