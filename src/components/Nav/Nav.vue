@@ -3,17 +3,19 @@
     data-0="line-height: 100px; height: 100px; background: rgba(0, 0, 0, 0.3);"
     data-300="line-height: 60px; height: 60px; background: rgba(0, 0, 0, 1);">
     <div class="container nav-container">
-      <ul class="nav navbar-nav" v-for="menu in menuList">
-        <li v-if="!menu.children || menu.children.length === 0">
-          <router-link :to="menu.url">{{ menu.module_name }}</span></router-link>
-        </li>
-        <li v-else-if="menu.children || menu.childrend.length > 0" class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-            aria-haspopup="true" aria-expended="false">{{ menu.module_name }}&nbsp;<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li v-for="item in menu.children"><router-link :to="item.url">{{ item.module_name }}</router-link></li>
-          </ul>
-        </li>
+      <ul class="nav navbar-nav">
+        <template v-for="menu in menuList">
+          <li v-if="!menu.children || menu.children.length === 0">
+            <router-link :to="menu.url">{{ menu.module_name }}</span></router-link>
+          </li>
+          <li v-else-if="menu.children || menu.childrend.length > 0" class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+              aria-haspopup="true" aria-expended="false">{{ menu.module_name }}&nbsp;<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li v-for="item in menu.children"><router-link :to="item.url">{{ item.module_name }}</router-link></li>
+            </ul>
+          </li>
+        </template>
       </ul>
       <div id="list-wrap-hidden">
         <button id="menuHidden"><i class="glyphicon glyphicon-menu-left"></i></button>
@@ -122,14 +124,17 @@ export default {
   margin-bottom: 0;
 }
 
-.nav > li {
+.navbar-nav {
+  width: 100%;
+}
+.navbar-nav li {
+  width: 14%;
   height: 50px;
   line-height: 50px;
 }
 
-.nav > li a {
+.navbar-nav > li a {
   display: block;
-  width: 160px;
   height: 100%;
   line-height: 100%;
   font-size: 15px;
@@ -147,10 +152,12 @@ export default {
   display: block;
   height: 34px;
   line-height: 34px;
+  width: 100%;
 }
 
 .dropdown-menu > li > a {
   display: block;
+  width: 100%;
   height: 30px;
   line-height: 30px;
   padding: 2px 20px 2px 20px;
