@@ -17,7 +17,14 @@ import Job from '@/components/Job/Job';
 import Schedule from '@/components/Schedule/Schedule';
 
 import Card from '@/components/Card/Card';
+
 import Reader from '@/components/Reader/Reader';
+
+import User from '@/components/User/User';
+import Role from '@/components/Role/Role';
+import Menu from '@/components/Menu/Menu';
+import Setting from '@/components/Setting/Setting';
+import Region from '@/components/Region/Region';
 
 Vue.use(Router);
 
@@ -97,6 +104,31 @@ export default new Router({
       path: '/Reader',
       name: 'Reader',
       component: Reader
+    },
+    {
+      path: '/User',
+      name: 'User',
+      component: User
+    },
+    {
+      path: '/Role',
+      name: 'Role',
+      component: Role
+    },
+    {
+      path: '/Menu',
+      name: 'Menu',
+      component: Menu
+    },
+    {
+      path: '/Setting',
+      name: 'Setting',
+      component: Setting
+    },
+    {
+      path: '/Region',
+      name: 'Region',
+      component: Region
     }
   ]
 });

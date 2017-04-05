@@ -54,12 +54,21 @@ main {
 
 /* 分割线 */
 .hr {
-  border: 1px solid #EEE;
+  border-top: 1px solid #EEE;
   margin: 20px auto;
   width: 100%;
 }
 .search-hr {
   border: 5px solid #EEE;
+  width: 100%;
+}
+.white-hr {
+  border: 1px solid white;
+  margin: 20px auto;
+  width: 100%;
+}
+.gray-hr {
+  border-top: 1px solid #E5E5E5;
   margin: 20px auto;
   width: 100%;
 }
@@ -234,12 +243,12 @@ select {
   zoom: 1;
 }
 .ms-bar-input {
-  width: 30%;
-  margin: 0 20px;
+  width: 25%;
+  margin: 0 5px;
 }
 .ms-bar-select {
-  width: 30%;
-  margin: 0 20px;
+  width: 25%;
+  margin: 0 5px;
 }
 .ms-bar-button {
   width: 25%;
@@ -275,6 +284,7 @@ select {
 /* 大标题包装盒样式 */
 .title-box {
   width: 100%;
+  margin-bottom: 15px;
   padding: 15px 0;
   background: #337AB7;
   color: white;

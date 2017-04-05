@@ -7,10 +7,10 @@
       </ol>
     </div>
     <main>
-      <div class="title-box content-box">
+      <div class="title-box content-box" style="margin-bottom: 0;">
         <h3>部门管理</h3>
       </div>
-      <div class="table-box outside-box">
+      <div class="table-box outside-box" style="margin-top: 5px;">
         <div class="table-box-left fl">
           <div class="title-box content-box">
             <h5>部门列表</h5>

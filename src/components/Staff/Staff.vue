@@ -7,10 +7,10 @@
       </ol>
     </div>
     <main>
-      <div class="title-box content-box">
+      <div class="title-box content-box" style="margin-bottom: 0;">
         <h3>员工管理</h3>
       </div>
-      <div class="table-box outside-box">
+      <div class="table-box outside-box" style="margin-top: 5px;">
         <div class="table-box-left fl">
           <div class="title-box">
             <h5>部门列表</h5>
@@ -124,7 +124,7 @@
               <div class="input-group-line">
                 <div class="group-left">工号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="staff.no">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.no">
                 </div>
               </div>
               <div class="input-group-line">

@@ -7,11 +7,11 @@
       </ol>
     </div>
     <main>
-      <div class="title-box">
+      <div class="title-box content-box">
         <h3>特殊工种管理</h3>
       </div>
-      <div class="table-box outside-box" style="padding-left: 0; padding-right: 0;">
-        <div class="search-bar-box" style="padding-left: 10px; padding-right: 10px;">
+      <div class="table-box outside-box">
+        <div class="search-bar-box">
           <div class="search-bar">
             <div class="search-bar-select fl">
               <select class="form-control refresh" name="">
@@ -30,8 +30,9 @@
             </div>
           </div>
         </div>
-        <div class="search-hr"></div>
-        <div class="btn-box" style="padding-left: 10px; padding-right: 10px;">
+      </div>
+      <div class="table-box outside-box">
+        <div class="btn-box">
           <div class="fl">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_job_modal">添加</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_job_modal">修改</button>

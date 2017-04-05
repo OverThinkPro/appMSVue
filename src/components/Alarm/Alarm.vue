@@ -372,6 +372,7 @@ export default {
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+      this.alarmType = 0;
     }
   }
 };

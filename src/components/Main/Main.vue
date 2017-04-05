@@ -270,7 +270,7 @@
             <h4 class="modal-title">撤离呼叫</h4>
           </div>
           <div class="modal-body">
-            <div class="modal-table-box">
+            <div class="modal-table-box outside-box">
               <div class="modal-search-bar">
                 <div class="ms-bar-select fl">
                   <select class="form-control">
@@ -291,7 +291,7 @@
                   <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
                 </div>
               </div>
-              <div class="hr"></div>
+              <div class="gray-hr"></div>
               <div class="btn-box">
                 <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-phone-alt"></i>&nbsp;呼叫</button>
               </div>
@@ -365,7 +365,7 @@
             <h4 class="modal-title">班组人员信息</h4>
           </div>
           <div class="modal-body">
-            <div class="modal-table-box">
+            <div class="modal-table-box outside-box">
               <div class="data-box">
                 <table class="table table-bordered table-hover">
                   <thead>
@@ -436,7 +436,7 @@
             <h4 class="modal-title">区域人员基本信息</h4>
           </div>
           <div class="modal-body">
-            <div class="modal-table-box">
+            <div class="modal-table-box outside-box">
               <div class="show-info-group clear-bottom clear-radius-bottom" >
                 <div class="s-group-left">区域</div>
                 <div class="s-group-right">D11084工作面</div>
@@ -445,7 +445,7 @@
                 <div class="s-group-left">人数</div>
                 <div class="s-group-right">20人</div>
               </div>
-              <div class="hr"></div>
+              <div class="white-hr"></div>
               <div class="data-box">
                 <table class="table table-bordered table-hover">
                   <thead>
@@ -521,7 +521,7 @@
             <h4 class="modal-title">撤离呼叫状态信息</h4>
           </div>
           <div class="modal-body">
-            <div class="modal-table-box">
+            <div class="modal-table-box outside-box">
               <div class="show-info-group clear-bottom clear-radius-bottom">
                 <div class="s-group-left">区域</div>
                 <div class="s-group-right">D11084工作面</div>
@@ -538,7 +538,7 @@
                 <div class="s-group-left">正在呼叫</div>
                 <div class="s-group-right">张启龙</div>
               </div>
-              <div class="hr"></div>
+              <div class="white-hr"></div>
               <div class="data-box">
                 <table class="table table-bordered table-hover">
                   <thead>
