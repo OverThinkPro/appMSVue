@@ -1,26 +1,21 @@
 <template lang="html">
-  <div class="user">
+  <div class="dictionary">
     <div class="bread-box">
       <ol class="breadcrumb">
         <li class="active">系统管理</li>
-        <li><router-link to="/User">用户管理</router-link></li>
+        <li><router-link to="/Dictionary">字典管理</router-link></li>
       </ol>
     </div>
-    <main>
-      <div class="">
-
-      </div>
-    </main>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'user',
+  name: 'dictionary',
   data () {
-      return {
+    return {
 
-      };
+    };
   },
   mounted () {
 
@@ -32,7 +27,7 @@ export default {
 </script>
 
 <style lang="css">
-#user {
+#dictionary {
   width: 100%;
 }
 </style>

@@ -19,12 +19,9 @@
         <div class="table-box-right outside-box fr">
           <div class="search-bar-box">
             <div class="search-bar">
-              <div class="search-bar-select fl">
-                <select class="form-control refresh" name="">
-                  <option value="">- 请选择部门 -</option>
-                  <option value="">掘进1队</option>
-                  <option value="">掘进2队</option>
-                </select>
+              <div class="input-group search-bar-input fl">
+                <span class="input-group-addon">部门名称</span>
+                <input type="text" class="form-control refresh">
               </div>
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">部门编号</span>

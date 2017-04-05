@@ -23,6 +23,7 @@ import Reader from '@/components/Reader/Reader';
 import User from '@/components/User/User';
 import Role from '@/components/Role/Role';
 import Menu from '@/components/Menu/Menu';
+import Dictionary from '@/components/Dictionary/Dictionary';
 import Setting from '@/components/Setting/Setting';
 import Region from '@/components/Region/Region';
 
@@ -119,6 +120,11 @@ export default new Router({
       path: '/Menu',
       name: 'Menu',
       component: Menu
+    },
+    {
+      path: '/Dictionary',
+      name: 'Dictionary',
+      component: Dictionary
     },
     {
       path: '/Setting',
