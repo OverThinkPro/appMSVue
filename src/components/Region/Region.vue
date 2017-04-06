@@ -2,8 +2,7 @@
   <div class="region">
     <div class="bread-box">
       <ol class="breadcrumb">
-        <li class="active">系统管理</li>
-        <li><router-link to="/Region">区域设置</router-link></li>
+        <li class="active">区域设置</li>
       </ol>
     </div>
   </div>
