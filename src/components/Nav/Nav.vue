@@ -80,6 +80,9 @@ export default {
         {'module_id': '15', 'module_name': '分站管理',  'up_module_id': '1',"url": "/Reader",
          'children': [],
         },
+        {'module_id': '1605', 'module_name': '区域设置',  'up_module_id': '16',"url": "/Region",
+         'children': [],
+        },
         {'module_id': '16', 'module_name': '系统管理', 'up_module_id': '1', "url": "/",
          'children': [
             {'module_id': '1601', 'module_name': '用户管理',  'up_module_id': '16',"url": "/User",
@@ -96,10 +99,7 @@ export default {
             },
             {'module_id': '1604', 'module_name': '参数设置',  'up_module_id': '16',"url": "/Setting",
              'children': [],
-            },
-            {'module_id': '1605', 'module_name': '区域设置',  'up_module_id': '16',"url": "/Region",
-             'children': [],
-            },
+            }
           ],
         },
       ]
@@ -124,13 +124,39 @@ export default {
   margin-bottom: 0;
 }
 
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
+  }
+}
+@media (min-width: 1380px) {
+  .container {
+    width: 1350px;
+  }
+}
+
 .navbar-nav {
   width: 100%;
 }
 .navbar-nav li {
-  width: 14%;
+  width: 12%;
   height: 50px;
   line-height: 50px;
+}
+
+.navbar-nav li ul {
+  width: 8%;
 }
 
 .navbar-nav > li a {

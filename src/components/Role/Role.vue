@@ -15,17 +15,17 @@
           <div class="search-bar">
             <div class="input-group search-bar-input fl">
               <span class="input-group-addon">角色名称</span>
-              <input class="form-control" type="text" name="">
+              <input class="form-control refresh" type="text" name="">
             </div>
             <div class="search-bar-select fl">
-              <select class="form-control" name="">
+              <select class="form-control refresh" name="">
                 <option value="">- 请选择角色状态 -</option>
                 <option value="0">启用</option>
                 <option value="1">禁用</option>
               </select>
             </div>
             <div class="btn-group fr">
-              <button class="btn btn-default" type="button"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
+              <button class="btn btn-default" type="button" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
               <button class="btn btn-primary" type="button"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
             </div>
           </div>
@@ -113,7 +113,10 @@ export default {
 
   },
   methods: {
-
+    clearSearch () {
+      $("input.refresh").val("");
+      $("select.refresh").find("option:eq(0)").prop('selected', true);
+    }
   }
 };
 </script>

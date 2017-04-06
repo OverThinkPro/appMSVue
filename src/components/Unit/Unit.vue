@@ -274,7 +274,7 @@ export default {
         callback: function() {
           bootbox.alert("删除成功!");
         }
-      })
+      });
     }
   }
 }
