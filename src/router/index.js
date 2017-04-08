@@ -26,7 +26,7 @@ import Menu from '@/components/Menu/Menu';
 import Dictionary from '@/components/Dictionary/Dictionary';
 import Setting from '@/components/Setting/Setting';
 import Region from '@/components/Region/Region';
-
+import Log from '@/components/Log/Log';
 Vue.use(Router);
 
 export default new Router({
@@ -135,6 +135,11 @@ export default new Router({
       path: '/Region',
       name: 'Region',
       component: Region
+    },
+    {
+      path: '/Log',
+      name: 'Log',
+      component: Log
     }
   ]
 });

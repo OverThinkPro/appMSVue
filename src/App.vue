@@ -9,6 +9,7 @@
 <script>
 import 'bootstrap/dist/js/bootstrap.min';
 // import 'bootstrap-table/dist/bootstrap-table.min';
+import 'bootstrap-fileinput/js/fileinput.min';
 import VHeader from './components/Header/Header.vue';
 import VFooter from './components/Footer/Footer.vue';
 import './assets/script/common';
@@ -34,6 +35,7 @@ export default {
 
 <style>
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../node_modules/bootstrap-fileinput/css/fileinput.min.css";
 /*@import "../node_modules/bootstrap-table/dist/bootstrap-table.min.css";*/
 @import "./assets/style/reset.css";
 @import "./assets/style/common.css";

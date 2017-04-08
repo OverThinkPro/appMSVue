@@ -99,7 +99,10 @@ export default {
             },
             {'module_id': '1604', 'module_name': '参数设置',  'up_module_id': '16',"url": "/Setting",
              'children': [],
-            }
+            },
+            {'module_id': '1605', 'module_name': '日志管理',  'up_module_id': '16',"url": "/Log",
+             'children': [],
+            },
           ],
         },
       ]
