@@ -33,7 +33,7 @@
       </div>
       <div class="table-box outside-box">
         <div class="btn-box">
-          <button class="btn btn-primary fl" type="button">添加角色</button>
+          <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_role_modal">添加角色</button>
           <button class="btn btn-primary fl" type="button">批量删除</button>
         </div>
         <div class="data-box content-box">
@@ -45,7 +45,6 @@
                 <th>角色名称</th>
                 <th>是否启用</th>
                 <th>描述</th>
-                <th>备注</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -54,13 +53,12 @@
                 <td><input type="checkbox" name="role" value="role.roleId" /></td>
                 <td>{{ index + 1 }}</td>
                 <td>{{ role.roleName }}</td>
-                <td v-if="role.isUse">启用</td>
+                <td v-if="role.inUse ==='1'">启用</td>
                 <td v-else>禁用</td>
                 <td>{{ role.description }}</td>
-                <td>{{ role.remark }}</td>
                 <td>
-                  <a href="javascript: void(0);" title="修改角色基本信息" data-toggle="modal" data-target="#set_reader_parameter_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                  <a href="javascript: void(0);" title="设置角色权限" data-toggle="modal" data-target="#mark_reader_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
+                  <a href="javascript: void(0);" title="修改角色基本信息" data-toggle="modal" data-target="#update_role_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
+                  <a href="javascript: void(0);" title="设置角色权限" data-toggle="modal" data-target="#set_priviledge_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
                   <a href="javascript: void(0);" title="删除角色"><i class="glyphicon glyphicon-trash"></i></a>
                 </td>
               </tr>
@@ -69,50 +67,188 @@
         </div>
       </div>
     </main>
+    <!-- 添加角色模态框 -->
+    <div class="modal fade" id="add_role_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">添加角色信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">角色编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="roleNew.roleId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">角色名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="roleNew.roleName
+                  ">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">是否启用</div>
+                <div class="group-right">
+                  <input type="radio" value="1" v-model="roleNew.inUse" checked>启用
+                  <input type="radio" value="0" v-model="roleNew.inUse">禁用
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">角色描述</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="roleNew.description">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 修改角色模态框 -->
+    <div class="modal fade" id="update_role_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">修改角色信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">角色编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="roleOld.roleId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">角色名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="roleOld.roleName
+                  ">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">是否启用</div>
+                <div class="group-right">
+                  <input type="radio" value="1" v-model="roleOld.inUse" checked>启用
+                  <input type="radio" value="0" v-model="roleOld.inUse">禁用
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">角色描述</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="roleOld.description">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 为用户添加权限模态框 -->
+    <div class="modal fade" id="set_priviledge_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">角色添加权限信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import bootbox from 'bootbox/bootbox.min';
+
 export default {
   name: 'role',
   data () {
     return {
+      roleNew:{},
+      roleOld:{},
       roleList: [
         {
           roleId: 'R100001',
           roleName: '系统管理员',
-          isUse: true,
+          inUse: '1',
           description: '系统管理员',
-          remark: '系统管理员',
         },
         {
           roleId: 'R100001',
           roleName: '系统管理员',
-          isUse: true,
+          inUse: '1',
           description: '系统管理员',
-          remark: '系统管理员',
         },
         {
           roleId: 'R100001',
           roleName: '系统管理员',
-          isUse: false,
+          inUse: '0',
           description: '系统管理员',
-          remark: '系统管理员',
         },
         {
           roleId: 'R100001',
           roleName: '系统管理员',
-          isUse: true,
+          inUse: '1',
           description: '系统管理员',
-          remark: '系统管理员',
         }
       ]
     };
   },
   mounted () {
-
+     this.initEvent();
   },
   methods: {
+    initEvent () {
+      var self = this;
+      $("#add_role_modal").on('show.bs.modal', function() {
+        self.roleNew = {
+          'roleId': 'R100002', 
+          'roleName': '',  
+          'inUse': '1',
+          'description':'', 
+        }
+      });
+      $("#update_role_modal").on('show.bs.modal', function() {
+        self.roleOld = {
+          'roleId': 'R100001', 
+          'roleName': '系统管理员',  
+          'inUse': '1',
+          'description':'系统管理员', 
+        };
+      });
+    },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
@@ -121,8 +257,19 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 #role {
   width: 100%;
+}
+.outside-box {
+  background-color: #EEE;
+}
+
+.table-box-left, .table-box-right {
+  background-color: #FFF;
+}
+
+.table-box-left {
+  min-height: 600px;
 }
 </style>
