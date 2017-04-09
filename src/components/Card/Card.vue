@@ -243,7 +243,7 @@
                 </div>
                 <div class="show-info-group clear-radius-top">
                   <div class="group-left">发放时间</div>
-                  <div class="group-right">{{ current() }}</div>
+                  <div class="group-right">{{ user.current }}</div>
                   <div class="group-left">操作人员</div>
                   <div class="group-right"></div>
                 </div>
@@ -316,7 +316,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="show_time_alert()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -433,6 +433,9 @@ export default {
   name: 'card',
   data () {
     return {
+      user: {
+        current: ""
+      },
       cardState: 0,
       cardStates: ['未使用', '正常', '丢失', '故障'],
       cardList: [
@@ -485,6 +488,10 @@ export default {
         var selectedValue = $("#cardStateSelect").val();
         self.cardState = selectedValue;
       });
+
+      $("#send_card_modal").on("show.bs.modal", () => {
+        this.user.current = this.current();
+      });
     },
     current () {
       return currentTime();
@@ -519,6 +526,9 @@ export default {
           bootbox.alert("定位卡收卡成功！");
         }
       });
+    },
+    show_time_alert () {
+      alert("time: " + this.user.current);
     }
   }
 };

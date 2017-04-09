@@ -134,8 +134,8 @@
                <div class="thumbnail">
                  <img src="../../assets/logo.png" height="200" width="200" >
                  <div class="caption">
-                   <h3>{{jobType.jobName}}</h3>
-                   <p><a href="#" class="btn btn-primary" role="button" data-toggle="modal" data-target="#update_job_modal">修改图标</a></p>
+                   <!-- <h3>{{jobType.jobName}}</h3> -->
+                   <p><a href="#" class="strong" data-toggle="modal" data-target="#update_job_modal">{{jobType.jobName}}</a></p>
                  </div>
                </div>
              </div>
@@ -519,6 +519,36 @@ export default {
           jobIconUrl:"../../assets/logo.png",
           remark:"",
         },
+        {
+          jobId:"JT100001",
+          jobName:"掘进工",
+          jobIconUrl:"../../assets/logo.png",
+          remark:"",
+        },
+        {
+          jobId:"JT100002",
+          jobName:"瓦检员",
+          jobIconUrl:"../../assets/logo.png",
+          remark:"",
+        },
+        {
+          jobId:"JT100003",
+          jobName:"放炮员",
+          jobIconUrl:"../../assets/logo.png",
+          remark:"",
+        },
+        {
+          jobId:"JT100004",
+          jobName:"采煤工",
+          jobIconUrl:"../../assets/logo.png",
+          remark:"",
+        },
+        {
+          jobId:"JT100005",
+          jobName:"安检员",
+          jobIconUrl:"../../assets/logo.png",
+          remark:"",
+        },
       ],
     };
   },
@@ -584,13 +614,13 @@ export default {
         initialCaption: '选择音频格式文件',
         msgValidationError:'文件上传错误',
         uploadExtraData: {},
-        allowedFileExtensions : ['wav', 'ogg', 'mp3'],  //允许的文件类型  
-        overwriteInitial: false,  
-        //maxFileSize: 1000,  //文件的最大大小  
-        maxFilesNum: 1,     //最多文件数量  
+        allowedFileExtensions : ['wav', 'ogg', 'mp3'],  //允许的文件类型
+        overwriteInitial: false,
+        //maxFileSize: 1000,  //文件的最大大小
+        maxFilesNum: 1,     //最多文件数量
         enctype: 'multipart/form-data',
-        slugCallback: function(filename) { 
-          return filename.replace('(', '_').replace(']', '_');  
+        slugCallback: function(filename) {
+          return filename.replace('(', '_').replace(']', '_');
         }
       });
       $(".job-file").fileinput({
@@ -600,17 +630,17 @@ export default {
         removeLabel: '删除',
         uploadLabel: '上传',
         cancelLabel: '取消',
-        showUpload: true,   
+        showUpload: true,
         browseLabel: '上传图例',
         initialCaption: '选择图片格式文件,支持jpg、jpeg、png格式',
         msgValidationError:'文件上传错误',
         uploadExtraData: {},
-        allowedFileExtensions : ['png', 'jpg', 'jpeg'],    
-        overwriteInitial: false,  
-        maxFilesNum: 1,     
+        allowedFileExtensions : ['png', 'jpg', 'jpeg'],
+        overwriteInitial: false,
+        maxFilesNum: 1,
         enctype: 'multipart/form-data',
-        slugCallback: function(filename) { 
-          return filename.replace('(', '_').replace(']', '_');  
+        slugCallback: function(filename) {
+          return filename.replace('(', '_').replace(']', '_');
         }
       });
       $("#input-gly").fileinput({
@@ -621,17 +651,17 @@ export default {
           removeLabel: '删除',
           uploadLabel: '上传',
           cancelLabel: '取消',
-          showUpload: true,  
+          showUpload: true,
           browseLabel: '上传底图',
           initialCaption: '选择图片格式文件,支持jpg、jpeg、png格式，大小不超过2.0M',
           msgValidationError:'文件上传错误',
           uploadExtraData: {},
-          allowedFileExtensions : ['png', 'jpg', 'jpeg'],   
-          overwriteInitial: false,  
-          maxFilesNum: 1,    
+          allowedFileExtensions : ['png', 'jpg', 'jpeg'],
+          overwriteInitial: false,
+          maxFilesNum: 1,
           enctype: 'multipart/form-data',
-          slugCallback: function(filename) { 
-            return filename.replace('(', '_').replace(']', '_');  
+          slugCallback: function(filename) {
+            return filename.replace('(', '_').replace(']', '_');
           },
          /* allowedPreviewTypes: ['image'],
           allowedFileTypes: ['image'],*/

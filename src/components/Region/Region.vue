@@ -49,7 +49,7 @@
           <div role="tabpanel" class="tab-pane active" id="region_map_tab">
             <div class="map-box" style="width: 100%;">
               <div id="map">
-             
+
               </div>
             </div>
           </div>
@@ -156,7 +156,7 @@
               <div class="input-group-line">
                 <div class="group-left">超员设置</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionNew.regionMaxPeople">
+                  <input class="form-control refresh" type="number" name="" v-model="regionNew.regionMaxPeople">
                 </div>
               </div>
               <div class="input-group-line">
