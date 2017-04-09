@@ -34,13 +34,13 @@
       <div class="table-box outside-box">
         <div class="btn-box">
           <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_user_modal">添加用户</button>
-          <button class="btn btn-primary fl" type="button">批量删除</button>
+          <button class="btn btn-primary fl" type="button" @click="deleteUser()">批量删除</button>
         </div>
-        <div class="data-box content-box">
+        <div class="data-box">
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
-                <th><input type="checkbox" name="allRole"></th>
+                <th><input type="checkbox" name="allUser"></th>
                 <th>序号</th>
                 <th>用户名</th>
                 <th>是否启用</th>
@@ -64,7 +64,7 @@
                 <td>
                   <a href="javascript: void(0);" title="修改用户基本信息" data-toggle="modal" data-target="#update_user_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
                   <a href="javascript: void(0);" title="设置用户角色" data-toggle="modal" data-target="#set_role_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
-                  <a href="javascript: void(0);" title="删除用户"><i class="glyphicon glyphicon-trash"></i></a>
+                  <a href="javascript: void(0);" title="删除用户"  @click="deleteUser()"><i class="glyphicon glyphicon-trash"></i></a>
                 </td>
               </tr>
             </tbody>
@@ -101,15 +101,17 @@
               <div class="input-group-line">
                 <div class="group-left">密码</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="userNew.password
+                  <input class="form-control refresh" type="password" name="" v-model="userNew.password
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="userNew.inUse" checked>启用
-                  <input type="radio" value="0" v-model="userNew.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="userNew.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="userNew.inUse">
+                  <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -156,22 +158,24 @@
               <div class="input-group-line">
                 <div class="group-left">用户名</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userOld.userName
+                  <input class="form-control refresh" type="text" name="" v-model="userOld.userName
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">密码</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userOld.password
+                  <input class="form-control refresh" type="password" name="" v-model="userOld.password
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="userOld.inUse" checked>启用
-                  <input type="radio" value="0" v-model="userOld.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="userOld.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="userOld.inUse">
+                  <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -230,6 +234,7 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
+import {currentTime} from '../../assets/script/date';
 
 export default {
   name: 'user',
@@ -277,7 +282,7 @@ export default {
           userName: '',
           password: '123456',
           inUse: '1',
-          createTime:'2017-04-07 17:00:00',
+          createTime: self.current(),
           lastLoginTime: '2017-04-07 17:00:00',
           remark: '',
         }
@@ -297,7 +302,28 @@ export default {
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
-    }
+    },
+    current () {
+      return currentTime();
+    },
+    deleteUser () {
+      bootbox.confirm({
+        message: "用户一旦删除，不可恢复！是否确定删除当前所选用户？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function () {
+          bootbox.alert({
+            message: "删除成功",
+          });
+        }
+      });
+    },
   }
 };
 </script>
@@ -316,5 +342,8 @@ export default {
 
 .table-box-left {
   min-height: 600px;
+}
+.outside-box{
+  background-color: #fff;
 }
 </style>

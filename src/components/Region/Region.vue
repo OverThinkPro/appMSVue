@@ -40,13 +40,27 @@
           </div>
         </div>
       </div>
-      <div class="table-box outside-box">
+      <div class="table-box outside-box" id="regionTabs">
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a href="javascript: void(0);" data-target="#region_map_tab" aria-controls="region_map_tab" role="tab" data-toggle="tab">地图</a></li>
           <li role="presentation"><a href="javascript: void(0);" data-target="#region_list_tab" aria-controls="region_list_tab" role="tab" data-toggle="tab">列表</a></li>
         </ul>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="region_map_tab">
+            <div class="btn-box">
+              <div class="fr">
+                <button type="button" @click="fullScreen()" class="btn btn-primary fr" title="地图全屏查看">
+                  <i class="glyphicon glyphicon-fullscreen"></i>&nbsp;全屏查看
+                </button>
+                <div class="input-group fr">
+                  <select class="">
+                    <option value="">标注工具</option>
+                    <option value="标注">标注</option>
+                    <option value="移除">移除</option>
+                  </select>
+                </div>
+              </div>
+            </div>
             <div class="map-box" style="width: 100%;">
               <div id="map">
 
@@ -58,7 +72,8 @@
               <div class="fl">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_region_modal">添加</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_region_modal">修改</button>
-                <button type="button" class="btn btn-primary" @click="deleteRegion()">删除</button>
+                <button type="button" class="btn btn-primary" @click="deleteRegion()">批量删除</button>
+                <button type="button" class="btn btn-primary" data-target="#region_map_tab" aria-controls="region_map_tab" role="tab" data-toggle="tab" @click="setRegion()">区域划分</button>
               </div>
               <div class="fr">
                 <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -74,7 +89,6 @@
                     <th>区域名称</th>
                     <th>区域类型</th>
                     <th>超员设置</th>
-                    <th>位置</th>
                     <th>描述</th>
                   </tr>
                 </thead>
@@ -85,7 +99,6 @@
                     <td>{{ region.regionName }}</td>
                     <td>{{ region.regionType }}</td>
                     <td>{{ region.regionMaxPeople }}</td>
-                    <td>{{ region.geoPolygon }}</td>
                     <td>{{ region.description }}</td>
                   </tr>
                 </tbody>
@@ -136,13 +149,6 @@
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left">区域位置</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionNew.geoPolygon
-                  ">
-                </div>
-              </div>
-              <div class="input-group-line">
                 <div class="group-left">区域类型</div>
                 <div class="group-right">
                   <select class="form-control refresh" name="" v-model="regionNew.regionType">
@@ -189,7 +195,7 @@
               <span aria-hidden="true">&times;</span>
               <span class="sr-only"></span>
             </button>
-            <h4 class="modal-title">添加区域信息</h4>
+            <h4 class="modal-title">修改区域信息</h4>
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
@@ -203,13 +209,6 @@
                 <div class="group-left">区域名称</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="regionOld.regionName
-                  ">
-                </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">区域位置</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionOld.geoPolygon
                   ">
                 </div>
               </div>
@@ -359,6 +358,29 @@ export default {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
+    deleteRegion () {
+      bootbox.confirm({
+        message: "区域一旦删除，不可恢复！是否确定删除当前所选区域？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function () {
+          bootbox.alert({
+            message: "删除成功",
+          });
+        }
+      });
+    },
+    setRegion(){
+      /* 点击划分区域按钮的时候切换地图tab*/
+      $("#regionTabs li:eq(1)").removeClass('active');
+      $("#regionTabs li:eq(0)").addClass('active');
+    },
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
         taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
@@ -384,23 +406,86 @@ export default {
           })
         });
     },
-    deleteRegion () {
-      bootbox.confirm({
-        message: "区域一旦删除，不可恢复！是否确定删除当前所选区域？",
-        buttons: {
-          confirm: {
-            label: '确定'
-          },
-          cancel: {
-            label: '取消'
+    fullScreen () {
+        var invokeFieldOrMethod = function(element, method) {
+          var usablePrefixMethod;
+          ["webkit", "moz", "ms", "o", ""].forEach(function(prefix) {
+           if (usablePrefixMethod) return;
+           if (prefix === "") {
+               // 无前缀，方法首字母小写
+               method = method.slice(0,1).toLowerCase() + method.slice(1);
+           }
+           var typePrefixMethod = typeof element[prefix + method];
+           if (typePrefixMethod + "" !== "undefined") {
+               if (typePrefixMethod === "function") {
+                   usablePrefixMethod = element[prefix + method]();
+               } else {
+                   usablePrefixMethod = element[prefix + method];
+               }
+           }
+       });
+         return usablePrefixMethod;
+       };
+       //進入全屏
+       function launchFullscreen(element) {
+          //此方法不可以在異步任務中執行，否則火狐無法全屏
+           if(element.requestFullscreen) {
+             element.requestFullscreen();
+           } else if(element.mozRequestFullScreen) {
+             element.mozRequestFullScreen();
+           } else if(element.msRequestFullscreen){
+             element.msRequestFullscreen();
+           } else if(element.oRequestFullscreen){
+              element.oRequestFullscreen();
           }
-        },
-        callback: function () {
-          bootbox.alert({
-            message: "删除成功",
-          });
+          else if(element.webkitRequestFullscreen)
+           {
+             element.webkitRequestFullScreen();
+           }else{
+
+              var docHtml  = document.documentElement;
+              var docBody  = document.body;
+              var videobox  = document.getElementById('map');
+              var  cssText = 'width:100%;height:100%;overflow:hidden;';
+              docHtml.style.cssText = cssText;
+              docBody.style.cssText = cssText;
+              videobox.style.cssText = cssText+';'+'margin:0px;padding:0px;';
+              document.IsFullScreen = true;
+
+            }
+         }
+          //退出全屏
+         function exitFullscreen() {
+             if (document.exitFullscreen) {
+                document.exitFullscreen();
+             } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+             } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+             } else if(document.oRequestFullscreen){
+                document.oCancelFullScreen();
+              }else if (document.webkitExitFullscreen){
+                document.webkitExitFullscreen();
+             }else{
+                var docHtml  = document.documentElement;
+                var docBody  = document.body;
+                var videobox  = document.getElementById('map');
+                docHtml.style.cssText = "";
+                docBody.style.cssText = "";
+                videobox.style.cssText = "";
+                document.IsFullScreen = false;
+             }
         }
-      });
+        // document.getElementById('fullScreenBtn').addEventListener('click',function(){
+            launchFullscreen(document.getElementById('map'));
+            // window.setTimeout(function exit(){
+                if(invokeFieldOrMethod(document,'FullScreen')
+                    || invokeFieldOrMethod(document,'IsFullScreen')
+                    || document.IsFullScreen) {
+                      exitFullscreen();
+                }
+            // },5*1000);
+        // },false);
     },
   }
 };

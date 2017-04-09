@@ -34,7 +34,7 @@
       <div class="table-box outside-box">
         <div class="btn-box">
           <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_role_modal">添加角色</button>
-          <button class="btn btn-primary fl" type="button">批量删除</button>
+          <button class="btn btn-primary fl" type="button" @click="deleteRole()">批量删除</button>
         </div>
         <div class="data-box content-box">
           <table class="table table-bordered table-hover">
@@ -59,7 +59,7 @@
                 <td>
                   <a href="javascript: void(0);" title="修改角色基本信息" data-toggle="modal" data-target="#update_role_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
                   <a href="javascript: void(0);" title="设置角色权限" data-toggle="modal" data-target="#set_priviledge_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
-                  <a href="javascript: void(0);" title="删除角色"><i class="glyphicon glyphicon-trash"></i></a>
+                  <a href="javascript: void(0);" title="删除角色" @click="deleteRole()"><i class="glyphicon glyphicon-trash"></i></a>
                 </td>
               </tr>
             </tbody>
@@ -89,15 +89,17 @@
               <div class="input-group-line">
                 <div class="group-left">角色名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="roleNew.roleName
+                  <input class="form-control refresh" type="text" name="" v-model="roleNew.roleName
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="roleNew.inUse" checked>启用
-                  <input type="radio" value="0" v-model="roleNew.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="roleNew.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="roleNew.inUse">
+                  <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -137,15 +139,17 @@
               <div class="input-group-line">
                 <div class="group-left">角色名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="roleOld.roleName
+                  <input class="form-control refresh" type="text" name="" v-model="roleOld.roleName
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="roleOld.inUse" checked>启用
-                  <input type="radio" value="0" v-model="roleOld.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="roleOld.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="roleOld.inUse">
+                  <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -252,7 +256,25 @@ export default {
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
-    }
+    },
+    deleteRole () {
+      bootbox.confirm({
+        message: "角色一旦删除，不可恢复！是否确定删除当前所选角色？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function () {
+          bootbox.alert({
+            message: "删除成功",
+          });
+        }
+      });
+    },
   }
 };
 </script>
@@ -271,5 +293,8 @@ export default {
 
 .table-box-left {
   min-height: 600px;
+}
+.outside-box{
+  background-color: #fff;
 }
 </style>

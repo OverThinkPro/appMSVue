@@ -21,14 +21,14 @@
         <div class="tab-content">
           <!-- 煤矿信息 -->
           <div role="tabpanel" class="tab-pane active" id="coalmine_info_tab">
-            <div class="table-box" style="width:80%;">
-              <div class="show-info-group clear-border-radius">
+            <div class="table-box">
+              <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="group-left">煤矿名称</div>
                 <div class="group-right">{{coalmine.coalmineName}}</div>
                 <div class="group-left">煤矿简称</div>
                 <div class="group-right">{{coalmine.coalmineAbbr}}</div>
               </div>
-              <div class="show-info-group clear-border-radius">
+              <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="group-left">核定产能(万吨/年)</div>
                 <div class="group-right">{{coalmine.coalmineOutput}}</div>
                 <div class="group-left">核定人数</div>
@@ -41,7 +41,7 @@
                 <div class="group-right">{{coalmine.gasGrade}}</div>
               </div>
             </div>
-            <div class="modal-footer">
+            <div class="btn-box fr">
               <button type="button" class="btn btn-primary modal-btn" data-toggle="modal" data-target="#update_coalmine_modal">修改</button>
             </div>
           </div>
@@ -49,7 +49,7 @@
           <div role="tabpanel" class="tab-pane" id="period_setting_tab">
             <div class="btn-box">
               <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_period_modal">添加周期信息</button>
-              <button class="btn btn-primary fl" type="button">批量删除</button>
+              <button class="btn btn-primary fl" type="button" @click="deletePeriod()">批量删除</button>
             </div>
             <div class="data-box content-box">
               <table class="table table-bordered table-hover">
@@ -72,7 +72,7 @@
                     <td>{{period.description}}</td>
                     <td>
                       <a href="javascript: void(0);" title="修改周期基本信息" data-toggle="modal" data-target="#update_period_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                      <a href="javascript: void(0);" title="删除周期"><i class="glyphicon glyphicon-trash"></i></a>
+                      <a href="javascript: void(0);" title="删除周期" @click="deletePeriod()"><i class="glyphicon glyphicon-trash"></i></a>
                     </td>
                   </tr>
                 </tbody>
@@ -83,7 +83,7 @@
           <div role="tabpanel" class="tab-pane" id="alarm_type_tab">
             <div class="btn-box">
               <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_alarm_modal">添加报警类型</button>
-              <button class="btn btn-primary fl" type="button">批量删除</button>
+              <button class="btn btn-primary fl" type="button" @click="deleteAlarm()">批量删除</button>
             </div>
             <div class="data-box content-box">
               <table class="table table-bordered table-hover">
@@ -107,7 +107,7 @@
                     <td>{{ alarmType.alarmFile }}</td>
                     <td>
                       <a href="javascript: void(0);" title="修改报警类型基本信息" data-toggle="modal" data-target="#update_alarm_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                      <a href="javascript: void(0);" title="删除报警类型"><i class="glyphicon glyphicon-trash"></i></a>
+                      <a href="javascript: void(0);" title="删除报警类型" @click="deleteAlarm()"><i class="glyphicon glyphicon-trash"></i></a>
                     </td>
                   </tr>
                 </tbody>
@@ -120,7 +120,7 @@
               <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#update_map_modal">修改底图</button>
             </div>
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-12">
                 <div class="thumbnail">
                   <img src="./map.png" alt="底图">
                 </div>
@@ -128,19 +128,21 @@
             </div>
           </div>
           <!-- 工种图例 -->
-         <div role="tabpanel" class="tab-pane" id="job_type_tab">
-           <div class="row">
-             <div class="col-sm-6 col-md-2" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
-               <div class="thumbnail">
-                 <img src="../../assets/logo.png" height="200" width="200" >
-                 <div class="caption">
-                   <!-- <h3>{{jobType.jobName}}</h3> -->
-                   <p><a href="#" class="strong" data-toggle="modal" data-target="#update_job_modal">{{jobType.jobName}}</a></p>
-                 </div>
-               </div>
-             </div>
-           </div>
-         </div>
+          <div role="tabpanel" class="tab-pane" id="job_type_tab">
+            <div class="job-type-wrap">
+              <div class="row">
+                <div class="col-sm-6 col-md-2" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
+                  <div class="thumbnail">
+                    <img src="../../assets/logo.png" height="200" width="200" >
+                    <div class="caption">
+                     <!-- <h3>{{jobType.jobName}}</h3> -->
+                      <p><a href="#" class="strong" data-toggle="modal" data-target="#update_job_modal">{{jobType.jobName}}</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -158,41 +160,45 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="input-group-line">
-                <div class="group-left special-group-left">煤矿名称</div>
+                <div class="group-left">煤矿名称</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineName">
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left special-group-left">煤矿简称</div>
+                <div class="group-left">煤矿简称</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineAbbr">
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left special-group-left">核定产能(万吨/年)</div>
+                <div class="group-left">核定产能(万吨/年)</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineOutput">
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left special-group-left">核定人数</div>
+                <div class="group-left">核定人数</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineNum">
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left special-group-left">矿井类型</div>
+                <div class="group-left">矿井类型</div>
                 <div class="group-right">
-                    <input type="radio" value="生产矿井" v-model="coalmine.coalmineType" checked>生产矿井
-                    <input type="radio" value="基建矿井" v-model="coalmine.coalmineType">基建矿井
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="生产矿井" v-model="coalmine.coalmineType" >
+                  <span>生产矿井</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="基建矿井" v-model="coalmine.coalmineType">
+                  <span>基建矿井</span>
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left special-group-left">瓦斯等级</div>
+                <div class="group-left">瓦斯等级</div>
                 <div class="group-right">
-                  <input type="radio" value="高瓦斯" v-model="coalmine.gasGrade" checked>高瓦斯
-                  <input type="radio" value="低瓦斯" v-model="coalmine.gasGrade">低瓦斯
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="高瓦斯" v-model="coalmine.gasGrade">
+                  <span>高瓦斯</span>
+                  <input class="refresh" style="margin-left: 13.5%;" type="radio"  value="低瓦斯" v-model="coalmine.gasGrade">
+                  <span>低瓦斯</span>
                 </div>
               </div>
             </div>
@@ -217,20 +223,22 @@
           </div>
           <div class="modal-body">
             <div class="input-group-line">
-              <div class="group-left special-group-left">报警类型</div>
+              <div class="group-left">报警类型</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="alarmTypeNew.alarmName">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">启用声音</div>
+              <div class="group-left">启用声音</div>
               <div class="group-right">
-                <input type="radio" value="1" v-model="alarmTypeNew.alarmInUse">启用
-                <input type="radio" value="0" v-model="alarmTypeNew.alarmInUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="alarmTypeNew.alarmInUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="alarmTypeNew.alarmInUse">
+                  <span>禁用</span>
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">报警声音文件</div>
+              <div class="group-left">报警声音文件</div>
               <div class="group-right">
                 <input type="file" class="alarm-file" data-show-preview="false"/>
               </div>
@@ -256,20 +264,22 @@
           </div>
           <div class="modal-body">
             <div class="input-group-line">
-              <div class="group-left special-group-left">报警类型</div>
+              <div class="group-left">报警类型</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="alarmTypeOld.alarmName">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">启用声音</div>
+              <div class="group-left">启用声音</div>
               <div class="group-right">
-                <input type="radio" value="1" v-model="alarmTypeOld.alarmInUse">启用
-                <input type="radio" value="0" v-model="alarmTypeOld.alarmInUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="alarmTypeOld.alarmInUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="alarmTypeOld.alarmInUse">
+                  <span>禁用</span>
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">报警声音文件</div>
+              <div class="group-left">报警声音文件</div>
               <div class="group-right">
                 <input type="file" class="alarm-file" data-show-preview="false"/>
               </div>
@@ -295,19 +305,19 @@
           </div>
           <div class="modal-body">
             <div class="input-group-line">
-              <div class="group-left special-group-left">周期类型</div>
+              <div class="group-left">周期类型</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="periodNew.periodName">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">周期值</div>
+              <div class="group-left">周期值</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="periodNew.periodNum">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">描述</div>
+              <div class="group-left">描述</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="periodNew.description">
               </div>
@@ -333,19 +343,19 @@
           </div>
           <div class="modal-body">
             <div class="input-group-line">
-              <div class="group-left special-group-left">周期类型</div>
+              <div class="group-left">周期类型</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="periodOld.periodName">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">周期值</div>
+              <div class="group-left">周期值</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="periodOld.periodNum">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">描述</div>
+              <div class="group-left">描述</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="periodOld.description">
               </div>
@@ -393,13 +403,13 @@
           </div>
           <div class="modal-body">
             <div class="input-group-line">
-              <div class="group-left special-group-left">工种类型</div>
+              <div class="group-left">工种类型</div>
               <div class="group-right">
                 <input class="form-control refresh" type="text" name="" v-model="jobType.jobName">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left special-group-left">公种图标</div>
+              <div class="group-left">公种图标</div>
               <div class="group-right">
                 <input type="file" class="job-file" data-show-preview="false"/>
               </div>
@@ -416,6 +426,7 @@
 </template>
 
 <script>
+import bootbox from 'bootbox/bootbox.min';
 export default {
   name: 'setting',
   data () {
@@ -667,6 +678,42 @@ export default {
           allowedFileTypes: ['image'],*/
       });
     },
+    deletePeriod () {
+      bootbox.confirm({
+        message: "周期一旦删除，不可恢复！是否确定删除当前所选周期？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function () {
+          bootbox.alert({
+            message: "删除成功",
+          });
+        }
+      });
+    },
+    deleteAlarm () {
+      bootbox.confirm({
+        message: "报警类型一旦删除，不可恢复！是否确定删除当前所选报警类型？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function () {
+          bootbox.alert({
+            message: "删除成功",
+          });
+        }
+      });
+    },
   }
 };
 </script>
@@ -686,5 +733,7 @@ export default {
   text-align: center;
   /*width:250px;*/
 }
-
+.job-type-wrap{
+  margin:25px 20px; 
+}
 </style>
