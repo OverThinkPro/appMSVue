@@ -133,4 +133,7 @@ export default {
 .table-box-left {
   min-height: 600px;
 }
+.outside-box{
+  background-color: #fff;
+}
 </style>

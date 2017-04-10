@@ -140,17 +140,21 @@
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="dictionaryNew.inUse" checked>启用
-                  <input type="radio" value="0" v-model="dictionaryNew.inUse">禁用
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryNew.inUse">
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryNew.inUse">
+                    <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">数据类型</div>
                 <div class="group-right">
                   <select class="form-control refresh" name="" v-model="dictionaryNew.dataType">
-                    <option value="String">String</option>
-                    <option value="Date">Date</option>
-                    <option value="Timestamp">Timestamp</option>
+                    <option value="字符型">字符型</option>
+                    <option value="整型">整型</option>
+                    <option value="单精度浮点型">单精度浮点型</option>
+                    <option value="双精度浮点型">双精度浮点型</option>
+                    <option value="布尔型">布尔型</option>
                   </select>
                 </div>
               </div>
@@ -222,17 +226,21 @@
             <div class="input-group-line">
               <div class="group-left">是否启用</div>
               <div class="group-right">
-                <input type="radio" value="1" v-model="dictionaryOld.inUse" checked>启用
-                <input type="radio" value="0" v-model="dictionaryOld.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse">
+                  <span>禁用</span>
               </div>
             </div>
             <div class="input-group-line">
               <div class="group-left">数据类型</div>
               <div class="group-right">
                 <select class="form-control refresh" name="" v-model="dictionaryOld.dataType">
-                  <option value="String">String</option>
-                  <option value="Date">Date</option>
-                  <option value="Timestamp">Timestamp</option>
+                  <option value="字符型">字符型</option>
+                  <option value="整型">整型</option>
+                  <option value="单精度浮点型">单精度浮点型</option>
+                  <option value="双精度浮点型">双精度浮点型</option>
+                  <option value="布尔型">布尔型</option>
                 </select>
               </div>
             </div>
@@ -269,75 +277,75 @@ export default {
       dictionaryNew:{},
       dictionaryOld:{},
       dictionaryList:[
-        {'dictionaryId': '10', 'dictionaryName': '首页',  'upDictionaryId': '1','inUse': '1','description':'首页', 'dataType':'String', 'remark':'', 'englishName': 'Main',
+        {'dictionaryId': '10', 'dictionaryName': '首页',  'upDictionaryId': '1','inUse': '1','description':'首页', 'dataType':'字符型', 'remark':'', 'englishName': 'Main',
          'children': [],
         },
-        {'dictionaryId': '11', 'dictionaryName': '查询统计', 'upDictionaryId': '1', 'inUse': '1','description':'查询统计', 'dataType':'String', 'remark':'', 'englishName': '',
+        {'dictionaryId': '11', 'dictionaryName': '查询统计', 'upDictionaryId': '1', 'inUse': '1','description':'查询统计', 'dataType':'字符型', 'remark':'', 'englishName': '',
          'children': [
-            {'dictionaryId': '1101', 'dictionaryName': '实时查询',  'upDictionaryId': '11','inUse': '1','description':'实时查询', 'dataType':'String', 'remark':'', 'englishName': 'Insearch',
+            {'dictionaryId': '1101', 'dictionaryName': '实时查询',  'upDictionaryId': '11','inUse': '1','description':'实时查询', 'dataType':'字符型', 'remark':'', 'englishName': 'Insearch',
              'children': [],
             },
-            {'dictionaryId': '1102', 'dictionaryName': '历史报警查询',  'upDictionaryId': '11','inUse': '1','description':'历史报警查询', 'dataType':'String', 'remark':'', 'englishName': 'Alarm',
+            {'dictionaryId': '1102', 'dictionaryName': '历史报警查询',  'upDictionaryId': '11','inUse': '1','description':'历史报警查询', 'dataType':'字符型', 'remark':'', 'englishName': 'Alarm',
              'children': [],
             },
-            {'dictionaryId': '1103', 'dictionaryName': '历史轨迹回放',  'upDictionaryId': '11','inUse': '1','description':'历史轨迹回放', 'dataType':'String', 'remark':'', 'englishName': 'Replay',
+            {'dictionaryId': '1103', 'dictionaryName': '历史轨迹回放',  'upDictionaryId': '11','inUse': '1','description':'历史轨迹回放', 'dataType':'字符型', 'remark':'', 'englishName': 'Replay',
              'children': [],
             },
           ]
         },
-        {'dictionaryId': '12', 'dictionaryName': '考勤管理', 'upDictionaryId': '1', 'inUse': '1','description':'考勤管理', 'dataType':'String', 'remark':'', 'englishName': '',
+        {'dictionaryId': '12', 'dictionaryName': '考勤管理', 'upDictionaryId': '1', 'inUse': '1','description':'考勤管理', 'dataType':'字符型', 'remark':'', 'englishName': '',
          'children': [
-            {'dictionaryId': '1201', 'dictionaryName': '日考勤报表',  'upDictionaryId': '12','inUse': '1','description':'日考勤报表', 'dataType':'String', 'remark':'', 'englishName': 'Daily',
+            {'dictionaryId': '1201', 'dictionaryName': '日考勤报表',  'upDictionaryId': '12','inUse': '1','description':'日考勤报表', 'dataType':'字符型', 'remark':'', 'englishName': 'Daily',
              'children': [],
             },
-            {'dictionaryId': '1202', 'dictionaryName': '月考勤详情报表',  'upDictionaryId': '12','inUse': '1','description':'月考勤详情报表', 'dataType':'String', 'remark':'', 'englishName': 'Monthly',
+            {'dictionaryId': '1202', 'dictionaryName': '月考勤详情报表',  'upDictionaryId': '12','inUse': '1','description':'月考勤详情报表', 'dataType':'字符型', 'remark':'', 'englishName': 'Monthly',
              'children': [],
             },
-            {'dictionaryId': '1203', 'dictionaryName': '月考勤统计报表',  'upDictionaryId': '12','inUse': '1','description':'月考勤统计报表', 'dataType':'String', 'remark':'', 'englishName': '',
+            {'dictionaryId': '1203', 'dictionaryName': '月考勤统计报表',  'upDictionaryId': '12','inUse': '1','description':'月考勤统计报表', 'dataType':'字符型', 'remark':'', 'englishName': '',
              'children': [],
             },
           ],
         },
-        {'dictionaryId': '13', 'dictionaryName': '人员管理', 'upDictionaryId': '1', 'inUse': '1','description':'人员管理', 'dataType':'String', 'remark':'', 'englishName': '',
+        {'dictionaryId': '13', 'dictionaryName': '人员管理', 'upDictionaryId': '1', 'inUse': '1','description':'人员管理', 'dataType':'字符型', 'remark':'', 'englishName': '',
          'children': [
-            {'dictionaryId': '1301', 'dictionaryName': '菜单管理',  'upDictionaryId': '13','inUse': '1','description':'菜单管理', 'dataType':'String', 'remark':'', 'englishName': 'Unit',
+            {'dictionaryId': '1301', 'dictionaryName': '菜单管理',  'upDictionaryId': '13','inUse': '1','description':'菜单管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Unit',
              'children': [],
             },
-            {'dictionaryId': '1302', 'dictionaryName': '员工管理',  'upDictionaryId': '13','inUse': '1','description':'员工管理', 'dataType':'String', 'remark':'', 'englishName': 'Staff',
+            {'dictionaryId': '1302', 'dictionaryName': '员工管理',  'upDictionaryId': '13','inUse': '1','description':'员工管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Staff',
              'children': [],
             },
-            {'dictionaryId': '1303', 'dictionaryName': '工种管理',  'upDictionaryId': '13','inUse': '1','description':'员工管理', 'dataType':'String', 'remark':'', 'englishName': 'Job',
+            {'dictionaryId': '1303', 'dictionaryName': '工种管理',  'upDictionaryId': '13','inUse': '1','description':'员工管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Job',
              'children': [],
             },
-            {'dictionaryId': '1304', 'dictionaryName': '班次管理',  'upDictionaryId': '13','inUse': '1','description':'班次管理', 'dataType':'String', 'remark':'', 'englishName': 'Schedule',
+            {'dictionaryId': '1304', 'dictionaryName': '班次管理',  'upDictionaryId': '13','inUse': '1','description':'班次管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Schedule',
              'children': [],
             },
           ],
         },
-        {'dictionaryId': '14', 'dictionaryName': '定位卡管理',  'upDictionaryId': '1','inUse': '1','description':'定位卡管理', 'dataType':'String', 'remark':'', 'englishName': 'Card',
+        {'dictionaryId': '14', 'dictionaryName': '定位卡管理',  'upDictionaryId': '1','inUse': '1','description':'定位卡管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Card',
          'children': [],
         },
-        {'dictionaryId': '15', 'dictionaryName': '分站管理',  'upDictionaryId': '1','inUse': '1','description':'分站管理', 'dataType':'String', 'remark':'', 'englishName': 'Reader',
+        {'dictionaryId': '15', 'dictionaryName': '分站管理',  'upDictionaryId': '1','inUse': '1','description':'分站管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Reader',
          'children': [],
         },
-        {'dictionaryId': '16', 'dictionaryName': '区域设置',  'upDictionaryId': '16','inUse': '1','description':'区域设置', 'dataType':'String', 'remark':'', 'englishName': 'Region',
+        {'dictionaryId': '16', 'dictionaryName': '区域设置',  'upDictionaryId': '16','inUse': '1','description':'区域设置', 'dataType':'字符型', 'remark':'', 'englishName': 'Region',
          'children': [],
         },
-        {'dictionaryId': '17', 'dictionaryName': '系统管理', 'upDictionaryId': '1', 'inUse': '1','description':'系统管理', 'dataType':'String', 'remark':'', 'englishName': '',
+        {'dictionaryId': '17', 'dictionaryName': '系统管理', 'upDictionaryId': '1', 'inUse': '1','description':'系统管理', 'dataType':'字符型', 'remark':'', 'englishName': '',
          'children': [
-            {'dictionaryId': '1701', 'dictionaryName': '用户管理',  'upDictionaryId': '17','inUse': '1','description':'用户管理', 'dataType':'String', 'remark':'', 'englishName': 'User',
+            {'dictionaryId': '1701', 'dictionaryName': '用户管理',  'upDictionaryId': '17','inUse': '1','description':'用户管理', 'dataType':'字符型', 'remark':'', 'englishName': 'User',
              'children': [],
             },
-            {'dictionaryId': '1702', 'dictionaryName': '角色管理',  'upDictionaryId': '17','inUse': '1','description':'角色管理', 'dataType':'String', 'remark':'', 'englishName': 'Role',
+            {'dictionaryId': '1702', 'dictionaryName': '角色管理',  'upDictionaryId': '17','inUse': '1','description':'角色管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Role',
              'children': [],
             },
-            {'dictionaryId': '1703', 'dictionaryName': '菜单管理',  'upDictionaryId': '17','inUse': '1','description':'菜单管理', 'dataType':'String', 'remark':'', 'englishName': 'Menu',
+            {'dictionaryId': '1703', 'dictionaryName': '菜单管理',  'upDictionaryId': '17','inUse': '1','description':'菜单管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Menu',
              'children': [],
             },
-            {'dictionaryId': '1703', 'dictionaryName': '字典管理',  'upDictionaryId': '17','inUse': '1','description':'字典管理', 'dataType':'String', 'remark':'', 'englishName': 'Dictionary',
+            {'dictionaryId': '1703', 'dictionaryName': '字典管理',  'upDictionaryId': '17','inUse': '1','description':'字典管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Dictionary',
              'children': [],
             },
-            {'dictionaryId': '1704', 'dictionaryName': '参数设置',  'upDictionaryId': '17','inUse': '1','description':'参数设置', 'dataType':'String', 'remark':'', 'englishName': 'Setting',
+            {'dictionaryId': '1704', 'dictionaryName': '参数设置',  'upDictionaryId': '17','inUse': '1','description':'参数设置', 'dataType':'字符型', 'remark':'', 'englishName': 'Setting',
              'children': [],
             }
           ],
@@ -359,7 +367,7 @@ export default {
           'upDictionaryName': '1',
           'inUse': '1',
           'description':'', 
-          'dataType':'String',
+          'dataType':'字符型',
           "englishName": "",
           'children': [], 
         }
@@ -372,7 +380,7 @@ export default {
           'upDictionaryName': '1',
           'inUse': '1',
           'description':'首页', 
-          'dataType':'String',
+          'dataType':'字符型',
           "englishName": "Main",
           'children': [],
         };
@@ -382,9 +390,9 @@ export default {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
-    deleteMenu () {
+    deleteDictionary () {
       bootbox.confirm({
-        message: '菜单菜单一旦删除，不可恢复，是否确定删除？',
+        message: '字典一旦删除，不可恢复，是否确定删除？',
         buttons: {
           confirm: {
             label: '确定'

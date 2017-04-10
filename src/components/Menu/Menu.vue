@@ -135,8 +135,10 @@
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="menuNew.inUse" checked>启用
-                  <input type="radio" value="0" v-model="menuNew.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuNew.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuNew.inUse">
+                  <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -202,8 +204,10 @@
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
                 <div class="group-right">
-                  <input type="radio" value="1" v-model="menuOld.inUse" checked>启用
-                  <input type="radio" value="0" v-model="menuOld.inUse">禁用
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse">
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse">
+                  <span>禁用</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -356,7 +360,7 @@ export default {
     },
     deleteMenu () {
       bootbox.confirm({
-        message: '菜单菜单一旦删除，不可恢复，是否确定删除？',
+        message: '菜单一旦删除，不可恢复，是否确定删除？',
         buttons: {
           confirm: {
             label: '确定'
