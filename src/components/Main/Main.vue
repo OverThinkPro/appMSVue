@@ -43,50 +43,29 @@
           </div>
           <div class="document-line">
             <label class="label-line-left">核定产能</label>
-            <label class="label-line-right">200万吨/年</label>
+            <label class="label-line-right">{{ coalmineInfo.coalmineOutput }}万吨/年</label>
           </div>
           <div class="document-line">
             <label class="label-line-left">核定人数</label>
-            <label class="label-line-right">350人</label>
+            <label class="label-line-right">{{ coalmineInfo.coalmineNum }}人</label>
           </div>
           <div class="document-line">
             <label class="label-line-left">井下人数</label>
-            <label class="label-line-right">350人</label>
+            <label class="label-line-right">{{ coalmineInfo.currentTotalStaff }}人</label>
           </div>
           <div class="document-line">
             <label class="label-line-left">值班领导</label>
-            <label class="label-line-right">张启刚</label>
+            <label class="label-line-right">{{ coalmineInfo.currentLeader }}</label>
           </div>
         </div>
         <div class="wrap-info onduty-wrap">
           <div class="s-title-box">
             <h5>当班人数</h5>
           </div>
-          <div class="document-line">
-            <label class="label-line-left">采矿1队</label>
+          <div class="document-line" v-if="realUnit != null" v-for="(unit, index) in realUnit" :key="unit.key">
+            <label class="label-line-left">{{ unit.unit_name }}</label>
             <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">10人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">采矿2队</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">12人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">通风科</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">7人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">机电科</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">7人</a>
+              <a href="javascript:void(0)" @click="loadUnitStaff(unit.unit_id)" data-toggle="modal" data-target="#unit_staff_modal">{{ unit.total }}人</a>
               <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
             </label>
           </div>
@@ -95,52 +74,10 @@
           <div class="s-title-box">
             <h5>区域人数</h5>
           </div>
-          <div class="document-line">
-            <label class="label-line-left">井口区</label>
+          <div class="document-line" v-if="realRegion != null" v-for="(region, index) in realRegion" :key="region.key">
+            <label class="label-line-left">{{ region.region_name }}</label>
             <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">1人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">420大巷</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
+              <a href="#" data-toggle="modal" data-target="#region_staff_modal">{{ region.total }}人</a>
               <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
             </label>
           </div>
@@ -149,28 +86,10 @@
           <div class="s-title-box">
             <h5>实时报警信息</h5>
           </div>
-          <div class="document-line">
-            <label class="label-line-left">超时报警</label>
+          <div class="document-line" v-if="realAlarm != null" v-for="(alarm, index) in realAlarm" :key="alarm.key">
+            <label class="label-line-left">{{ alarm.alarm_name }}</label>
             <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#overtime_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">超员报警</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#overman_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">限制区域报警</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_limit_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">呼叫报警</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#staff_call_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
+              <a href="#" data-toggle="modal" data-target="#overtime_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
             </label>
           </div>
         </div>
@@ -379,24 +298,6 @@
                   <tbody>
                     <tr>
                       <td>1</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
-                    </tr>
-                    <tr>
-                      <td>4</td>
                       <td>张三</td>
                       <td>10:20</td>
                       <td>人员最近分站的安装位置</td>
@@ -803,6 +704,7 @@
 </template>
 <script>
 import ol from 'openlayers/dist/ol';
+import { mapGetters } from 'vuex';
 
 export default {
   name: "main",
@@ -838,12 +740,20 @@ export default {
           state: '已呼叫'
         }
       ]
-    }
+    };
   },
   mounted () {
     this.loadMap();
+    this.loadCoalmineInfo();
+    this.loadCountRealtimeInfo();
+  },
+  computed: {
+    ...mapGetters(['coalmineInfo', 'realUnit', 'realRegion', 'realAlarm'])
   },
   methods: {
+    initEvent () {
+      $("#unit_staff_modal").on('shown.bs.modal', this.loadUnitStaff());
+    },
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
   			taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
@@ -868,6 +778,12 @@ export default {
   					rotation: Math.PI / 6
   				})
   			});
+    },
+    loadCoalmineInfo () {
+      this.$store.dispatch('findCoalmineBaseInfo');
+    },
+    loadCountRealtimeInfo () {
+      this.$store.dispatch('countRealtimeInfo');
     },
     fullScreen () {
         var invokeFieldOrMethod = function(element, method) {
@@ -950,6 +866,9 @@ export default {
                 }
             // },5*1000);
         // },false);
+    },
+    loadUnitStaff (unitId) {
+      this.$store.dispatch('FIND_UNIT_STAFF_BY_UNITID', unitId);
     }
   }
 }

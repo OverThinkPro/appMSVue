@@ -3,16 +3,18 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
+import store from './vuex/store';
 import axios from 'axios';
-import vuex from 'vuex';
+
+// axios.defaults.baseURL = 'http://192.168.2.105:8080/appMSJava/api/v1/main/';
+axios.defaults.baseURL = '/main/';
 
 Vue.config.productionTip = false;
-
-Vue.use(vuex);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 });
