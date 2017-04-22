@@ -43,51 +43,30 @@
           </div>
           <div class="document-line">
             <label class="label-line-left">核定产能</label>
-            <label class="label-line-right">200万吨/年</label>
+            <label class="label-line-right">{{ coalmineInfo.coalmineOutput }}万吨/年</label>
           </div>
           <div class="document-line">
             <label class="label-line-left">核定人数</label>
-            <label class="label-line-right">350人</label>
+            <label class="label-line-right">{{ coalmineInfo.coalmineNum }}人</label>
           </div>
           <div class="document-line">
             <label class="label-line-left">井下人数</label>
-            <label class="label-line-right">350人</label>
+            <label class="label-line-right">{{ coalmineInfo.currentTotalStaff }}人</label>
           </div>
           <div class="document-line">
             <label class="label-line-left">值班领导</label>
-            <label class="label-line-right">张启刚</label>
+            <label class="label-line-right">{{ coalmineInfo.currentLeader }}</label>
           </div>
         </div>
         <div class="wrap-info onduty-wrap">
           <div class="s-title-box">
             <h5>当班人数</h5>
           </div>
-          <div class="document-line">
-            <label class="label-line-left">采矿1队</label>
+          <div class="document-line" v-if="realUnit != null" v-for="(unit, index) in realUnit" :key="unit.key">
+            <label class="label-line-left">{{ unit.unit_name }}</label>
             <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">10人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">采矿2队</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">12人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">通风科</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">7人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">机电科</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#unit_staff_modal">7人</a>
-              <a href="#" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
+              <a href="javascript:void(0)" @click="loadUnitStaff(unit.unit_id)" data-toggle="modal" data-target="#unit_staff_modal">{{ unit.total }}人</a>
+              <a href="javascript:void(0)" @click="" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
             </label>
           </div>
         </div>
@@ -95,53 +74,11 @@
           <div class="s-title-box">
             <h5>区域人数</h5>
           </div>
-          <div class="document-line">
-            <label class="label-line-left">井口区</label>
+          <div class="document-line" v-if="realRegion != null" v-for="(region, index) in realRegion" :key="region.key">
+            <label class="label-line-left">{{ region.region_name }}</label>
             <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">1人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">420大巷</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">D11084工作面</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_staff_modal">20人</a>
-              <a href="#" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
+              <a href="javascript:void(0)" @click="loadRegionStaff(region, null)" data-toggle="modal" data-target="#region_staff_modal">{{ region.total }}人</a>
+              <a href="javascript:void(0)" @click="loadEvacuateInfo(region, null)" title="查看撤离呼叫状态" data-toggle="modal" data-target="#evacuate_state_modal"><i class="glyphicon glyphicon-list-alt"></i></a>
             </label>
           </div>
         </div>
@@ -149,28 +86,10 @@
           <div class="s-title-box">
             <h5>实时报警信息</h5>
           </div>
-          <div class="document-line">
-            <label class="label-line-left">超时报警</label>
+          <div class="document-line" v-if="realAlarm != null" v-for="(alarm, index) in realAlarm" :key="alarm.key">
+            <label class="label-line-left">{{ alarm.alarm_name }}</label>
             <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#overtime_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">超员报警</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#overman_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">限制区域报警</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#region_limit_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
-            </label>
-          </div>
-          <div class="document-line">
-            <label class="label-line-left">呼叫报警</label>
-            <label class="label-line-right">
-              <a href="#" data-toggle="modal" data-target="#staff_call_alarm_modal" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;2条</a>
+              <a href="javascript:void(0)" @click="loadAlarmInfo(alarm, null)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
             </label>
           </div>
         </div>
@@ -377,41 +296,19 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
-                    </tr>
-                    <tr>
-                      <td>4</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>人员最近分站的安装位置</td>
+                    <tr v-if="staffReal.tlStaffList != null" v-for="(staff, index) in staffReal.tlStaffList" :key="staff.key">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ staff.staffName }}</td>
+                      <td>{{ staff.daqTimeType }}</td>
+                      <td>{{ staff.distance }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <nav class="pagination-box">
                   <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
+                      <template v-for="page in staffReal.countTotalPages">
+                        <li><a href="javascript: void(0)" @click="loadUnitStaff(null, page)">{{ page }}</a></li>
+                      </template>
                   </ul>
                 </nav>
               </div>
@@ -439,11 +336,11 @@
             <div class="modal-table-box outside-box">
               <div class="show-info-group clear-bottom clear-radius-bottom" >
                 <div class="s-group-left">区域</div>
-                <div class="s-group-right">D11084工作面</div>
+                <div class="s-group-right">{{ regionShowInfo.regionName }}</div>
               </div>
               <div class="show-info-group clear-radius-top">
                 <div class="s-group-left">人数</div>
-                <div class="s-group-right">20人</div>
+                <div class="s-group-right">{{ regionShowInfo.total }}人</div>
               </div>
               <div class="white-hr"></div>
               <div class="data-box">
@@ -458,45 +355,20 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
-                    </tr>
-                    <tr>
-                      <td>4</td>
-                      <td>张三</td>
-                      <td>10:20</td>
-                      <td>掘进工</td>
-                      <td>采掘一队</td>
+                    <tr v-if="staffReal.tlStaffList != null" v-for="(staff, index) in staffReal.tlStaffList" :key="staff.key">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ staff.staffName }}</td>
+                      <td>{{ staff.daqTimeType }}</td>
+                      <td>{{ staff.jobName }}</td>
+                      <td>{{ staff.unitName }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <nav class="pagination-box">
                   <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
+                    <template v-for="page in staffReal.countTotalPages">
+                      <li><a href="javascript: void(0)" @click="loadRegionStaff(null, page)">{{ page }}</a></li>
+                    </template>
                   </ul>
                 </nav>
               </div>
@@ -524,19 +396,19 @@
             <div class="modal-table-box outside-box">
               <div class="show-info-group clear-bottom clear-radius-bottom">
                 <div class="s-group-left">区域</div>
-                <div class="s-group-right">D11084工作面</div>
+                <div class="s-group-right">{{ regionShowInfo.regionName }}</div>
               </div>
               <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="s-group-left">人数</div>
-                <div class="s-group-right">4人</div>
+                <div class="s-group-right">{{ regionShowInfo.total }}人</div>
               </div>
-              <div class="show-info-group clear-bottom clear-border-radius">
+              <div class="show-info-group clear-bottom clear-radius">
                 <div class="s-group-left">已呼叫</div>
-                <div class="s-group-right">1人</div>
+                <div class="s-group-right">{{ staffReal.calledNum }}人</div>
               </div>
               <div class="show-info-group clear-radius-top">
-                <div class="s-group-left">正在呼叫</div>
-                <div class="s-group-right">张启龙</div>
+                <div class="s-group-left">呼叫人次</div>
+                <div class="s-group-right">{{ staffReal.callCount }}人次</div>
               </div>
               <div class="white-hr"></div>
               <div class="data-box">
@@ -552,25 +424,21 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(elem, index) in evacuateStateList" :key="elem.key">
+                    <tr v-for="(evacuate, index) in staffReal.evacuationDetails" :key="evacuate.key">
                       <td>{{ index + 1 }}</td>
-                      <td>{{ elem.name }}</td>
-                      <td>{{ elem.time }}</td>
-                      <td>{{ elem.job }}</td>
-                      <td>{{ elem.unit }}</td>
-                      <td>{{ elem.state }}</td>
+                      <td>{{ evacuate.staffName }}</td>
+                      <td>{{ evacuate.enteringTime }}</td>
+                      <td>{{ evacuate.jobName }}</td>
+                      <td>{{ evacuate.unitName }}</td>
+                      <td>{{ evacuate.callStatus }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <nav class="pagination-box">
                   <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
+                    <template v-for="page in staffReal.countTotalPages">
+                      <li><a href="javascript: void(0)" @click="loadEvacuateInfo(null, page)">{{ page }}</a></li>
+                    </template>
                   </ul>
                 </nav>
               </div>
@@ -766,27 +634,18 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>张三</td>
-                      <td>A工作面</td>
-                      <td>2014-10-25 10:20</td>
-                    </tr>
-                    <tr>
-                      <td>李四</td>
-                      <td>B工作面</td>
-                      <td>2014-10-25 10:20</td>
+                    <tr v-if="staffAlarm != null" v-for="(staff, index) in staffAlarm.staffAlarmList" :key="staff.key">
+                      <td>{{ staff.staffName }}</td>
+                      <td>{{ staff.readerId }}</td>
+                      <td>{{ staff.alarmStartTime }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <nav class="pagination-box">
                   <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
+                    <template v-for="page in staffAlarm.countTotalPages">
+                      <li><a href="javascript: void(0)" @click="loadAlarmInfo(null, page)">{{ page }}</a></li>
+                    </template>
                   </ul>
                 </nav>
               </div>
@@ -803,47 +662,40 @@
 </template>
 <script>
 import ol from 'openlayers/dist/ol';
+import { mapGetters } from 'vuex';
 
 export default {
   name: "main",
   data() {
     return {
-      evacuateStateList: [
-        {
-          name: '张三',
-          time: '8:00',
-          job: '掘进',
-          unit: '掘进1队',
-          state: '未呼叫'
-        },
-        {
-          name: '张三',
-          time: '8:00',
-          job: '掘进',
-          unit: '掘进1队',
-          state: '未呼叫'
-        },
-        {
-          name: '张三',
-          time: '8:00',
-          job: '掘进',
-          unit: '掘进1队',
-          state: '未呼叫'
-        },
-        {
-          name: '张启龙',
-          time: '8:00',
-          job: '掘进',
-          unit: '掘进1队',
-          state: '已呼叫'
-        }
-      ]
-    }
+      alarmTypes: {
+        '超时报警': '#overtime_alarm_modal',
+        '超员报警': '#overman_alarm_modal',
+        '限制区域报警': '#region_limit_alarm_modal',
+        '呼叫报警': '#staff_call_alarm_modal'
+      },
+      unitId: '',
+      regionId: '',
+      regionShowInfo: {
+        regionoName: '',
+        total: 0
+      },
+      alarmTypeId: ''
+    };
   },
   mounted () {
+    this.initEvent();
     this.loadMap();
+    this.loadCoalmineInfo();
+    this.loadCountRealtimeInfo();
+  },
+  computed: {
+    ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm'])
   },
   methods: {
+    initEvent () {
+
+    },
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
   			taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
@@ -869,87 +721,140 @@ export default {
   				})
   			});
     },
+    loadCoalmineInfo () {
+      this.$store.dispatch('findCoalmineBaseInfo');
+    },
+    loadCountRealtimeInfo () {
+      this.$store.dispatch('countRealtimeInfo');
+    },
     fullScreen () {
-        var invokeFieldOrMethod = function(element, method) {
-          var usablePrefixMethod;
-          ["webkit", "moz", "ms", "o", ""].forEach(function(prefix) {
-           if (usablePrefixMethod) return;
-           if (prefix === "") {
-               // 无前缀，方法首字母小写
-               method = method.slice(0,1).toLowerCase() + method.slice(1);
-           }
-           var typePrefixMethod = typeof element[prefix + method];
-           if (typePrefixMethod + "" !== "undefined") {
-               if (typePrefixMethod === "function") {
-                   usablePrefixMethod = element[prefix + method]();
-               } else {
-                   usablePrefixMethod = element[prefix + method];
-               }
-           }
-       });
-         return usablePrefixMethod;
-       };
+      var invokeFieldOrMethod = function(element, method) {
+        var usablePrefixMethod;
+        ["webkit", "moz", "ms", "o", ""].forEach(function(prefix) {
+         if (usablePrefixMethod) return;
+         if (prefix === "") {
+             // 无前缀，方法首字母小写
+             method = method.slice(0,1).toLowerCase() + method.slice(1);
+         }
+         var typePrefixMethod = typeof element[prefix + method];
+         if (typePrefixMethod + "" !== "undefined") {
+             if (typePrefixMethod === "function") {
+                 usablePrefixMethod = element[prefix + method]();
+             } else {
+                 usablePrefixMethod = element[prefix + method];
+             }
+         }
+     });
+       return usablePrefixMethod;
+     };
 
-       //進入全屏
-       function launchFullscreen(element) {
-          //此方法不可以在異步任務中執行，否則火狐無法全屏
-           if(element.requestFullscreen) {
-             element.requestFullscreen();
-           } else if(element.mozRequestFullScreen) {
-             element.mozRequestFullScreen();
-           } else if(element.msRequestFullscreen){
-             element.msRequestFullscreen();
-           } else if(element.oRequestFullscreen){
-              element.oRequestFullscreen();
+     //进入全屏
+     function launchFullscreen(element) {
+        //此方法不可以在異步任務中執行，否則火狐無法全屏
+         if(element.requestFullscreen) {
+           element.requestFullscreen();
+         } else if(element.mozRequestFullScreen) {
+           element.mozRequestFullScreen();
+         } else if(element.msRequestFullscreen){
+           element.msRequestFullscreen();
+         } else if(element.oRequestFullscreen){
+            element.oRequestFullscreen();
+        }
+        else if(element.webkitRequestFullscreen)
+         {
+           element.webkitRequestFullScreen();
+         }else{
+
+            var docHtml  = document.documentElement;
+            var docBody  = document.body;
+            var videobox  = document.getElementById('map');
+            var  cssText = 'width:100%;height:100%;overflow:hidden;';
+            docHtml.style.cssText = cssText;
+            docBody.style.cssText = cssText;
+            videobox.style.cssText = cssText+';'+'margin:0px;padding:0px;';
+            document.IsFullScreen = true;
+
           }
-          else if(element.webkitRequestFullscreen)
-           {
-             element.webkitRequestFullScreen();
+       }
+        //退出全屏
+       function exitFullscreen() {
+           if (document.exitFullscreen) {
+              document.exitFullscreen();
+           } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+           } else if (document.mozCancelFullScreen) {
+              document.mozCancelFullScreen();
+           } else if(document.oRequestFullscreen){
+              document.oCancelFullScreen();
+            }else if (document.webkitExitFullscreen){
+              document.webkitExitFullscreen();
            }else{
-
               var docHtml  = document.documentElement;
               var docBody  = document.body;
               var videobox  = document.getElementById('map');
-              var  cssText = 'width:100%;height:100%;overflow:hidden;';
-              docHtml.style.cssText = cssText;
-              docBody.style.cssText = cssText;
-              videobox.style.cssText = cssText+';'+'margin:0px;padding:0px;';
-              document.IsFullScreen = true;
+              docHtml.style.cssText = "";
+              docBody.style.cssText = "";
+              videobox.style.cssText = "";
+              document.IsFullScreen = false;
+           }
+      }
+      // document.getElementById('fullScreenBtn').addEventListener('click',function(){
+          launchFullscreen(document.getElementById('map'));
+          // window.setTimeout(function exit(){
+              if(invokeFieldOrMethod(document,'FullScreen')
+                  || invokeFieldOrMethod(document,'IsFullScreen')
+                  || document.IsFullScreen) {
+                    exitFullscreen();
+              }
+          // },5*1000);
+      // },false);
+    },
+    loadUnitStaff (unitId, page) {
+      if (unitId) { this.unitId = unitId; }
+      unitId = unitId ? unitId : this.unitId;
 
-            }
-         }
-          //退出全屏
-         function exitFullscreen() {
-             if (document.exitFullscreen) {
-                document.exitFullscreen();
-             } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-             } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-             } else if(document.oRequestFullscreen){
-                document.oCancelFullScreen();
-              }else if (document.webkitExitFullscreen){
-                document.webkitExitFullscreen();
-             }else{
-                var docHtml  = document.documentElement;
-                var docBody  = document.body;
-                var videobox  = document.getElementById('map');
-                docHtml.style.cssText = "";
-                docBody.style.cssText = "";
-                videobox.style.cssText = "";
-                document.IsFullScreen = false;
-             }
-        }
-        // document.getElementById('fullScreenBtn').addEventListener('click',function(){
-            launchFullscreen(document.getElementById('map'));
-            // window.setTimeout(function exit(){
-                if(invokeFieldOrMethod(document,'FullScreen')
-                    || invokeFieldOrMethod(document,'IsFullScreen')
-                    || document.IsFullScreen) {
-                      exitFullscreen();
-                }
-            // },5*1000);
-        // },false);
+      this.$store.dispatch('findUnitStaffByUnitId', { 'unitId' : unitId, 'page' : page });
+    },
+    loadRegionStaff (region, page) {
+      let regionId = region ? region.region_id : this.regionId;
+
+      if (region) {
+        // 赋值给regionShowInfo供模态框显示信息使用
+        this.regionShowInfo.regionName = region.region_name;
+        this.regionShowInfo.total = region.total;
+        // 兼容分页查询情况
+        if (regionId) { this.regionId = regionId; }
+      }
+      // 兼容非首次打开模态框查询情况
+      regionId = regionId ? regionId : this.regionId;
+
+      this.$store.dispatch('findRegionStaffByRegionId', { 'regionId' : regionId, 'page' : page });
+    },
+    loadEvacuateInfo (region, page) {
+      let regionId = region ? region.region_id : this.regionId;
+
+      if (region) {
+        // 赋值给regionShowInfo供模态框显示信息使用
+        this.regionShowInfo.regionName = region.region_name;
+        this.regionShowInfo.total = region.total;
+        // 兼容分页查询情况
+        if (regionId) { this.regionId = regionId; }
+      }
+
+      // 兼容非首次打开模态框查询情况
+      regionId = regionId ? regionId : this.regionId;
+
+      this.$store.dispatch('findEvacuateStaffByRegionId', { 'regionId' : regionId, 'page' : page });
+    },
+    loadAlarmInfo (alarm, page) {
+      let alarmTypeId;
+      if (alarm && alarm.alarm_type_id) {
+        this.alarmTypeId = alarmTypeId = alarm.alarm_type_id;
+      } else {
+        alarmTypeId = this.alarmTypeId;
+      }
+
+      this.$store.dispatch('findAlarmBaseInfo', { 'alarm_type_id' : alarmTypeId, 'page' : page });
     }
   }
 }
