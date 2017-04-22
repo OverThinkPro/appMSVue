@@ -5,6 +5,8 @@
 export default {
   coalmineInfo: state => state.coalmineInfo,
   realUnit: state => state.realUnit,
+  staffReal: state => state.staffReal,
   realRegion: state => state.realRegion,
-  realAlarm: state => state.realAlarm
+  realAlarm: state => state.realAlarm,
+  staffAlarm: state => state.staffAlarm
 }

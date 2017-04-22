@@ -39,15 +39,18 @@ export default {
           });
   },
 
-  [types.FIND_UNIT_STAFF_BY_UNITID] (state, unitId) {
-    axios.get('/realtime/staff/unit/' + unitId)
+  [types.FIND_UNIT_STAFF_BY_UNITID] (state, params) {
+    params.page = (params.page ? params.page : 1);
+
+    axios.get('/realtime/staff/unit/' + params.unitId + '/p/' + params.page)
           .then((response) => {
             let meta = response.data.meta;
 
             if (meta.success) {
               let data = response.data.data;
 
-
+              state.staffReal.tlStaffList = data.tlStaffList;
+              state.staffReal.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -57,7 +60,7 @@ export default {
   },
 
   [types.MAP_UNIT_STAFF_BY_UNITID] (state, unitId) {
-    axios.get('map/staff/unit' + unitId)
+    axios.get('/map/staff/unit/' + unitId)
           .then((response) => {
             let meta = response.data.meta;
 
@@ -73,15 +76,17 @@ export default {
           });
   },
 
-  [types.FIND_REGION_STAFF_BY_REGIONID] (state, regionId) {
-    axios.get('/realtime/staff/region/' + regionId)
+  [types.FIND_REGION_STAFF_BY_REGIONID] (state, params) {
+    params.page = (params.page ? params.page : 1);
+    axios.get('/realtime/staff/region/' + params.regionId + '/p/' + params.page)
           .then((response) => {
             let meta = response.data.meta;
 
             if (meta.success) {
               let data = response.data.data;
 
-
+              state.staffReal.tlStaffList = data.tlStaffList;
+              state.staffReal.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -90,15 +95,19 @@ export default {
           });
   },
 
-  [types.FIND_EVACUATE_STAFF_BY_REGIONID] (state, regionId) {
-    axios.get('/realtime/evacuate/region/' + regionId)
+  [types.FIND_EVACUATE_STAFF_BY_REGIONID] (state, params) {
+    params.page = (params.page ? params.page : 1);
+    axios.get('/realtime/evacuate/region/' + params.regionId + '/p/' + params.page)
           .then((response) => {
             let meta = response.data.meta;
 
             if (meta.success) {
               let data = response.data.data;
 
-
+              state.staffReal.evacuationDetails = data.evacuationDetails;
+              state.staffReal.countTotalPages = data.countTotalPages;
+              state.staffReal.calledNum = data.calledNum;
+              state.staffReal.callCount = data.callCount;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -107,20 +116,38 @@ export default {
           });
   },
 
-  [types.FIND_ALARM_BASE_INFO] (state, alarm_type_id) {
-    axios.get('/realtime/alarm/' + alarm_type_id)
+  [types.FIND_ALARM_BASE_INFO] (state, params) {
+    params.page = (params.page ? params.page : 1);
+    axios.get('/realtime/alarm/' + params.alarm_type_id + '/p/' + params.page)
           .then((response) => {
             let meta = response.data.meta;
 
             if (meta.success) {
               let data = response.data.data;
 
-
+              state.staffAlarm.staffAlarmList = data.staffAlarmList;
+              state.staffAlarm.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
               });
             }
           });
+  },
+
+  [types.COUNT_REGION_INFO] (state, page) {
+    
+  },
+
+  [types.INSERT_EVACUATE_CALL_INFO] (state, regionId) {
+
+  },
+
+  [types.COUNT_STAFF_INFO] (state, params) {
+
+  },
+
+  [types.INSERT_CALLBACK_STAFF_INFO] (state, staffId) {
+
   }
 };

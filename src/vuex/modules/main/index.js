@@ -14,8 +14,19 @@ export default {
         currentLeader: '',
       },
       realUnit: [],
+      staffReal: {
+        tlStaffList: [],
+        evacuationDetails: [],
+        countTotalPages: 1,
+        calledNum: 0,
+        callCount: 0
+      },
       realRegion: [],
       realAlarm: [],
+      staffAlarm: {
+        staffAlarmList: [],
+        countTotalPages: 1
+      }
   },
   actions: actions,
   mutations: mutations,
