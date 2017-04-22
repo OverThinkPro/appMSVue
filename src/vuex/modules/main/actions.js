@@ -52,28 +52,28 @@ export default {
   /**
    * 查询区域统计信息
    */
-  countRegionInfo ({ commit }, page) {
-
+  countRegionInfo ({ commit }) {
+    commit(types.COUNT_REGION_INFO);
   },
 
   /**
    * 录入区域撤离呼叫信息
    */
   insertEvacuateCallInfo ({ commit }, regionId) {
-
+    commit(types.INSERT_EVACUATE_CALL_INFO, regionId);
   },
 
   /**
    * 查询部门人员信息
    */
   countStaffInfo ({ commit }, params) {
-
+    commit(types.COUNT_STAFF_INFO, params);
   },
 
   /**
    * 录入对员工的回电呼叫信息
    */
   insertCallbackStaffInfo ({ commit }, staffId) {
-
+    commit(types.INSERT_CALLBACK_STAFF_INFO, staffId);
   }
 };

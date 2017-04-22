@@ -8,5 +8,6 @@ export default {
   staffReal: state => state.staffReal,
   realRegion: state => state.realRegion,
   realAlarm: state => state.realAlarm,
-  staffAlarm: state => state.staffAlarm
+  staffAlarm: state => state.staffAlarm,
+  regionCall: state => state.regionCall
 }

@@ -9,7 +9,7 @@
       <div class="main-left fl content-box">
         <div class="btn-box">
           <div class="fl">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#evacuate_modal">撤离呼叫</button>
+            <button type="button" @click="loadRegionCount(null)" class="btn btn-primary" data-toggle="modal" data-target="#evacuate_modal">撤离呼叫</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#callback_modal">回电呼叫</button>
           </div>
           <div class="fr">
@@ -113,10 +113,9 @@
                   <div class="ms-bar-select">
                     <select class="form-control">
                       <option value="">- 请选择区域 -</option>
-                      <option value="">井口区</option>
-                      <option value="">D11084工作面</option>
-                      <option value="">420大巷</option>
-                      <option value="">D2301掘进面</option>
+                      <template v-if="regionCall.realStaffByRegion != null" v-for="(region, index) in regionCall.realStaffByRegion">
+                        <option value="region.region_id">{{ region.region_name }}</option>
+                      </template>
                     </select>
                   </div>
               </div>
@@ -134,37 +133,18 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td><input type="checkbox" name="region"/></td>
-                      <td>井口区</td>
-                      <td>2</td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" name="region"/></td>
-                      <td>D11084工作面</td>
-                      <td>10</td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" name="region"/></td>
-                      <td>420大巷</td>
-                      <td>10</td>
-                    </tr>
-                    <tr>
-                      <td><input type="checkbox" name="region"/></td>
-                      <td>D2301掘进面</td>
-                      <td>10</td>
+                    <tr v-if="regionCall.realStaffByRegion != null" v-for="(region, index) in regionCall.realStaffByRegion" :key="region.key">
+                      <td><input type="checkbox" :value="region.region_id" name="region"/></td>
+                      <td>{{ region.region_name }}</td>
+                      <td>{{ region.total }}</td>
                     </tr>
                   </tbody>
                 </table>
                 <nav class="pagination-box">
                   <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
+                    <template v-for="page in regionCall.countTotalPages">
+                      <li><a href="javascript:void(0)" @click="loadRegionCount(page)">{{ page }}</a></li>
+                    </template>
                   </ul>
                 </nav>
               </div>
@@ -680,7 +660,12 @@ export default {
         regionoName: '',
         total: 0
       },
-      alarmTypeId: ''
+      alarmTypeId: '',
+      regionCallCache: {
+        index: 0,
+        cacheStaffList: [],
+        total: 1
+      }
     };
   },
   mounted () {
@@ -690,7 +675,7 @@ export default {
     this.loadCountRealtimeInfo();
   },
   computed: {
-    ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm'])
+    ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm', 'regionCall'])
   },
   methods: {
     initEvent () {
@@ -855,6 +840,9 @@ export default {
       }
 
       this.$store.dispatch('findAlarmBaseInfo', { 'alarm_type_id' : alarmTypeId, 'page' : page });
+    },
+    loadRegionCount (page) {
+        this.$store.dispatch('countRegionInfo');
     }
   }
 }

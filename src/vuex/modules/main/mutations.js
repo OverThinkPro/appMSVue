@@ -135,8 +135,22 @@ export default {
           });
   },
 
-  [types.COUNT_REGION_INFO] (state, page) {
-    
+  [types.COUNT_REGION_INFO] (state) {
+    axios.get('/base/region/count/')
+          .then((response) => {
+            let meta = response.data.meta;
+
+            if (meta.success) {
+              let data = response.data.data;
+
+              state.regionCall.realStaffByRegion = data.realStaffByRegion;
+              state.regionCall.countTotalPages = data.countTotalPages;
+            } else {
+              bootbox.alert({
+                message: meta.message
+              });
+            }
+          });
   },
 
   [types.INSERT_EVACUATE_CALL_INFO] (state, regionId) {
