@@ -26,6 +26,10 @@ export default {
       staffAlarm: {
         staffAlarmList: [],
         countTotalPages: 1
+      },
+      regionCall: {
+        realStaffByRegion: [],
+        countTotalPages: 1
       }
   },
   actions: actions,
