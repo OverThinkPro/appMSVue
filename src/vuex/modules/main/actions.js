@@ -52,15 +52,15 @@ export default {
   /**
    * 查询区域统计信息
    */
-  countRegionInfo ({ commit }) {
-    commit(types.COUNT_REGION_INFO);
+  countRegionInfo ({ commit }, page) {
+    commit(types.COUNT_REGION_INFO, page);
   },
 
   /**
    * 录入区域撤离呼叫信息
    */
-  insertEvacuateCallInfo ({ commit }, regionId) {
-    commit(types.INSERT_EVACUATE_CALL_INFO, regionId);
+  insertEvacuateCallInfo ({ commit }, regionIdArr) {
+    commit(types.INSERT_EVACUATE_CALL_INFO, regionIdArr);
   },
 
   /**
@@ -75,5 +75,9 @@ export default {
    */
   insertCallbackStaffInfo ({ commit }, staffId) {
     commit(types.INSERT_CALLBACK_STAFF_INFO, staffId);
+  },
+
+  clearPaginationInfo ({ commit }) {
+    commit(types.CLEAR_PAGINATION_INFO);
   }
 };

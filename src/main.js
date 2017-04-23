@@ -5,9 +5,12 @@ import App from './App';
 import router from './router';
 import store from './vuex/store';
 import axios from 'axios';
+import Paginate from './components/Paginate/Paginate.vue';
 
 // axios.defaults.baseURL = 'http://192.168.2.105:8080/appMSJava/api/v1/main/';
 axios.defaults.baseURL = '/main/';
+
+Vue.component('paginate', Paginate);
 
 Vue.config.productionTip = false;
 /* eslint-disable no-new */
