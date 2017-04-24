@@ -8,11 +8,12 @@ import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
 
 import main from './modules/main/index';
-
+import user from './modules/user/index';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     modules: {
-      main: main
+      main: main,
+      user: user,
     }
 });
