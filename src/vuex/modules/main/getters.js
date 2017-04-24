@@ -9,5 +9,6 @@ export default {
   realRegion: state => state.realRegion,
   realAlarm: state => state.realAlarm,
   staffAlarm: state => state.staffAlarm,
-  regionCall: state => state.regionCall
+  regionCall: state => state.regionCall,
+  pagination: state => state.pagination,
 }
