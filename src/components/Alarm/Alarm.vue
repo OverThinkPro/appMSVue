@@ -16,7 +16,8 @@
             <div class="ss-bar-select">
               <select id="unitId" class="form-control refresh" name="">
                 <option value="">- 请选择部门 -</option>
-                <option value="">掘进1队</option>
+                <option v-if="unitList != null" v-for="(unit, index) in unitList"
+                    :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
               </select>
             </div>
           </div>
@@ -28,19 +29,20 @@
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-input">
-              <input id="startTime" class="form-control refresh" type="text" placeholder="请选择开始时间" >
+              <input id="startTime" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择开始时间" >
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-input">
-              <input id="endTime" class="form-control refresh" type="text" placeholder="请选择结束时间">
+              <input id="endTime" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择结束时间">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-select">
               <select id="regionId" class="form-control refresh">
                 <option value="">- 请选择区域 -</option>
-                <option value="">区域1</option>
+                <option v-if="regionList != null" v-for="(region, index) in regionList"
+                    :key="region.key" :value="region.regionId">{{ region.regionName }}</option>
               </select>
             </div>
           </div>
@@ -220,6 +222,8 @@ import initLoad from '../../assets/script/sidemenu';
 import { initPagination } from '../../assets/script/initplugin';
 import axios from 'axios';
 import bootbox from 'bootbox/bootbox.min';
+// 日历&时间插件
+import jeDate from '../../assets/script/jedate/jquery.jedate.min';
 
 export default {
   name: 'alarm',
@@ -229,14 +233,28 @@ export default {
       resultListCache: {
         resultList: [],
         total: 0
-      }
+      },
+      unitList: [],
+      regionList: []
     };
   },
   mounted () {
     this.checkType();
     initLoad();
+    this.initEvent();
   },
   methods: {
+    initEvent () {
+      $("#startTime").jeDate({
+        format: "YYYY-MM-DD hh:mm:ss",
+        isTime: true
+      });
+
+      $("#endTime").jeDate({
+        format: "YYYY-MM-DD hh:mm:ss",
+        isTime: true
+      });
+    },
     checkType() {
       var self = this;
       $("#alarmTypeSelect").change(function() {
@@ -249,6 +267,43 @@ export default {
       $("select.refresh").find("option:eq(0)").prop('selected', true);
       this.alarmType = 1;
     },
+    /* 默认查询 */
+    defaultLoadUnit () {
+      let self = this;
+      axios.get('/base/unit/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.unitList = data.unitList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    defaultLoadRegion () {
+      let self = this;
+
+      axios.get('/base/region/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.regionList = data.regionList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                })
+              }
+            });
+    },
+    /* 获取查询条件 */
     getSearchParam () {
       let params = {};
       let unitId, staffName, startTime, endTime, regionId;
@@ -432,6 +487,6 @@ export default {
 };
 </script>
 
-<style lang="css">
-
+<style scoped>
+@import '../../assets/script/jedate/skin/jedate.css';
 </style>
