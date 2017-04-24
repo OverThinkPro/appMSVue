@@ -73,8 +73,8 @@ export default {
   /**
    * 录入对员工的回电呼叫信息
    */
-  insertCallbackStaffInfo ({ commit }, staffId) {
-    commit(types.INSERT_CALLBACK_STAFF_INFO, staffId);
+  insertCallbackStaffInfo ({ commit }, staffIdArr) {
+    commit(types.INSERT_CALLBACK_STAFF_INFO, staffIdArr);
   },
 
   clearPaginationInfo ({ commit }) {

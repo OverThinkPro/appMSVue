@@ -54,7 +54,7 @@ export default {
               let data = response.data.data;
 
               state.staffReal.tlStaffList = data.tlStaffList;
-              state.staffReal.countTotalPages = state.pagination.pageCount = data.countTotalPages;
+              state.staffReal.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -90,7 +90,7 @@ export default {
               let data = response.data.data;
 
               state.staffReal.tlStaffList = data.tlStaffList;
-              state.staffReal.countTotalPages = state.pagination.pageCount = data.countTotalPages;
+              state.staffReal.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -109,7 +109,7 @@ export default {
               let data = response.data.data;
 
               state.staffReal.evacuationDetails = data.evacuationDetails;
-              state.staffReal.countTotalPages = state.pagination.pageCount = data.countTotalPages;
+              state.staffReal.countTotalPages = data.countTotalPages;
               state.staffReal.calledNum = data.calledNum;
               state.staffReal.callCount = data.callCount;
             } else {
@@ -130,7 +130,7 @@ export default {
               let data = response.data.data;
 
               state.staffAlarm.staffAlarmList = data.staffAlarmList;
-              state.staffReal.countTotalPages = state.pagination.pageCount = data.countTotalPages;
+              state.staffReal.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -148,7 +148,7 @@ export default {
               let data = response.data.data;
 
               state.regionCall.realStaffByRegion = data.realStaffByRegion;
-              state.staffReal.countTotalPages = state.pagination.pageCount = data.countTotalPages;
+              state.staffReal.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -158,7 +158,9 @@ export default {
   },
 
   [types.INSERT_EVACUATE_CALL_INFO] (state, regionIdArr) {
-    axios.post('/base/evacuate/region/', { 'regionId': regionIdArr })
+    let param = {};
+    param.regionIdArr = regionIdArr;
+    axios.post('/base/evacuate/region/u/d', $.param(param))
           .then((response) => {
             let meta = response.data.meta;
 
@@ -167,7 +169,7 @@ export default {
 
               bootbox.alert({
                 message: meta.message
-              })
+              });
             } else {
               bootbox.alert({
                 message: meta.message
@@ -177,7 +179,7 @@ export default {
   },
 
   [types.COUNT_STAFF_INFO] (state, params) {
-    axios.get('base/staff/count', { params: params })
+    axios.get('base/staff/count/p/1', { unit: '1213' })
           .then((response) => {
             let meta = response.data.meta;
 
@@ -185,7 +187,7 @@ export default {
               let data = response.data.data;
 
               state.callbackCache.staffList = data.staffList;
-              state.callbackCache.countTotalPages = state.pagination.pageCount = data.countTotalPages;
+              state.callbackCache.countTotalPages = data.countTotalPages;
             } else {
               bootbox.alert({
                 message: meta.message
@@ -194,7 +196,22 @@ export default {
           });
   },
 
-  [types.INSERT_CALLBACK_STAFF_INFO] (state, staffId) {
+  [types.INSERT_CALLBACK_STAFF_INFO] (state, staffIdArr) {
+    axios.post('/base/callback/staff/u/d', $.param({ 'staffIdArr': staffIdArr }))
+          .then((response) => {
+            let meta = response.data.meta;
 
+            if (meta.success) {
+              let data = response.data.data;
+
+              bootbox.alert({
+                message: meta.message
+              });
+            } else {
+              bootbox.alert({
+                message: meta.message
+              });
+            }
+          });
   }
 };

@@ -10,7 +10,7 @@
         <div class="btn-box">
           <div class="fl">
             <button type="button" @click="loadRegionCount(null)" class="btn btn-primary" data-toggle="modal" data-target="#evacuate_modal">撤离呼叫</button>
-            <button type="button" @click="loadCallbackInfo(null, null)" class="btn btn-primary" data-toggle="modal" data-target="#callback_modal">回电呼叫</button>
+            <button type="button" @click="loadCallbackInfo()" class="btn btn-primary" data-toggle="modal" data-target="#callback_modal">回电呼叫</button>
           </div>
           <div class="fr">
             <button type="button" @click="fullScreen()" class="btn btn-primary fr" title="地图全屏查看">
@@ -113,7 +113,7 @@
                   <div class="ms-bar-select">
                     <select class="form-control">
                       <option value="">- 请选择区域 -</option>
-                      <template v-if="regionCall.realStaffByRegion != null" v-for="(region, index) in regionCall.realStaffByRegion">
+                      <template v-if="staffListCache.realStaffList != null" v-for="(region, index) in staffListCache.realStaffList">
                         <option value="region.region_id">{{ region.region_name }}</option>
                       </template>
                     </select>
@@ -133,7 +133,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="regionCall.realStaffByRegion != null" v-for="(region, index) in regionCall.realStaffByRegion" :key="region.key">
+                    <tr v-if="staffListCache.realStaffList != null" v-for="(region, index) in staffListCache.realStaffList" :key="region.key">
                       <td><input type="checkbox" :value="region.region_id" name="region"/></td>
                       <td>{{ region.region_name }}</td>
                       <td>{{ region.total }}</td>
@@ -141,22 +141,7 @@
                   </tbody>
                 </table>
                 <nav class="pagination-box">
-                  <!-- <ul class="pagination"> -->
-                    <!-- <template v-for="page in regionCall.countTotalPages">
-                      <li><a href="javascript:void(0)" @click="loadRegionCount(page)">{{ page }}</a></li>
-                    </template> -->
-                    <!-- <paginate
-                      :pageCount="pagination.pageCount"
-                      :pageRange="pagination.pageRange"
-                      :currentPage="currentPage"
-                      :clickHandler="loadRegionCount"
-                      :prevText="pagination.prevText"
-                      :nextText="pagination.nextText"
-                      :containerClass="pagination.containerClass"></paginate> -->
-                    <div id="regionCountPaging">
-
-                    </div>
-                  <!-- </ul> -->
+                    <div id="regionCountPaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -194,7 +179,7 @@
                 </div>
                 <div class="btn-group input-group ms-bar-button fr">
                   <button type="button" @click="clearSearchInfo()" class="btn btn-default"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
-                  <button type="button" @click="loadCallbackInfo(null, null)" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+                  <button type="button" @click="loadCallbackInfo()" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
                 </div>
               </div>
               <div class="gray-hr"></div>
@@ -212,7 +197,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="" v-for="elem in elemArray" :key="elem.key">
+                    <tr>
                       <td><input type="checkbox" name="staff" /></td>
                       <td>掘进1队</td>
                       <td>张三</td>
@@ -221,14 +206,7 @@
                   </tbody>
                 </table>
                 <nav class="pagination-box">
-                  <paginate
-                    :pageCount="pagination.pageCount"
-                    :pageRange="pagination.pageRange"
-                    :initialPage="pagination.initialPage"
-                    :clickHandler="loadRegionCount"
-                    :prevText="pagination.prevText"
-                    :nextText="pagination.nextText"
-                    :containerClass="pagination.containerClass"></paginate>
+                  <div id="callbackPaging"></div>
                 </nav>
               </div>
             </div>
@@ -264,7 +242,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="staffReal.tlStaffList != null" v-for="(staff, index) in staffReal.tlStaffList" :key="staff.key">
+                    <tr v-if="staffListCache.realStaffList != null" v-for="(staff, index) in staffListCache.realStaffList" :key="staff.key">
                       <td>{{ index + 1 }}</td>
                       <td>{{ staff.staffName }}</td>
                       <td>{{ staff.enteringDate }}</td>
@@ -273,19 +251,7 @@
                   </tbody>
                 </table>
                 <nav class="pagination-box">
-                  <!-- <ul class="pagination">
-                      <template v-for="page in staffReal.countTotalPages">
-                        <li><a href="javascript: void(0)" @click="loadUnitStaff(null, page)">{{ page }}</a></li>
-                      </template>
-                  </ul> -->
-                  <paginate
-                    :pageCount="pagination.pageCount"
-                    :pageRange="pagination.pageRange"
-                    :initialPage="pagination.initialPage"
-                    :clickHandler="loadUnitStaffPaging"
-                    :prevText="pagination.prevText"
-                    :nextText="pagination.nextText"
-                    :containerClass="pagination.containerClass"></paginate>
+                  <div id="staffUnitPaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -331,7 +297,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="staffReal.tlStaffList != null" v-for="(staff, index) in staffReal.tlStaffList" :key="staff.key">
+                    <tr v-if="staffListCache.realStaffList != null" v-for="(staff, index) in staffListCache.realStaffList" :key="staff.key">
                       <td>{{ index + 1 }}</td>
                       <td>{{ staff.staffName }}</td>
                       <td>{{ staff.enteringDate }}</td>
@@ -341,20 +307,7 @@
                   </tbody>
                 </table>
                 <nav class="pagination-box">
-                  <!-- <ul class="pagination">
-                    <template v-for="page in staffReal.countTotalPages">
-                      <li><a href="javascript: void(0)" @click="loadRegionStaff(null, page)">{{ page }}</a></li>
-                    </template>
-                  </ul> -->
-                  <paginate
-                    :pageCount="pagination.pageCount"
-                    :pageRange="pagination.pageRange"
-                    :clickHandler="loadRegionStaffPaging"
-                    :prevText="pagination.prevText"
-                    :nextText="pagination.nextText"
-                    :containerClass="pagination.containerClass"
-                    ref="curr_page"
-                    ></paginate>
+                  <div id="regionStaffPaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -425,14 +378,6 @@
                       <li><a href="javascript: void(0)" @click="loadEvacuateInfo(null, page)">{{ page }}</a></li>
                     </template>
                   </ul> -->
-                  <paginate
-                    :pageCount="pagination.pageCount"
-                    :pageRange="pagination.pageRange"
-                    :initialPage="pagination.initialPage"
-                    :clickHandler="loadEvacuateInfoPaging"
-                    :prevText="pagination.prevText"
-                    :nextText="pagination.nextText"
-                    :containerClass="pagination.containerClass"></paginate>
                 </nav>
               </div>
             </div>
@@ -483,15 +428,7 @@
                   </tbody>
                 </table>
                 <nav class="pagination-box">
-                  <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
-                  </ul>
+
                 </nav>
               </div>
             </div>
@@ -539,15 +476,7 @@
                   </tbody>
                 </table>
                 <nav class="pagination-box">
-                  <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
-                  </ul>
+
                 </nav>
               </div>
             </div>
@@ -584,15 +513,7 @@
                   <tbody></tbody>
                 </table>
                 <nav class="pagination-box">
-                  <ul class="pagination">
-                      <li><a href="#">&laquo;</a></li>
-                      <li><a href="#">1</a></li>
-                      <li><a href="#">2</a></li>
-                      <li><a href="#">3</a></li>
-                      <li><a href="#">4</a></li>
-                      <li><a href="#">5</a></li>
-                      <li><a href="#">&raquo;</a></li>
-                  </ul>
+
                 </nav>
               </div>
             </div>
@@ -640,14 +561,7 @@
                       <li><a href="javascript: void(0)" @click="loadAlarmInfo(null, page)">{{ page }}</a></li>
                     </template>
                   </ul> -->
-                  <paginate
-                    :pageCount="pagination.pageCount"
-                    :pageRange="pagination.pageRange"
-                    :initialPage="pagination.initialPage"
-                    :clickHandler="loadAlarmInfoPaging"
-                    :prevText="pagination.prevText"
-                    :nextText="pagination.nextText"
-                    :containerClass="pagination.containerClass"></paginate>
+                  <div id="alarmInfoPaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -665,6 +579,8 @@
 import ol from 'openlayers/dist/ol';
 import { mapGetters } from 'vuex';
 import bootbox from 'bootbox/bootbox.min';
+import axios from 'axios';
+import fullscreen from '../../assets/script/fullscreen';
 
 export default {
   name: "main",
@@ -684,11 +600,11 @@ export default {
         total: 0
       },
       alarmTypeId: '',
-      regionCallCache: {
-        index: 0,
-        cacheStaffList: [],
-        total: 1
-      }
+      staffListCache: {
+        realStaffList: [],
+        countTotalPages: 1
+      },
+      unitList: []
     };
   },
   mounted () {
@@ -698,13 +614,11 @@ export default {
     this.loadCountRealtimeInfo();
   },
   computed: {
-    ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm', 'regionCall', 'pagination'])
+    ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm', 'pagination'])
   },
   methods: {
     initEvent () {
-      $(".modal").on('shown.bs.modal', () => {
 
-      });
     },
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
@@ -731,112 +645,94 @@ export default {
   				})
   			});
     },
+    /* 查询矿井基本信息 */
     loadCoalmineInfo () {
       this.$store.dispatch('findCoalmineBaseInfo');
     },
+    /* 实时统计 */
     loadCountRealtimeInfo () {
       this.$store.dispatch('countRealtimeInfo');
     },
+    /* 全屏查看地图 */
     fullScreen () {
-      var invokeFieldOrMethod = function(element, method) {
-        var usablePrefixMethod;
-        ["webkit", "moz", "ms", "o", ""].forEach(function(prefix) {
-         if (usablePrefixMethod) return;
-         if (prefix === "") {
-             // 无前缀，方法首字母小写
-             method = method.slice(0,1).toLowerCase() + method.slice(1);
-         }
-         var typePrefixMethod = typeof element[prefix + method];
-         if (typePrefixMethod + "" !== "undefined") {
-             if (typePrefixMethod === "function") {
-                 usablePrefixMethod = element[prefix + method]();
-             } else {
-                 usablePrefixMethod = element[prefix + method];
-             }
-         }
-     });
-       return usablePrefixMethod;
-     };
-
-     //进入全屏
-     function launchFullscreen(element) {
-        //此方法不可以在異步任務中執行，否則火狐無法全屏
-         if(element.requestFullscreen) {
-           element.requestFullscreen();
-         } else if(element.mozRequestFullScreen) {
-           element.mozRequestFullScreen();
-         } else if(element.msRequestFullscreen){
-           element.msRequestFullscreen();
-         } else if(element.oRequestFullscreen){
-            element.oRequestFullscreen();
-        }
-        else if(element.webkitRequestFullscreen)
-         {
-           element.webkitRequestFullScreen();
-         }else{
-
-            var docHtml  = document.documentElement;
-            var docBody  = document.body;
-            var videobox  = document.getElementById('map');
-            var  cssText = 'width:100%;height:100%;overflow:hidden;';
-            docHtml.style.cssText = cssText;
-            docBody.style.cssText = cssText;
-            videobox.style.cssText = cssText+';'+'margin:0px;padding:0px;';
-            document.IsFullScreen = true;
-
-          }
-       }
-        //退出全屏
-       function exitFullscreen() {
-           if (document.exitFullscreen) {
-              document.exitFullscreen();
-           } else if (document.msExitFullscreen) {
-              document.msExitFullscreen();
-           } else if (document.mozCancelFullScreen) {
-              document.mozCancelFullScreen();
-           } else if(document.oRequestFullscreen){
-              document.oCancelFullScreen();
-            }else if (document.webkitExitFullscreen){
-              document.webkitExitFullscreen();
-           }else{
-              var docHtml  = document.documentElement;
-              var docBody  = document.body;
-              var videobox  = document.getElementById('map');
-              docHtml.style.cssText = "";
-              docBody.style.cssText = "";
-              videobox.style.cssText = "";
-              document.IsFullScreen = false;
-           }
-      }
-      // document.getElementById('fullScreenBtn').addEventListener('click',function(){
-          launchFullscreen(document.getElementById('map'));
-          // window.setTimeout(function exit(){
-              if(invokeFieldOrMethod(document,'FullScreen')
-                  || invokeFieldOrMethod(document,'IsFullScreen')
-                  || document.IsFullScreen) {
-                    exitFullscreen();
-              }
-          // },5*1000);
-      // },false);
+      fullscreen('map');
     },
+    /* 实时统计部门员工 */
     loadUnitStaff (unitId) {
       this.unitId = unitId;
-      this.$store.dispatch('findUnitStaffByUnitId', { 'unitId' : unitId, 'page' : null });
+      this.loadUnitStaffPaging(null);
     },
     loadUnitStaffPaging (page) {
-      this.$store.dispatch('findUnitStaffByUnitId', { 'unitId' : this.unitId, 'page' : page });
+      var self = this;
+      page = page ? page : 1;
+      axios.get('/realtime/staff/unit/' + this.unitId + '/p/' + page)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.staffListCache.realStaffList = data.tlStaffList;
+                self.staffListCache.countTotalPages = data.countTotalPages;
+
+                $("#staffUnitPaging").page({
+                  total: self.staffListCache.countTotalPages,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadUnitStaffPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
     },
+    /* 实时统计区域员工 */
     loadRegionStaff (region) {
       // 赋值给regionShowInfo供模态框显示信息使用
       this.regionShowInfo.regionName = region.region_name;
       this.regionShowInfo.total = region.total;
       this.regionId = region.region_id;
 
-      this.$store.dispatch('findRegionStaffByRegionId', { 'regionId' : region.region_id, 'page' : null });
+      this.loadRegionStaffPaging(null);
     },
     loadRegionStaffPaging (page) {
-      this.$store.dispatch('findRegionStaffByRegionId', { 'regionId' : this.regionId, 'page' : page });
+      let self = this;
+      page = page ? page : 1;
+      axios.get('/realtime/staff/region/' + this.regionId + '/p/' + page)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.staffListCache.realStaffList = data.tlStaffList;
+                self.staffListCache.countTotalPages = data.countTotalPages;
+
+                $("#regionStaffPaging").page({
+                  total: self.staffListCache.countTotalPages,
+                  pageSize: 6,
+                  pageBtnCount: 5,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadRegionStaffPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
     },
+    /* 统计撤离呼叫信息 */
     loadEvacuateInfo (region) {
       // 赋值给regionShowInfo供模态框显示信息使用
       this.regionShowInfo.regionName = region.region_name;
@@ -848,40 +744,35 @@ export default {
     loadEvacuateInfoPaging (page) {
       this.$store.dispatch('findEvacuateStaffByRegionId', { 'regionId' : this.regionId, 'page' : page });
     },
+    /* 实时查询报警信息 */
     loadAlarmInfo (alarmTypeId) {
       this.alarmTypeId = alarmTypeId;
       this.$store.dispatch('findAlarmBaseInfo', { 'alarm_type_id' : alarmTypeId, 'page' : null });
     },
     loadAlarmInfoPaging (page) {
-      this.$store.dispatch('findAlarmBaseInfo', { 'alarm_type_id' : this.alarmTypeId, 'page' : page });
-    },
-    loadRegionCount (page) {
-      // this.doLoadRegionCount(page);
-      page = page || 1;
-      axios.get('/base/region/count/' + '/p/' + page)
+      // this.$store.dispatch('findAlarmBaseInfo', { 'alarm_type_id' : this.alarmTypeId, 'page' : page });
+
+      params.page = (params.page ? params.page : 1);
+      axios.get('/realtime/alarm/' + params.alarm_type_id + '/p/' + params.page)
             .then((response) => {
               let meta = response.data.meta;
 
               if (meta.success) {
                 let data = response.data.data;
 
-                // data.realStaffByRegion;
-                // data.countTotalPages;
+                state.staffAlarm.staffAlarmList = data.staffAlarmList;
+                state.staffReal.countTotalPages = data.countTotalPages;
 
-                var that = this;
-                laypage({
-                  cont: $('#regionCountPaging'),
-                  pages: 11,
-                  skin: '#337AB7',
-                  curr: page || 1,
-                  last: 11,
-                  prev: '<<',
-                  next: '>>',
-                  jump: function(obj, first) {
-                    if (!first) {
-                      that.loadRegionCount(obj.curr);
-                    }
-                  }
+                $("#alarmInfoPaging").page({
+                  total: self.staffListCache.countTotalPages,
+                  pageSize: 6,
+                  pageBtnCount: 5,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadAlarmInfoPaging(pageNumber + 1);
                 });
               } else {
                 bootbox.alert({
@@ -890,9 +781,36 @@ export default {
               }
             });
     },
-    doLoadRegionCount (page) {
-      page = page ? page : 1;
-      this.$store.dispatch('countRegionInfo', page);
+    /* 撤离呼叫 */
+    loadRegionCount (page) {
+      page = page || 1;
+      let self = this;
+      axios.get('/base/region/count/' + '/p/' + page)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                 self.staffListCache.realStaffList = data.realStaffByRegion;
+                 self.staffListCache.countTotalPages = data.countTotalPages;
+
+                $("#regionCountPaging").page({
+                  total: self.staffListCache.countTotalPages,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadRegionCount(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
     },
     insertEvacuateCallInfo () {
       let regionIdArr = [];
@@ -900,8 +818,21 @@ export default {
       $("input[name='region']").filter(":checked").each(function() {
         regionIdArr.push($(this).val());
       });
+      
 
       this.$store.dispatch('insertEvacuateCallInfo', regionIdArr);
+    },
+    loadCallbackInfo () {
+      this.$store.dispatch('countStaffInfo', null);
+    },
+    insertCallbackStaffInfo () {
+      let staffIdArr = '';
+
+      $("input[name='staff']").filter(":checked").each(function() {
+        staffIdArr.push($(this).val());
+      });
+
+      this.$store.dispatch('insertCallbackStaffInfo', staffIdArr);
     }
   }
 }

@@ -9,7 +9,8 @@
 <script>
 import 'bootstrap/dist/js/bootstrap.min';
 // import 'bootstrap-table/dist/bootstrap-table.min';
-import laypage from './assets/script/laypage/laypage';
+import pagination from './assets/script/pagination/pagination';
+
 import 'bootstrap-fileinput/js/fileinput.min';
 import VHeader from './components/Header/Header.vue';
 import VFooter from './components/Footer/Footer.vue';
@@ -38,7 +39,8 @@ export default {
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "../node_modules/bootstrap-fileinput/css/fileinput.min.css";
 /*@import "../node_modules/bootstrap-table/dist/bootstrap-table.min.css";*/
-@import './assets/script/laypage/skin/laypage.css';
+/*@import "./assets/script/pagination/pagination.css";*/
+
 @import "./assets/style/reset.css";
 @import "./assets/style/common.css";
 

@@ -34,15 +34,6 @@ export default {
       callbackCache: {
         staffList: [],
         countTotalPages: 1
-      },
-      pagination: {
-        currentPage: 0,
-        pageCount: 1,
-        pageRange: 5,
-        initialPage: 0,
-        prevText: '上一页',
-        nextText: '下一页',
-        containerClass: 'pagination'
       }
   },
   actions: actions,
