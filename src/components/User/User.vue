@@ -51,7 +51,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(user, index) in userList" :key="user.key">
+              <tr v-for="(user, index) in users.userList" :key="user.key">
                 <td><input type="checkbox" name="user" value="user.userId" /></td>
                 <td>{{ index + 1 }}</td>
                 <td>{{ user.userName }}</td>
@@ -235,14 +235,16 @@
 <script>
 import bootbox from 'bootbox/bootbox.min';
 import {currentTime} from '../../assets/script/date';
-
+import { mapGetters } from 'vuex';
 export default {
   name: 'user',
   data () {
       return {
+        /*userStatusCode: ['0','1'],
+        userStatusName: ['启用', '禁用'],*/
         userNew:{},
         userOld:{},
-        userList: [
+        /*userList: [
         {
           userId: 'U100001',
           userName: '郝莎莎',
@@ -267,11 +269,15 @@ export default {
           lastLoginTime: '2017-04-07 17:00:00',
           remark: '',
         }
-      ]
+      ]*/
       };
   },
   mounted () {
-    this.initEvent();
+   // this.initEvent();
+    this.loadUserPaging (1);
+  },
+  computed: {
+    ...mapGetters(['users']),
   },
   methods: {
     initEvent () {
@@ -323,6 +329,9 @@ export default {
           });
         }
       });
+    },
+    loadUserPaging (page) {
+      this.$store.dispatch('findUserBaseInfo', {'page' : page ,});
     },
   }
 };
