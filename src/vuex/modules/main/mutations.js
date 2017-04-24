@@ -99,63 +99,11 @@ export default {
           });
   },
 
-  [types.FIND_EVACUATE_STAFF_BY_REGIONID] (state, params) {
-    params.page = (params.page ? params.page : 1);
-    axios.get('/realtime/evacuate/region/' + params.regionId + '/p/' + params.page)
-          .then((response) => {
-            let meta = response.data.meta;
+  [types.FIND_EVACUATE_STAFF_BY_REGIONID] (state, params) {},
 
-            if (meta.success) {
-              let data = response.data.data;
+  [types.FIND_ALARM_BASE_INFO] (state, params) {},
 
-              state.staffReal.evacuationDetails = data.evacuationDetails;
-              state.staffReal.countTotalPages = data.countTotalPages;
-              state.staffReal.calledNum = data.calledNum;
-              state.staffReal.callCount = data.callCount;
-            } else {
-              bootbox.alert({
-                message: meta.message
-              });
-            }
-          });
-  },
-
-  [types.FIND_ALARM_BASE_INFO] (state, params) {
-    params.page = (params.page ? params.page : 1);
-    axios.get('/realtime/alarm/' + params.alarm_type_id + '/p/' + params.page)
-          .then((response) => {
-            let meta = response.data.meta;
-
-            if (meta.success) {
-              let data = response.data.data;
-
-              state.staffAlarm.staffAlarmList = data.staffAlarmList;
-              state.staffReal.countTotalPages = data.countTotalPages;
-            } else {
-              bootbox.alert({
-                message: meta.message
-              });
-            }
-          });
-  },
-
-  [types.COUNT_REGION_INFO] (state, page) {
-    axios.get('/base/region/count/' + '/p/' + page)
-          .then((response) => {
-            let meta = response.data.meta;
-
-            if (meta.success) {
-              let data = response.data.data;
-
-              state.regionCall.realStaffByRegion = data.realStaffByRegion;
-              state.staffReal.countTotalPages = data.countTotalPages;
-            } else {
-              bootbox.alert({
-                message: meta.message
-              });
-            }
-          });
-  },
+  [types.COUNT_REGION_INFO] (state, page) {},
 
   [types.INSERT_EVACUATE_CALL_INFO] (state, regionIdArr) {
     let param = {};
@@ -178,23 +126,7 @@ export default {
           });
   },
 
-  [types.COUNT_STAFF_INFO] (state, params) {
-    axios.get('base/staff/count/p/1', { unit: '1213' })
-          .then((response) => {
-            let meta = response.data.meta;
-
-            if (meta.success) {
-              let data = response.data.data;
-
-              state.callbackCache.staffList = data.staffList;
-              state.callbackCache.countTotalPages = data.countTotalPages;
-            } else {
-              bootbox.alert({
-                message: meta.message
-              });
-            }
-          });
-  },
+  [types.COUNT_STAFF_INFO] (state, params) {},
 
   [types.INSERT_CALLBACK_STAFF_INFO] (state, staffIdArr) {
     axios.post('/base/callback/staff/u/d', $.param({ 'staffIdArr': staffIdArr }))
@@ -205,7 +137,7 @@ export default {
               let data = response.data.data;
 
               bootbox.alert({
-                message: meta.message
+                message: '呼叫成功!'
               });
             } else {
               bootbox.alert({
