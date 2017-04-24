@@ -14,35 +14,33 @@
         <div class="search-bar">
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" name="">
+              <select id="unitId" class="form-control refresh">
                 <option value="">- 请选择部门 -</option>
-                <option value="">掘进1队</option>
-                <option value="">掘进1队</option>
               </select>
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">员工姓名</span>
-              <input class="form-control refresh" type="text">
+              <input id="staffName" class="form-control refresh" type="text">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">定位卡号</span>
-              <input class="form-control refresh" type="text">
+              <input id="cardId" class="form-control refresh" type="text">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">开始时间</span>
-              <input class="form-control refresh" type="text">
+              <input id="startTime" class="form-control refresh" type="text">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">结束时间</span>
-              <input class="form-control refresh" type="text">
+              <input id="endTime" class="form-control refresh" type="text">
             </div>
           </div>
           <div class="ss-bar-line">
@@ -52,7 +50,7 @@
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-button">
-              <button class="btn btn-primary" type="button"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+              <button class="btn btn-primary" type="button" @click="doReplaySearch()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
             </div>
           </div>
         </div>
@@ -86,24 +84,16 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(elem, index) in staffList" :key="elem.key">
+                  <tr v-for="(staff, index) in staffListCache.staffList" :key="staff.key">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ elem.time }}</td>
-                    <td>{{ elem.position }}</td>
-                    <td>{{ elem.reader }}</td>
+                    <td>{{ staff.time }}</td>
+                    <td>{{ staff.position }}</td>
+                    <td>{{ staff.reader }}</td>
                   </tr>
                 </tbody>
               </table>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
+              <nav class="pagination-box" id="replayPagingBox">
+                <ul id="replayPaging" class="pagination"></ul>
               </nav>
             </div>
           </div>
@@ -119,33 +109,18 @@
 <script>
 import initLoad from '../../assets/script/sidemenu';
 import ol from 'openlayers';
+import axios from 'axios';
+import { initPagination } from '../../assets/script/initplugin';
+import bootbox from 'bootbox/bootbox.min';
 
 export default {
   name: 'replay',
   data () {
     return {
-      staffList: [
-        {
-          time: '8:00',
-          position: 'A平面',
-          reader: '分站1'
-        },
-        {
-          time: '9:00',
-          position: 'B平面',
-          reader: '分站2'
-        },
-        {
-          time: '10:00',
-          position: 'C平面',
-          reader: '分站3'
-        },
-        {
-          time: '11:00',
-          position: 'D平面',
-          reader: '分站4'
-        }
-      ]
+      staffListCache: {
+        staffList: [],
+        total: 0
+      }
     };
   },
   mounted () {
@@ -181,6 +156,72 @@ export default {
             rotation: Math.PI / 6
           })
         });
+    },
+    getSearchParam () {
+      let params = {},
+          unitId, staffName, cardId, startTime, endTime;
+
+      unitId = $("#unitId").find("option:selected").val();
+      if (unitId) { params.unitId = unitId; }
+
+      staffName = $("#staffName").val();
+      if (staffName) { params.staffName = staffName; }
+
+      cardId = $("#cardId").val();
+      if (cardId) { params.cardId = cardId; }
+
+      startTime = $("#startTime").val();
+      if (startTime) { params.startTime = startTime; }
+
+      endTime = $("#endTime").val();
+      if (endTime) { params.endTime = endTime; }
+
+      return params;
+    },
+    /* 执行历史轨迹查询 */
+    doReplaySearch () {
+      this.loadStaffList();
+      this.loadStaffMap();
+    },
+    /* 轨迹回放列表 */
+    loadStaffList () {
+      initPagination('replayPagingBox', 'replayPaging');
+      this.loadStaffListPaging(null);
+    },
+    loadStaffListPaging (page) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      axios.post("/history/staff/count/p/" + page, params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.staffListCache.staffList = data.staffList;
+                self.staffListCache.total = data.total;
+
+                $("#replayPaging").page({
+                  total: self.staffListCache.total,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadStaffListPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /* 轨迹回放地图 */
+    loadStaffMap () {
+
     }
   }
 };

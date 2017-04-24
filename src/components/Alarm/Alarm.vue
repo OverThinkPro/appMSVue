@@ -14,9 +14,8 @@
         <div class="search-bar">
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" name="">
+              <select id="unitId" class="form-control refresh" name="">
                 <option value="">- 请选择部门 -</option>
-                <option value="">掘进1队</option>
                 <option value="">掘进1队</option>
               </select>
             </div>
@@ -24,24 +23,23 @@
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">员工姓名</span>
-              <input class="form-control refresh" type="text" >
+              <input id="staffName" class="form-control refresh" type="text" >
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-input">
-              <input class="form-control refresh" type="text" placeholder="请选择开始时间" >
+              <input id="startTime" class="form-control refresh" type="text" placeholder="请选择开始时间" >
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-input">
-              <input class="form-control refresh" type="text" placeholder="请选择结束时间">
+              <input id="endTime" class="form-control refresh" type="text" placeholder="请选择结束时间">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh">
+              <select id="regionId" class="form-control refresh">
                 <option value="">- 请选择区域 -</option>
-                <option value="">区域1</option>
                 <option value="">区域1</option>
               </select>
             </div>
@@ -49,10 +47,10 @@
           <div class="ss-bar-line">
             <div class="ss-bar-select">
               <select id="alarmTypeSelect" class="form-control refresh" >
-                <option value="0">超时报警</option>
-                <option value="1">超员报警</option>
-                <option value="2">限制区域报警</option>
-                <option value="3">呼叫报警</option>
+                <option value="1">超时报警</option>
+                <option value="2">超员报警</option>
+                <option value="3">限制区域报警</option>
+                <option value="4">呼叫报警</option>
               </select>
             </div>
           </div>
@@ -63,12 +61,13 @@
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-button">
-              <button class="btn btn-primary" type="button"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+              <button @click="doAlarmSearch()" class="btn btn-primary" type="button"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="alarmType == 0" class="table-box outside-box">
+      <!-- 超时报警 -->
+      <div v-if="alarmType == 1" class="table-box outside-box">
         <div class="btn-box">
           <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-export"></i>&nbsp;导出</button>
           <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-print"></i>&nbsp;打印</button>
@@ -87,31 +86,24 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(elem, index) in overtimeList" :key="elem.key">
+              <tr v-for="(overtime, index) in resultListCache.resultList" :key="overtime.key">
                 <td>{{ index + 1 }}</td>
-                <td>{{ elem.name }}</td>
-                <td>{{ elem.no }}</td>
-                <td>{{ elem.unit }}</td>
-                <td>{{ elem.region }}</td>
-                <td>{{ elem.alarmTime }}</td>
-                <td>{{ elem.alarmType }}</td>
+                <td>{{ overtime.name }}</td>
+                <td>{{ overtime.no }}</td>
+                <td>{{ overtime.unit }}</td>
+                <td>{{ overtime.region }}</td>
+                <td>{{ overtime.alarmTime }}</td>
+                <td>{{ overtime.alarmType }}</td>
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="overtimePagingBox">
+            <div id="overtimePaging" class="pagination"></div>
           </nav>
         </div>
       </div>
-      <div v-if="alarmType == 1" class="table-box outside-box">
+      <!-- 超员报警 -->
+      <div v-if="alarmType == 2" class="table-box outside-box">
         <div class="btn-box">
           <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-export"></i>&nbsp;导出</button>
           <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-print"></i>&nbsp;打印</button>
@@ -129,72 +121,22 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(elem, index) in overmanList" :key="elem.key">
+              <tr v-for="(overman, index) in resultListCache.resultList" :key="overman.key">
                 <td>{{ index + 1 }}</td>
-                <td>{{ elem.region }}</td>
-                <td>{{ elem.reqNum }}</td>
-                <td>{{ elem.realNum }}</td>
-                <td>{{ elem.alarmTime }}</td>
-                <td>{{ elem.alarmType }}</td>
+                <td>{{ overman.region }}</td>
+                <td>{{ overman.reqNum }}</td>
+                <td>{{ overman.realNum }}</td>
+                <td>{{ overman.alarmTime }}</td>
+                <td>{{ overman.alarmType }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <nav class="pagination-box">
-          <ul class="pagination">
-            <li><a href="#">&laquo;</a></li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">&raquo;</a></li>
-          </ul>
+        <nav class="pagination-box" id="overmanPagingBox">
+          <div id="overmanPaging" class="pagination"></div>
         </nav>
       </div>
-      <div v-if="alarmType == 2" class="table-box outside-box">
-        <div class="btn-box">
-          <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-export"></i>&nbsp;导出</button>
-          <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-print"></i>&nbsp;打印</button>
-        </div>
-        <div class="data-box">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>序号</th>
-                <th>姓名</th>
-                <th>卡号</th>
-                <th>部门</th>
-                <th>区域</th>
-                <th>报警时间</th>
-                <th>报警类型</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(elem, index) in regionLimitList" :key="elem.key">
-                <td>{{ index + 1 }}</td>
-                <td>{{ elem.name }}</td>
-                <td>{{ elem.no }}</td>
-                <td>{{ elem.unit }}</td>
-                <td>{{ elem.region }}</td>
-                <td>{{ elem.alarmTime }}</td>
-                <td>{{ elem.alarmType }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <nav class="pagination-box">
-          <ul class="pagination">
-            <li><a href="#">&laquo;</a></li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">&raquo;</a></li>
-          </ul>
-        </nav>
-      </div>
+      <!--  限制区域报警 -->
       <div v-if="alarmType == 3" class="table-box outside-box">
         <div class="btn-box">
           <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-export"></i>&nbsp;导出</button>
@@ -214,28 +156,56 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(elem, index) in staffCallList" :key="elem.key">
+              <tr v-for="(limitRegion, index) in resultListCache.resultList" :key="limitRegion.key">
                 <td>{{ index + 1 }}</td>
-                <td>{{ elem.name }}</td>
-                <td>{{ elem.no }}</td>
-                <td>{{ elem.unit }}</td>
-                <td>{{ elem.region }}</td>
-                <td>{{ elem.alarmTime }}</td>
-                <td>{{ elem.alarmType }}</td>
+                <td>{{ limitRegion.name }}</td>
+                <td>{{ limitRegion.no }}</td>
+                <td>{{ limitRegion.unit }}</td>
+                <td>{{ limitRegion.region }}</td>
+                <td>{{ limitRegion.alarmTime }}</td>
+                <td>{{ limitRegion.alarmType }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <nav class="pagination-box">
-          <ul class="pagination">
-            <li><a href="#">&laquo;</a></li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">&raquo;</a></li>
-          </ul>
+        <nav class="pagination-box" id="limitRegionPagingBox">
+          <div id="limitRegionPaging" class="pagination"></div>
+        </nav>
+      </div>
+      <!-- 呼叫报警 -->
+      <div v-if="alarmType == 4" class="table-box outside-box">
+        <div class="btn-box">
+          <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-export"></i>&nbsp;导出</button>
+          <button type="button" class="btn btn-primary fl"><i class="glyphicon glyphicon-print"></i>&nbsp;打印</button>
+        </div>
+        <div class="data-box">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>姓名</th>
+                <th>卡号</th>
+                <th>部门</th>
+                <th>区域</th>
+                <th>报警时间</th>
+                <th>报警类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(staffCall, index) in resultListCache.resultList" :key="staffCall.key">
+                <td>{{ index + 1 }}</td>
+                <td>{{ staffCall.name }}</td>
+                <td>{{ staffCall.no }}</td>
+                <td>{{ staffCall.unit }}</td>
+                <td>{{ staffCall.region }}</td>
+                <td>{{ staffCall.alarmTime }}</td>
+                <td>{{ staffCall.alarmType }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <nav class="pagination-box" id="staffCallPagingBox">
+          <div id="staffCallPaging" class="pagination"></div>
         </nav>
       </div>
     </main>
@@ -247,114 +217,19 @@
 
 <script>
 import initLoad from '../../assets/script/sidemenu';
+import { initPagination } from '../../assets/script/initplugin';
+import axios from 'axios';
+import bootbox from 'bootbox/bootbox.min';
 
 export default {
   name: 'alarm',
   data () {
     return {
-      alarmTypes: ['超时报警', '超员报警', '限制区域报警', '呼叫告警'],
-      alarmType: 0,
-      overtimeList: [
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '超时报警'
-        },
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '超时报警'
-        },
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '超时报警'
-        }
-      ],
-      overmanList: [
-        {
-          region: 'A平面',
-          reqNum: 13,
-          realNum: 15,
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '超员报警'
-        },
-        {
-          region: 'A平面',
-          reqNum: 13,
-          realNum: 15,
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '超员报警'
-        },
-        {
-          region: 'A平面',
-          reqNum: 13,
-          realNum: 15,
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '超员报警'
-        }
-      ],
-      regionLimitList: [
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '限制区域报警'
-        },
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '限制区域报警'
-        },
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '限制区域报警'
-        }
-      ],
-      staffCallList: [
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '呼叫告警'
-        },
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '呼叫告警'
-        },
-        {
-          name: '丁英杰',
-          no: '201320030303',
-          unit: '掘进1队',
-          region: 'A平面',
-          alarmTime: '2017-04-01 21:00',
-          alarmType: '呼叫告警'
-        }
-      ]
+      alarmType: 1,
+      resultListCache: {
+        resultList: [],
+        total: 0
+      }
     };
   },
   mounted () {
@@ -372,7 +247,186 @@ export default {
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
-      this.alarmType = 0;
+      this.alarmType = 1;
+    },
+    getSearchParam () {
+      let params = {};
+      let unitId, staffName, startTime, endTime, regionId;
+
+      unitId = $("#unitId").find("option:selected").val();
+      if (unitId) { params.unitId = unitId; }
+
+      staffName = $("#staffName").val();
+      if (staffName) { params.staffNanme = staffName; }
+
+      startTime = $("#startTime").val();
+      if (startTime) { params.startTime = startTime; }
+
+      endTime = $("#endTime").val();
+      if (endTime) { params.endTime = endTime; }
+
+      regionId = $("#regionId").find("option:selected").val();
+      if (regionId) { params.regionId = regionId; }
+
+      return params;
+    },
+    doAlarmSearch () {
+      let methods = {};
+      let self = this;
+      methods['0'] = (function OverTimeList() { self.loadOverTimeList(); })();
+      methods['1'] = (function OverManList() { self.loadOverManList(); });
+      methods['2'] = (function LimitRegionList() { self.loadLimitRegionList(); });
+      methods['3'] = (function staffCallList() { self.loadStaffCallList(); });
+
+      methods[this.alarmType]();
+    },
+    /* 超时报警 */
+    loadOverTimeList () {
+      initPagination('overTimePagingBox', 'overTimePaging');
+      this.loadOverTimeListPaging(null);
+    },
+    loadOverTimeListPaging (page) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      page = page || 1;
+      axios.post('/history/alarm/type/' + self.alarmType + '/p/' + page, params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.resultListCache.resultList = data.staffList;
+                self.resultListCache.total = data.total;
+
+                $("#overTimePaging").page({
+                  total: self.resultListCache.total,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadOverTimeListPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /* 超员报警 */
+    loadOverManList () {
+      initPagination('overManPagingBox', 'overManPaging');
+      this.loadOverManListPaging(null);
+    },
+    loadOverManListPaging (page) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      page = page || 1;
+      axios.post('/history/alarm/type/' + self.alarmType + '/p/' + page, params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.resultListCache.resultList = data.staffList;
+                self.resultListCache.total = data.total;
+
+                $("#overManPaging").page({
+                  total: self.resultListCache.total,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadOverTimeListPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /* 限制区域报警 */
+    loadLimitRegionList () {
+      initPagination('limitRegionPagingBox', 'limitRegionPaging');
+      this.loadOverManListPaging(null);
+    },
+    loadLimitRegionListPaging (page) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      page = page || 1;
+      axios.post('/history/alarm/type/' + self.alarmType + '/p/' + page, params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.resultListCache.resultList = data.staffList;
+                self.resultListCache.total = data.total;
+
+                $("#limitRegionPaging").page({
+                  total: self.resultListCache.total,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadOverTimeListPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /* 呼叫报警 */
+    loadStaffCallList () {
+      initPagination('staffCallPagingBox', 'staffCallPaging');
+      this.loadOverManListPaging(null);
+    },
+    loadStaffCallListPaging (page) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      page = page || 1;
+      axios.post('/history/alarm/type/' + self.alarmType + '/p/' + page, params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.resultListCache.resultList = data.staffList;
+                self.resultListCache.total = data.total;
+
+                $("#staffCallPaging").page({
+                  total: self.resultListCache.total,
+                  pageSize: 6,
+                  prevBtnText: '上一页',
+                  nextBtnText: '下一页',
+                  showInfo: true,
+                  infoFormat: '{start} ~ {end}条，共{total}条',
+                }).on("pageClicked", function (event, pageNumber) {
+                  self.loadOverTimeListPaging(pageNumber + 1);
+                });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
     }
   }
 };

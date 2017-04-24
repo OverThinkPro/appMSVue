@@ -14,46 +14,46 @@
         <div class="search-bar">
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" id="unit" name="">
+              <select class="form-control refresh" id="unitId" name="">
                 <option value="">- 请选择部门 -</option>
-                <option value="">掘进1队</option>
-                <option value="">掘进2队</option>
+                <option v-if="unitList != null" v-for="(unit, index) in unitList"
+                    :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
               </select>
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">员工姓名</span>
-              <input class="form-control refresh" type="text" name="" value="">
+              <input id="staffName" class="form-control refresh" type="text" name="">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">员工编号</span>
-              <input class="form-control refresh" type="text" name="" value="">
+              <input id="staffId" class="form-control refresh" type="text" name="">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">定位卡号</span>
-              <input class="form-control refresh" type="text" name="" value="">
+              <input id="cardId" class="form-control refresh" type="text" name="" value="">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" id="region" name="">
+              <select class="form-control refresh" id="regionId" name="">
                 <option value="">- 请选择区域 -</option>
-                <option value="">A平面</option>
-                <option value="">A平面</option>
+                <option v-if="regionList != null" v-for="(region, index) in regionList"
+                    :key="region.key" :value="region.regionId">{{ region.regionName }}</option>
               </select>
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" id="reader" name="">
+              <select class="form-control refresh" id="readerId" name="">
                 <option value="">- 请选择定位分站 -</option>
-                <option value="">分站1</option>
-                <option value="">分站2</option>
+                <option v-if="readerList != null" v-for="(reader, index) in readerList"
+                    :key="reader.key" :value="reader.readerId">{{ reader.readerName }}</option>
               </select>
             </div>
           </div>
@@ -64,7 +64,7 @@
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-button">
-              <button class="btn btn-primary" type="button"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+              <button class="btn btn-primary" type="button" @click="doInSearchOper()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(staff, index) in staffList">
+                  <tr v-if="staffListCache.staffList != null" v-for="(staff, index) in staffListCache.staffList">
                     <td>{{ index + 1 }}</td>
                     <td>{{ staff.name }}</td>
                     <td>{{ staff.no }}</td>
@@ -113,15 +113,7 @@
                 </tbody>
               </table>
               <nav class="pagination-box">
-                <ul class="pagination">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
+                <div class="pagination"></div>
               </nav>
             </div>
           </div>
@@ -137,66 +129,34 @@
 <script>
 import initLoad from '../../assets/script/sidemenu';
 import ol from 'openlayers/dist/ol';
+import axios from 'axios';
+import bootbox from 'bootbox';
 
 export default {
   name: 'insearch',
   data () {
     return {
-      staffList: [
-        {
-          name: '王梓良',
-          no: '001',
-          cardId: '2001001',
-          unit: '采掘1队',
-          region: '1#工作面',
-          reader: '1#分站'
-        },
-        {
-          name: '王梓良',
-          no: '001',
-          cardId: '2001001',
-          unit: '采掘1队',
-          region: '1#工作面',
-          reader: '1#分站'
-        },
-        {
-          name: '王梓良',
-          no: '001',
-          cardId: '2001001',
-          unit: '采掘1队',
-          region: '1#工作面',
-          reader: '1#分站'
-        },
-        {
-          name: '王梓良',
-          no: '001',
-          cardId: '2001001',
-          unit: '采掘1队',
-          region: '1#工作面',
-          reader: '1#分站'
-        },
-        {
-          name: '王梓良',
-          no: '001',
-          cardId: '2001001',
-          unit: '采掘1队',
-          region: '1#工作面',
-          reader: '1#分站'
-        },
-        {
-          name: '王梓良',
-          no: '001',
-          cardId: '2001001',
-          unit: '采掘1队',
-          region: '1#工作面',
-          reader: '1#分站'
-        }
-      ]
+      staffListCache: {
+        staffList: [],
+        total: 0
+        // currentPage: 0
+      },
+      staffMapCache: {
+        staffList: [],
+        total: 0
+      },
+      unitList: [],
+      regionList: [],
+      readerList: []
     };
   },
   mounted () {
     this.loadMap();
     initLoad();
+    this.loadStaffList();
+    this.defaultLoadUnitInfo();
+    this.defaultLoadRegionInfo();
+    this.defaultLoadReaderInfo();
   },
   methods: {
     clearSearch () {
@@ -227,6 +187,140 @@ export default {
             rotation: Math.PI / 6
           })
         });
+    },
+    defaultLoadUnitInfo () {
+      let self = this;
+      axios.get('/base/unit/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.unitList = data.unitList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    defaultLoadRegionInfo () {
+      let self = this;
+
+      axios.get('/base/region/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.regionList = data.regionList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                })
+              }
+            });
+    },
+    defaultLoadReaderInfo () {
+      let self = this;
+
+      axios.get('/base/reader/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.readerList = data.readerList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    doInSearchOper () {
+      this.loadStaffList(null);
+    },
+    getSearchParam () {
+      let params = {}, unitId, staffName, staffId, cardId, regionId, readerId;
+
+      unitId = $("#unitId").find("option:selected").val();
+      if (unitId) { params.unitId = unitId; }
+
+      staffName = $("#staffName").val();
+      if (staffName) { params.staffName = staffName; }
+
+      staffId = $("#staffId").val();
+      if (staffId) { params.staffId = staffId; }
+
+      cardId = $("#cardId").val();
+      if (cardId) { params.cardId = cardId; }
+
+      regionId = $("#regionId").find("option:selected").val();
+      if (regionId) { params.regionId = regionId; }
+
+      readerId = $("#readerId").find("option:selected").val();
+      if (readerId) { params.readerId = readerId; }
+
+      return params;
+    },
+    /* 实时查询员工信息列表 */
+    loadStaffList (page) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      page = page || 1;
+      axios.post('/realtime/staff/p/' + page, params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.staffListCache.staffList = data.staffList;
+                self.staffListCache.total = data.countTotalPages;
+
+                $(".pagination").page({
+                    total: self.staffListCache.total,
+                    pageSize: 6,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    // self.staffListCache.currentPage = pageNumber + 1;
+                    self.loadStaffList(pageNumber + 1);
+                  });
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /* 实时查询员工地图位置信息 */
+    loadStaffMap () {
+      let self = this;
+      let params = this.getSearchParam();
+
+      axios.post('/map/staff/count/', params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.staffMapCache.staffList = data.staffList;
+                self.staffMapCache.total = data.countTotalPages;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
     }
   }
 };

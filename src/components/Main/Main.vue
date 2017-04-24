@@ -26,8 +26,8 @@
             <div class="fr">
                 <div class="input-group">
                   <span>图层:</span>
-                  <input type="checkbox" /><span>人员位置&nbsp;&nbsp;</span>
-                  <input type="checkbox" /><span style="margin-right: 25px;">分站</span>
+                  <input type="checkbox" checked="checked" id="personLayer"/><span>人员位置&nbsp;&nbsp;</span>
+                  <input type="checkbox" checked="checked" id="readerLayer" /><span style="margin-right: 25px;">分站</span>
                 </div>
             </div>
           </div>
@@ -109,7 +109,7 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="modal-search-bar">
+              <!-- <div class="modal-search-bar">
                   <div class="ms-bar-select">
                     <select class="form-control">
                       <option value="">- 请选择区域 -</option>
@@ -118,8 +118,8 @@
                       </template>
                     </select>
                   </div>
-              </div>
-              <div class="hr"></div>
+              </div> -->
+              <!-- <div class="hr"></div> -->
               <div class="btn-box">
                 <button type="button" @click="insertEvacuateCallInfo()" class="btn btn-primary fl"><i class="glyphicon glyphicon-phone-alt"></i>&nbsp;呼叫</button>
               </div>
@@ -579,6 +579,7 @@ export default {
   name: "main",
   data() {
     return {
+      /* 报警类型,显示模态框时使用 */
       alarmTypes: {
         '超时报警': '#overtime_alarm_modal',
         '超员报警': '#overman_alarm_modal',
@@ -896,8 +897,28 @@ export default {
       this.$store.dispatch('insertEvacuateCallInfo', regionIdArr);
     },
     /* 回电呼叫 */
+    loadUnitList () {
+      let self = this;
+
+      self.unitList = [];
+      axios.get('/base/unit/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.unitList = data.unitList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
     loadCallbackInfo () {
       initPagination('callbackPagingBox', 'callbackPaging');
+      this.loadUnitList();
       this.loadCallbackInfoPaging(null);
     },
     loadCallbackInfoPaging (page) {
@@ -910,7 +931,7 @@ export default {
       // test unitId: , staffName: hss
       // params.unitId = 16,
       // params.staffName = 'hss';
-      axios.get('base/staff/count/p/' + page, JSON.stringify(params))
+      axios.get('/base/staff/count/p/' + page, JSON.stringify(params))
             .then((response) => {
               let meta = response.data.meta;
 
