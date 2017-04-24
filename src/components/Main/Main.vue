@@ -168,14 +168,14 @@
             <div class="modal-table-box outside-box">
               <div class="modal-search-bar">
                 <div class="ms-bar-select fl">
-                  <select class="form-control refresh">
+                  <select id="unitSelectVal" class="form-control refresh">
                     <option value="">- 请选择部门 -</option>
                     <option v-if="unitList != null" v-for="(unit, index) in unitList" :key="unit.key" :value="unit.unit_id">{{ unit.unit_name }}</option>
                   </select>
                 </div>
                 <div class="input-group ms-bar-input fl">
                     <span class="input-group-addon">员工姓名</span>
-                    <input type="text" class="form-control refresh" />
+                    <input id="staffNameVal" type="text" class="form-control refresh" />
                 </div>
                 <div class="btn-group input-group ms-bar-button fr">
                   <button type="button" @click="clearSearchInfo()" class="btn btn-default"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
@@ -573,6 +573,7 @@ import bootbox from 'bootbox/bootbox.min';
 import axios from 'axios';
 import fullscreen from '../../assets/script/fullscreen';
 import { initPagination } from '../../assets/script/initplugin';
+import { checkOnListener } from '../../assets/script/listener';
 
 export default {
   name: "main",
@@ -610,7 +611,42 @@ export default {
   },
   methods: {
     initEvent () {
+      $("input[name='checkAllStaff']").click(function() {
+        let child = $("input[name='staff']");
+        if (this.checked) {
+          child.each(function() {
+            this.checked = true;
+          });
+        } else {
+          child.each(function() {
+            this.checked = false;
+          });
+        }
+      });
 
+      // $(":checkbox").prop("indeterminate", true);
+      // var $check = $("input[type=checkbox]"), el;
+      //   $check.data('checked', 0).click(function(e) {
+      //       el = $(this);
+      //       switch(el.data('checked')) {
+      //           // unchecked, going indeterminate
+      //           case 0:
+      //               el.data('checked',1);
+      //               el.prop('indeterminate',true);
+      //               break;
+      //           // indeterminate, going checked
+      //           case 1:
+      //               el.data('checked',2);
+      //               el.prop('indeterminate',false);
+      //               el.prop('checked',true);
+      //               break;
+      //           // checked, going unchecked
+      //           default:
+      //               el.data('checked',0);
+      //               el.prop('indeterminate',false);
+      //               el.prop('checked',false);
+      //       }
+      //   });
     },
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
@@ -636,6 +672,11 @@ export default {
   					rotation: Math.PI / 6
   				})
   			});
+    },
+    /* 清除查询条件内容 */
+    clearSearchInfo () {
+      $("input.refresh").val("");
+      $("select.refresh").children('option').eq(0).prop('selected', true);
     },
     /* 查询矿井基本信息 */
     loadCoalmineInfo () {
@@ -856,7 +897,6 @@ export default {
     },
     /* 回电呼叫 */
     loadCallbackInfo () {
-      // this.$store.dispatch('countStaffInfo', null);
       initPagination('callbackPagingBox', 'callbackPaging');
       this.loadCallbackInfoPaging(null);
     },
@@ -865,9 +905,11 @@ export default {
       let params = {};
       page = page || 1;
 
+      params.unitId = $('#unitSelectVal').children('option:selected').val();
+      params.staffName = $("#staffNameVal").val();
       // test unitId: , staffName: hss
-      params.unitId = 16,
-      params.staffName = 'hss';
+      // params.unitId = 16,
+      // params.staffName = 'hss';
       axios.get('base/staff/count/p/' + page, JSON.stringify(params))
             .then((response) => {
               let meta = response.data.meta;
