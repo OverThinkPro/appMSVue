@@ -16,6 +16,8 @@
             <div class="ss-bar-select">
               <select id="unitId" class="form-control refresh">
                 <option value="">- 请选择部门 -</option>
+                <option v-if="unitList != null" v-for="(unit, index) in unitList"
+                    :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
               </select>
             </div>
           </div>
@@ -32,15 +34,13 @@
             </div>
           </div>
           <div class="ss-bar-line">
-            <div class="input-group ss-bar-input">
-              <span class="input-group-addon">开始时间</span>
-              <input id="startTime" class="form-control refresh" type="text">
+            <div class="ss-bar-input">
+              <input id="startTime" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择开始时间">
             </div>
           </div>
           <div class="ss-bar-line">
-            <div class="input-group ss-bar-input">
-              <span class="input-group-addon">结束时间</span>
-              <input id="endTime" class="form-control refresh" type="text">
+            <div class="ss-bar-input">
+              <input id="endTime" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择结束时间">
             </div>
           </div>
           <div class="ss-bar-line">
@@ -112,6 +112,7 @@ import ol from 'openlayers';
 import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
 import bootbox from 'bootbox/bootbox.min';
+import jeDate from '../../assets/script/jedate/jquery.jedate.min';
 
 export default {
   name: 'replay',
@@ -120,14 +121,28 @@ export default {
       staffListCache: {
         staffList: [],
         total: 0
-      }
+      },
+      unitList: []
     };
   },
   mounted () {
     this.loadMap();
     initLoad();
+    this.initEvent();
+    this.defaultLoadUnit();
   },
   methods: {
+    initEvent () {
+      $("#startTime").jeDate({
+        format: "YYYY-MM-DD hh:mm:ss",
+        isTime: true
+      });
+
+      $("#endTime").jeDate({
+        format: "YYYY-MM-DD hh:mm:ss",
+        isTime: true
+      });
+    },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
@@ -156,6 +171,24 @@ export default {
             rotation: Math.PI / 6
           })
         });
+    },
+    /* 默认查询 */
+    defaultLoadUnit () {
+      let self = this;
+      axios.get('/base/unit/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.unitList = data.unitList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
     },
     getSearchParam () {
       let params = {},
@@ -228,6 +261,8 @@ export default {
 </script>
 
 <style lang="css">
+@import '../../assets/script/jedate/skin/jedate.css';
+
 #replay {
     width: 100%;
 }

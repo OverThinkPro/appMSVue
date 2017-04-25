@@ -70,16 +70,8 @@
                 </tr>
               </tbody>
             </table>
-            <nav class="pagination-box">
-              <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">&raquo;</a></li>
-              </ul>
+            <nav class="pagination-box" id="unitPagingBox">
+              <div id="unitPaging" class="pagination"></div>
             </nav>
           </div>
         </div>
@@ -196,6 +188,8 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
+import axios from 'axios';
+import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
 
 export default {
   name: 'unit',
@@ -208,36 +202,7 @@ export default {
         unitName: '掘进1队',
         remark: '机电科机电科机电科机电科机电科'
       },
-      unitList: [
-        {
-          unitId: '1000001',
-          unitName: '掘进1队',
-          unitAbbr: '掘1',
-          telephone: '18435156270',
-          remark: '掘进'
-        },
-        {
-          unitId: '1000001',
-          unitName: '掘进1队',
-          unitAbbr: '掘1',
-          telephone: '18435156270',
-          remark: '掘进'
-        },
-        {
-          unitId: '1000001',
-          unitName: '掘进1队',
-          unitAbbr: '掘1',
-          telephone: '18435156270',
-          remark: '掘进'
-        },
-        {
-          unitId: '1000001',
-          unitName: '掘进1队',
-          unitAbbr: '掘1',
-          telephone: '18435156270',
-          remark: '掘进'
-        }
-      ]
+      unitList: []
     }
   },
   mounted () {
@@ -260,6 +225,9 @@ export default {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
+    defaultLoadUnitTree () {
+      
+    },
     deleteUnit () {
       bootbox.confirm({
         message: '部门一旦删除，不可恢复，是否确定删除？',
@@ -276,11 +244,25 @@ export default {
         }
       });
     }
-  }
+  },
+  loadUnitListPaging (page) {
+    $("#unitPaging").page({
+      total: 6,
+      pageSize: 6,
+      prevBtnText: '上一页',
+      nextBtnText: '下一页',
+      showInfo: true,
+      infoFormat: '{start} ~ {end}条，共{total}条',
+    }).on("pageClicked", function (event, pageNumber) {
+      self.loadUnitListPaging(pageNumber + 1);
+    });
+  },
 }
 </script>
 
 <style lang="css" scoped>
+@import '../../assets/script/ztree/zTreeStyle.css';
+
 #unit {
   width: 100%;
 }

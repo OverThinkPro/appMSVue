@@ -170,7 +170,7 @@
                 <div class="ms-bar-select fl">
                   <select id="unitSelectVal" class="form-control refresh">
                     <option value="">- 请选择部门 -</option>
-                    <option v-if="unitList != null" v-for="(unit, index) in unitList" :key="unit.key" :value="unit.unit_id">{{ unit.unit_name }}</option>
+                    <option v-if="unitList != null" v-for="(unit, index) in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
                   </select>
                 </div>
                 <div class="input-group ms-bar-input fl">
@@ -625,6 +625,9 @@ export default {
         }
       });
 
+      let self = this;
+      $("#callback_modal").on('shown.bs.modal', self.loadUnitList());
+
       // $(":checkbox").prop("indeterminate", true);
       // var $check = $("input[type=checkbox]"), el;
       //   $check.data('checked', 0).click(function(e) {
@@ -918,7 +921,6 @@ export default {
     },
     loadCallbackInfo () {
       initPagination('callbackPagingBox', 'callbackPaging');
-      this.loadUnitList();
       this.loadCallbackInfoPaging(null);
     },
     loadCallbackInfoPaging (page) {
@@ -926,12 +928,14 @@ export default {
       let params = {};
       page = page || 1;
 
-      params.unitId = $('#unitSelectVal').children('option:selected').val();
+      params.unitId = $('#unitSelectVal').find('option:selected').val();
       params.staffName = $("#staffNameVal").val();
+
+      console.log("params: ", params);
       // test unitId: , staffName: hss
       // params.unitId = 16,
       // params.staffName = 'hss';
-      axios.get('/base/staff/count/p/' + page, JSON.stringify(params))
+      axios.get('/base/staff/count/p/' + page, { params: params})
             .then((response) => {
               let meta = response.data.meta;
 
