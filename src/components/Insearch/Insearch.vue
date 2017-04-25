@@ -138,6 +138,7 @@ export default {
   data () {
     return {
       insearchMap: {},
+      currentlayer: {},
       staffListCache: {
         staffList: [],
         total: 0
@@ -186,6 +187,10 @@ export default {
             minZoom: 6,
             maxZoom: 12
           })
+        });
+        this.insearchMap.on('click', function (evt) {
+          var point = evt.coordinate; //鼠标单击点坐标
+          alert(point);
         });
     },
     defaultLoadUnitInfo () {
@@ -242,8 +247,12 @@ export default {
             });
     },
     doInSearchOper () {
+      let self = this;
       initPagination('staffPagingBox', 'staffPaging');
       this.loadStaffList(null);
+      setInterval(function() {
+        self.loadStaffMap();
+      }, 3000);
     },
     getSearchParam () {
       let params = {}, unitId, staffName, staffId, cardId, regionId, readerId;
@@ -315,8 +324,7 @@ export default {
               if (meta.success) {
                 let data = response.data.data;
 
-                self.staffMapCache.staffList = data.staffList;
-                self.staffMapCache.total = data.countTotalPages;
+                self.staffMapCache.staffList = data.staffPointList;
 
                 // 渲染人员位置图层
                 self.doMapPointLayer();
@@ -330,7 +338,66 @@ export default {
     doMapPointLayer () {
       let self = this;
 
-      
+      let featureList = new Array();
+      self.staffMapCache.staffList.forEach(function(staff, index) {
+        let geometry = JSON.parse(staff.point),
+            properties = { "name": staff.staff_name, "id": staff.staff_id, "staffInfoId": staff.staff_info_id};
+
+        // 随机数仿真测试
+        geometry.coordinates[0] += index * 100000 * Math.random();
+        geometry.coordinates[1] += index * 1000 * Math.random();
+        featureList.push(createPointFeature(geometry, properties));
+      });
+
+
+      let featureCollection = createFeatureCollection(featureList);
+      let pointSource = new ol.source.Vector({
+        features: new ol.format.GeoJSON().readFeatures(featureCollection)
+      });
+      let pointLayer = new ol.layer.Vector({
+        source: pointSource,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.2)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#ffcc33',
+                width: 2
+            }),
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({
+                    color: '#6699CC'
+                })
+            })
+        })
+      });
+      if (self.currentlayer) {
+        self.insearchMap.removeLayer(self.currentlayer);
+      }
+      self.currentlayer = pointLayer;
+
+      self.insearchMap.addLayer(pointLayer);
+      let newPoint = JSON.parse(self.staffMapCache.staffList[0].point);
+      let newCenter = newPoint.coordinates;
+      self.insearchMap.getView().setCenter(newCenter);
+
+      function createPointFeature(geometry, properties) {
+        let feature = {
+          "type": "Feature",
+          "geometry": geometry,
+          "properties": properties
+        };
+        return feature;
+      }
+
+      function createFeatureCollection(features) {
+        let featureCollection = {
+          "type": "FeatureCollection",
+          features: features
+        };
+        return featureCollection;
+      }
     }
   }
 };

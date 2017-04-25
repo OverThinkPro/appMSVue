@@ -26,8 +26,8 @@
             <div class="fr">
                 <div class="input-group">
                   <span>图层:</span>
-                  <input type="checkbox" checked="checked" id="personLayer"/><span>人员位置&nbsp;&nbsp;</span>
-                  <input type="checkbox" checked="checked" id="readerLayer" /><span style="margin-right: 25px;">分站</span>
+                  <input type="checkbox" checked="checked" value="stafflayer" id="staffLayer"/><span>人员位置&nbsp;&nbsp;</span>
+                  <input type="checkbox" checked="checked" value="readerlayer" id="readerLayer" /><span style="margin-right: 25px;">分站</span>
                 </div>
             </div>
           </div>
@@ -579,6 +579,9 @@ export default {
   name: "main",
   data() {
     return {
+      realMap: {},
+      stafflayer: {},
+      readerlayer: {},
       /* 报警类型,显示模态框时使用 */
       alarmTypes: {
         '超时报警': '#overtime_alarm_modal',
@@ -674,7 +677,7 @@ export default {
   				minZoom: 8,
   				zoom: 3
   			});
-  			var map = new ol.Map({
+  			this.realMap = new ol.Map({
   				target: 'map',
   				layers: [
   					new ol.layer.Tile({
@@ -686,9 +689,11 @@ export default {
   					zoom: 8,
   					minZoom: 6,
   					maxZoom: 12,
-  					rotation: Math.PI / 6
   				})
   			});
+    },
+    doMapRealInfo () {
+      
     },
     /* 清除查询条件内容 */
     clearSearchInfo () {
