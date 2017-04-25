@@ -612,3 +612,7 @@ table tbody {
 .clear-border-radius {border-radius: 0;}
 .clear-radius-top {border-top-left-radius: 0; border-top-right-radius: 0;}
 .clear-radius-bottom {border-bottom-left-radius: 0; border-bottom-right-radius: 0;}
+
+[v-cloak] {
+  display: none;
+}

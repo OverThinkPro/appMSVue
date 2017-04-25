@@ -21,11 +21,11 @@
             <div class="search-bar">
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">部门名称</span>
-                <input type="text" class="form-control refresh">
+                <input id="unitName" type="text" class="form-control refresh">
               </div>
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">部门编号</span>
-                <input type="text" class="form-control refresh">
+                <input id="unitId" type="text" class="form-control refresh">
               </div>
               <div class="input-group btn-group fr">
                 <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
@@ -190,6 +190,7 @@
 import bootbox from 'bootbox/bootbox.min';
 import axios from 'axios';
 import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
+import { initPagination } from '../../assets/script/initplugin';
 
 export default {
   name: 'unit',
@@ -202,7 +203,10 @@ export default {
         unitName: '掘进1队',
         remark: '机电科机电科机电科机电科机电科'
       },
-      unitList: []
+      unitListCache: {
+        unitList: [],
+        total: 0
+      }
     }
   },
   mounted () {
@@ -225,8 +229,55 @@ export default {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
+    getSearchParam () {
+      let params = {},
+          unitId, unitName;
+
+      unitId = $("#unitId").val();
+      if (unitId) { params.unitId = unitId; }
+
+      unitName = $("#unitName").val();
+      if (unitName) { params.unitName = unitName; }
+
+      return params;
+    },
     defaultLoadUnitTree () {
-      
+
+    },
+    defaultLoadUnitTable () {
+      initPagination('unitPagingBox', 'unitPaging');
+      this.loadUnitListPaging(null);
+    },
+    loadUnitListPaging (page, isPaging) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      axios.get('/p/' + page, { params: params })
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                  let data = response.data.data;
+
+                  self.unitListCache.unitList = data.unitList;
+                  self.unitListCache.total = data.total;
+
+                  if (!isPaging) {
+                    $("#unitPaging").page({
+                      total: self.unitListCache.total,
+                      pageSize: 10,
+                      prevBtnText: '上一页',
+                      nextBtnText: '下一页',
+                      showInfo: true,
+                      infoFormat: '{start} ~ {end}条，共{total}条',
+                    }).on("pageClicked", function (event, pageNumber) {
+                      self.loadUnitListPaging(pageNumber + 1, true);
+                    });
+                  }
+                }
+              }
+            });
     },
     deleteUnit () {
       bootbox.confirm({
@@ -246,16 +297,7 @@ export default {
     }
   },
   loadUnitListPaging (page) {
-    $("#unitPaging").page({
-      total: 6,
-      pageSize: 6,
-      prevBtnText: '上一页',
-      nextBtnText: '下一页',
-      showInfo: true,
-      infoFormat: '{start} ~ {end}条，共{total}条',
-    }).on("pageClicked", function (event, pageNumber) {
-      self.loadUnitListPaging(pageNumber + 1);
-    });
+
   },
 }
 </script>

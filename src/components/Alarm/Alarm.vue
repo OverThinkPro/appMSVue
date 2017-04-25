@@ -361,16 +361,18 @@ export default {
                 self.resultListCache.resultList = data.alarmResult;
                 self.resultListCache.total = data.total;
 
-                $("#overtimePaging").page({
-                  total: self.resultListCache.total,
-                  pageSize: 10,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条'
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadOverTimeListPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#overtimePaging").page({
+                    total: self.resultListCache.total,
+                    pageSize: 10,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条'
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadOverTimeListPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -383,7 +385,7 @@ export default {
       initPagination('overmanPagingBox', 'overmanPaging');
       this.loadOverManListPaging(null);
     },
-    loadOverManListPaging (page) {
+    loadOverManListPaging (page, isPaging) {
       let self = this;
       let params = this.getSearchParam();
 
@@ -399,16 +401,18 @@ export default {
                 self.resultListCache.resultList = data.alarmResult;
                 self.resultListCache.total = data.total;
 
-                $("#overmanPaging").page({
-                  total: self.resultListCache.total,
-                  pageSize: 10,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadOverManListPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#overmanPaging").page({
+                    total: self.resultListCache.total,
+                    pageSize: 10,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadOverManListPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -421,7 +425,7 @@ export default {
       initPagination('limitregionPagingBox', 'limitregionPaging');
       this.loadLimitRegionListPaging(null);
     },
-    loadLimitRegionListPaging (page) {
+    loadLimitRegionListPaging (page, isPaging) {
       let self = this;
       let params = this.getSearchParam();
 
@@ -437,16 +441,18 @@ export default {
                 self.resultListCache.resultList = data.alarmResult;
                 self.resultListCache.total = data.total;
 
-                $("#limitregionPaging").page({
-                  total: self.resultListCache.total,
-                  pageSize: 10,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadLimitRegionListPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#limitregionPaging").page({
+                    total: self.resultListCache.total,
+                    pageSize: 10,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadLimitRegionListPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -459,7 +465,7 @@ export default {
       initPagination('staffcallPagingBox', 'staffcallPaging');
       this.loadStaffCallListPaging(null);
     },
-    loadStaffCallListPaging (page) {
+    loadStaffCallListPaging (page, isPaging) {
       let self = this;
       let params = this.getSearchParam();
 
@@ -475,16 +481,18 @@ export default {
                 self.resultListCache.resultList = data.alarmResult;
                 self.resultListCache.total = data.total;
 
-                $("#staffcallPaging").page({
-                  total: self.resultListCache.total,
-                  pageSize: 10,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadStaffCallListPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#staffcallPaging").page({
+                    total: self.resultListCache.total,
+                    pageSize: 10,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadStaffCallListPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message

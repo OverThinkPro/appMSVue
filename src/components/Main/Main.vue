@@ -423,8 +423,8 @@
                     </tr>
                   </tbody>
                 </table>
-                <nav class="pagination-box" id="">
-                  <div id="" class="pagination"></div>
+                <nav class="pagination-box" id="overtimePagingBox">
+                  <div id="overtimePaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -471,8 +471,8 @@
                     </tr>
                   </tbody>
                 </table>
-                <nav class="pagination-box">
-                  <div id="" class="pagination"></div>
+                <nav class="pagination-box" id="overmanPagingBox">
+                  <div id="overmanPaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -508,8 +508,8 @@
                   </thead>
                   <tbody></tbody>
                 </table>
-                <nav class="pagination-box">
-                  <div id="" class="pagination"></div>
+                <nav class="pagination-box" id="limitregionPagingBox">
+                  <div id="limitregionPaging" class="pagination"></div>
                 </nav>
               </div>
             </div>
@@ -625,6 +625,19 @@ export default {
         }
       });
 
+      $("input[name='checkAllRegion']").click(function() {
+        let child = $("input[name='region']");
+        if (this.checked) {
+          child.each(function() {
+            this.checked = true;
+          });
+        } else {
+          child.each(function() {
+            this.checked = false;
+          });
+        }
+      });
+
       let self = this;
       $("#callback_modal").on('shown.bs.modal', self.loadUnitList());
 
@@ -701,7 +714,7 @@ export default {
       initPagination('staffUnitPagingBox', 'staffUnitPaging');
       this.loadUnitStaffPaging(null);
     },
-    loadUnitStaffPaging (page) {
+    loadUnitStaffPaging (page, isPaging) {
       var self = this;
       page = page ? page : 1;
       axios.get('/realtime/staff/unit/' + this.unitId + '/p/' + page)
@@ -714,16 +727,18 @@ export default {
                 self.staffListCache.realStaffList = data.tlStaffList;
                 self.staffListCache.countTotalPages = data.countTotalPages;
 
-                $("#staffUnitPaging").page({
-                  total: self.staffListCache.countTotalPages,
-                  pageSize: 6,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadUnitStaffPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#staffUnitPaging").page({
+                    total: self.staffListCache.countTotalPages,
+                    pageSize: 6,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadUnitStaffPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -741,7 +756,7 @@ export default {
       initPagination('regionStaffPagingBox', 'regionStaffPaging');
       this.loadRegionStaffPaging(null);
     },
-    loadRegionStaffPaging (page) {
+    loadRegionStaffPaging (page, isPaging) {
       let self = this;
       page = page ? page : 1;
       axios.get('/realtime/staff/region/' + this.regionId + '/p/' + page)
@@ -754,17 +769,19 @@ export default {
                 self.staffListCache.realStaffList = data.tlStaffList;
                 self.staffListCache.countTotalPages = data.countTotalPages;
 
-                $("#regionStaffPaging").page({
-                  total: self.staffListCache.countTotalPages,
-                  pageSize: 6,
-                  pageBtnCount: 5,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadRegionStaffPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#regionStaffPaging").page({
+                    total: self.staffListCache.countTotalPages,
+                    pageSize: 6,
+                    pageBtnCount: 5,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadRegionStaffPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -782,7 +799,7 @@ export default {
       initPagination('evacuateDetailPagingBox', 'evacuateDetailPaging');
       this.loadEvacuateInfoPaging(null);
     },
-    loadEvacuateInfoPaging (page) {
+    loadEvacuateInfoPaging (page, isPaging) {
       let self = this;
 
       page = (page ? page : 1);
@@ -798,17 +815,19 @@ export default {
                 self.staffListCache.calledNum = data.calledNum;
                 self.staffListCache.callCount = data.callCount;
 
-                $("#evacuateDetailPaging").page({
-                  total: self.staffListCache.countTotalPages,
-                  pageSize: 6,
-                  pageBtnCount: 5,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadEvacuateInfoPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#evacuateDetailPaging").page({
+                    total: self.staffListCache.countTotalPages,
+                    pageSize: 6,
+                    pageBtnCount: 5,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadEvacuateInfoPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -823,7 +842,7 @@ export default {
       initPagination('alarmInfoPagingBox', 'alarmInfoPaging');
       this.loadAlarmInfoPaging(null);
     },
-    loadAlarmInfoPaging (page) {
+    loadAlarmInfoPaging (page, isPaging) {
       let self = this;
       page = page || 1;
       axios.get('/realtime/alarm/' + this.alarmTypeId + '/p/' + page)
@@ -836,17 +855,19 @@ export default {
                 self.staffListCache.realStaffList = data.staffAlarmList;
                 self.staffListCache.countTotalPages = data.countTotalPages;
 
-                $("#alarmInfoPaging").page({
-                  total: self.staffListCache.countTotalPages,
-                  pageSize: 6,
-                  pageBtnCount: 5,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadAlarmInfoPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#alarmInfoPaging").page({
+                    total: self.staffListCache.countTotalPages,
+                    pageSize: 6,
+                    pageBtnCount: 5,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadAlarmInfoPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -859,7 +880,7 @@ export default {
       initPagination('regionCountPagingBox', 'regionCountPaging');
       this.loadRegionCountPaging(null);
     },
-    loadRegionCountPaging (page) {
+    loadRegionCountPaging (page, isPaging) {
       let self = this;
       page = page || 1;
       axios.get('/base/region/count/' + '/p/' + page)
@@ -872,16 +893,18 @@ export default {
                  self.staffListCache.realStaffList = data.realStaffByRegion;
                  self.staffListCache.countTotalPages = data.countTotalPages;
 
-                $("#regionCountPaging").page({
-                  total: self.staffListCache.countTotalPages,
-                  pageSize: 6,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadRegionCountPaging(pageNumber + 1);
-                });
+                 if (!isPaging) {
+                   $("#regionCountPaging").page({
+                     total: self.staffListCache.countTotalPages,
+                     pageSize: 6,
+                     prevBtnText: '上一页',
+                     nextBtnText: '下一页',
+                     showInfo: true,
+                     infoFormat: '{start} ~ {end}条，共{total}条',
+                   }).on("pageClicked", function (event, pageNumber) {
+                     self.loadRegionCountPaging(pageNumber + 1, true);
+                   });
+                 }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -892,6 +915,12 @@ export default {
     insertEvacuateCallInfo () {
       let regionIdArr = [];
 
+      if ($("input[name='region']").filter(":checked").length <= 0) {
+        bootbox.alert({
+          message: '请先选择至少一个区域,再进行呼叫操作!'
+        });
+        return;
+      }
       $("input[name='region']").filter(":checked").each(function() {
         regionIdArr.push($(this).val());
       });
@@ -923,7 +952,7 @@ export default {
       initPagination('callbackPagingBox', 'callbackPaging');
       this.loadCallbackInfoPaging(null);
     },
-    loadCallbackInfoPaging (page) {
+    loadCallbackInfoPaging (page, isPaging) {
       let self = this;
       let params = {};
       page = page || 1;
@@ -931,7 +960,7 @@ export default {
       params.unitId = $('#unitSelectVal').find('option:selected').val();
       params.staffName = $("#staffNameVal").val();
 
-      console.log("params: ", params);
+      // console.log("params: ", params);
       // test unitId: , staffName: hss
       // params.unitId = 16,
       // params.staffName = 'hss';
@@ -945,16 +974,18 @@ export default {
                 self.staffListCache.realStaffList = data.realStaffByCondition;
                 self.staffListCache.countTotalPages = data.countTotalPages;
 
-                $("#callbackPaging").page({
-                  total: self.staffListCache.countTotalPages,
-                  pageSize: 6,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadCallbackInfoPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#callbackPaging").page({
+                    total: self.staffListCache.countTotalPages,
+                    pageSize: 6,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadCallbackInfoPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -964,6 +995,13 @@ export default {
     },
     insertCallbackStaffInfo () {
       let staffIdArr = [];
+
+      if ($("input[name='staff']").filter(":checked").length <= 0) {
+        bootbox.alert({
+          message: '请先选择至少一个员工,再进行回电呼叫操作!'
+        });
+        return;
+      }
 
       $("input[name='staff']").filter(":checked").each(function() {
         staffIdArr.push($(this).val());

@@ -78,17 +78,21 @@
                 <thead>
                   <tr>
                     <th>序号</th>
+                    <th>姓名</th>
+                    <th>卡号</th>
                     <th>时间</th>
                     <th>位置</th>
                     <th>分站</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(staff, index) in staffListCache.staffList" :key="staff.key">
+                  <tr v-if="staffListCache.staffList != null" v-for="(staff, index) in staffListCache.staffList" :key="staff.key">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ staff.time }}</td>
-                    <td>{{ staff.position }}</td>
-                    <td>{{ staff.reader }}</td>
+                    <td>{{ staff.staffName }}</td>
+                    <td>{{ staff.cardId }}</td>
+                    <td>{{ staff.daqDate }}</td>
+                    <td>{{ staff.geoPoint }}</td>
+                    <td>{{ staff.readerName }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -122,7 +126,11 @@ export default {
         staffList: [],
         total: 0
       },
-      unitList: []
+      staffMapCache: {
+        staffList: []
+      },
+      unitList: [],
+      replayMap: {}
     };
   },
   mounted () {
@@ -135,12 +143,16 @@ export default {
     initEvent () {
       $("#startTime").jeDate({
         format: "YYYY-MM-DD hh:mm:ss",
-        isTime: true
+        isTime: true,
+        isinitVal: false
       });
 
       $("#endTime").jeDate({
         format: "YYYY-MM-DD hh:mm:ss",
-        isTime: true
+        isTime: true,
+        okfun: function(val) {
+
+        }
       });
     },
     clearSearch () {
@@ -150,13 +162,15 @@ export default {
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
         taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
-        beijing = ol.proj.fromLonLat([12950000, 4860000]);
+        beijing = ol.proj.fromLonLat([12950000, 4860000]),
+        center = ol.proj.fromLonLat([116.3908, 39]);
         var view = new ol.View({
-          center: taiyuan,
+          center: center,
           minZoom: 8,
           zoom: 3
         });
-        var map = new ol.Map({
+
+        this.replayMap = new ol.Map({
           target: 'map',
           layers: [
             new ol.layer.Tile({
@@ -164,11 +178,10 @@ export default {
             })
           ],
           view: new ol.View({
-            center: taiyuan,
+            center: center,
             zoom: 8,
             minZoom: 6,
-            maxZoom: 12,
-            rotation: Math.PI / 6
+            maxZoom: 12
           })
         });
     },
@@ -221,10 +234,20 @@ export default {
       initPagination('replayPagingBox', 'replayPaging');
       this.loadStaffListPaging(null);
     },
-    loadStaffListPaging (page) {
+    loadStaffListPaging (page, isPaging) {
       let self = this;
+
+      let staffName = $("#staffName").val();
+      let cardId = $("#cardId").val();
+      if (!staffName && !cardId) {
+        bootbox.alert({
+          message: '查询条件: 员工姓名和定位卡号不能同时为空!'
+        });
+        return ;
+      }
       let params = this.getSearchParam();
 
+      page = page || 1;
       axios.post("/history/staff/count/p/" + page, params)
             .then((response) => {
               let meta = response.data.meta;
@@ -232,19 +255,21 @@ export default {
               if (meta.success) {
                 let data = response.data.data;
 
-                self.staffListCache.staffList = data.staffList;
+                self.staffListCache.staffList = data.pastdocList;
                 self.staffListCache.total = data.total;
 
-                $("#replayPaging").page({
-                  total: self.staffListCache.total,
-                  pageSize: 6,
-                  prevBtnText: '上一页',
-                  nextBtnText: '下一页',
-                  showInfo: true,
-                  infoFormat: '{start} ~ {end}条，共{total}条',
-                }).on("pageClicked", function (event, pageNumber) {
-                  self.loadStaffListPaging(pageNumber + 1);
-                });
+                if (!isPaging) {
+                  $("#replayPaging").page({
+                    total: self.staffListCache.total,
+                    pageSize: 10,
+                    prevBtnText: '上一页',
+                    nextBtnText: '下一页',
+                    showInfo: true,
+                    infoFormat: '{start} ~ {end}条，共{total}条',
+                  }).on("pageClicked", function (event, pageNumber) {
+                    self.loadStaffListPaging(pageNumber + 1, true);
+                  });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -254,7 +279,98 @@ export default {
     },
     /* 轨迹回放地图 */
     loadStaffMap () {
+      let self = this;
 
+      let params = this.getSearchParam();
+
+      axios.post("/map/history/staff/count/", params)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.staffMapCache.staffList = data.listMapPoint;
+                // 在地图上显示轨迹
+                self.doMapPointLayer();
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    doMapPointLayer () {
+      let self = this;
+      let pointList = new Array();
+      var replayLayer = new ol.layer.Vector({
+          source: new ol.source.Vector({})
+      });
+
+      self.replayMap.addLayer(replayLayer);
+      // 获取全部坐标点
+      self.staffMapCache.staffList.forEach(function(staff, index) {
+        let x = staff.pointx + index, y = staff.pointy;
+        let pointFeature = new ol.Feature({
+          geometry: new ol.geom.Point(ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857'))
+        });
+
+        let propertiesList = new Array();
+        propertiesList.push(staff.staff_id, staff.staff_name, staff.staff_info_his_id, x, y);
+        pointFeature.setProperties(propertiesList);
+
+        if (pointFeature != null) {
+          pointList.push(pointFeature);
+        }
+      });
+
+      let j = 0;
+      let iconStyle = new ol.style.Style({
+          fill: new ol.style.Fill({ //矢量图层填充颜色，以及透明度
+            color: 'rgba(255, 255, 255, 0.6)'
+          }),
+          stroke: new ol.style.Stroke({ //边界样式
+            color: '#319FD3',
+            width: 10
+          }),
+          text: new ol.style.Text({ //文本样式
+            font: '30px Calibri,sans-serif',
+            fill: new ol.style.Fill({
+              color: '#000'
+            }),
+            stroke: new ol.style.Stroke({
+              color: '#fff',
+              width: 10
+            })
+          })
+      });
+
+      let newCenter = pointList[0].getGeometry().getCoordinates();
+      self.replayMap.getView().setCenter(newCenter);
+      var stopTime = setInterval(function() {
+        if (j + 1 <= pointList.length) {
+          if (j > 0) {
+            let doubleCoordinatePoint = new Array();
+            let coordinateFirst = pointList[j - 1].getGeometry().getCoordinates();
+            let coordinateSecond = pointList[j].getGeometry().getCoordinates();
+            doubleCoordinatePoint.push(coordinateFirst, coordinateSecond);
+
+            let lineString = new ol.geom.LineString(doubleCoordinatePoint);
+
+            let lineFeature = new ol.Feature({
+              geometry: lineString
+            });
+
+            replayLayer.getSource().addFeature(lineFeature);
+            pointList[j - 1].setStyle(null);
+          }
+          pointList[j].setStyle(iconStyle);
+          replayLayer.getSource().addFeature(pointList[j]);
+        } else {
+          clearInterval(stopTime);
+        }
+        j++;
+      }, 3000);
     }
   }
 };

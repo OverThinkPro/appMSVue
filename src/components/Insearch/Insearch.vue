@@ -93,7 +93,7 @@
                   <tr>
                     <th>序号</th>
                     <th>姓名</th>
-                    <th>编号</th>
+                    <!-- <th>编号</th> -->
                     <th>卡号</th>
                     <th>部门</th>
                     <th>区域</th>
@@ -103,17 +103,17 @@
                 <tbody>
                   <tr v-if="staffListCache.staffList != null" v-for="(staff, index) in staffListCache.staffList">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ staff.name }}</td>
-                    <td>{{ staff.no }}</td>
+                    <td>{{ staff.staffName }}</td>
+                    <!-- <td>{{ staff.cardId }}</td> -->
                     <td>{{ staff.cardId }}</td>
-                    <td>{{ staff.unit }}</td>
-                    <td>{{ staff.region }}</td>
-                    <td>{{ staff.reader }}</td>
+                    <td>{{ staff.unitName }}</td>
+                    <td>{{ staff.regionName }}</td>
+                    <td>{{ staff.readerName }}</td>
                   </tr>
                 </tbody>
               </table>
-              <nav class="pagination-box">
-                <div class="pagination"></div>
+              <nav class="pagination-box" id="staffPagingBox">
+                <div id="staffPaging" class="pagination"></div>
               </nav>
             </div>
           </div>
@@ -131,15 +131,16 @@ import initLoad from '../../assets/script/sidemenu';
 import ol from 'openlayers/dist/ol';
 import axios from 'axios';
 import bootbox from 'bootbox';
+import { initPagination } from '../../assets/script/initplugin';
 
 export default {
   name: 'insearch',
   data () {
     return {
+      insearchMap: {},
       staffListCache: {
         staffList: [],
         total: 0
-        // currentPage: 0
       },
       staffMapCache: {
         staffList: [],
@@ -153,7 +154,7 @@ export default {
   mounted () {
     this.loadMap();
     initLoad();
-    this.loadStaffList();
+    this.loadStaffList(null);
     this.defaultLoadUnitInfo();
     this.defaultLoadRegionInfo();
     this.defaultLoadReaderInfo();
@@ -172,7 +173,7 @@ export default {
           minZoom: 8,
           zoom: 3
         });
-        var map = new ol.Map({
+        this.insearchMap = new ol.Map({
           target: 'map',
           layers: [
             new ol.layer.Tile({
@@ -183,8 +184,7 @@ export default {
             center: taiyuan,
             zoom: 8,
             minZoom: 6,
-            maxZoom: 12,
-            rotation: Math.PI / 6
+            maxZoom: 12
           })
         });
     },
@@ -242,6 +242,7 @@ export default {
             });
     },
     doInSearchOper () {
+      initPagination('staffPagingBox', 'staffPaging');
       this.loadStaffList(null);
     },
     getSearchParam () {
@@ -268,7 +269,7 @@ export default {
       return params;
     },
     /* 实时查询员工信息列表 */
-    loadStaffList (page) {
+    loadStaffList (page, isPaging) {
       let self = this;
       let params = this.getSearchParam();
 
@@ -280,20 +281,21 @@ export default {
               if (meta.success) {
                 let data = response.data.data;
 
-                self.staffListCache.staffList = data.staffList;
-                self.staffListCache.total = data.countTotalPages;
+                self.staffListCache.staffList = data.tlStaffList;
+                self.staffListCache.total = data.total;
 
-                $(".pagination").page({
-                    total: self.staffListCache.total,
-                    pageSize: 6,
-                    prevBtnText: '上一页',
-                    nextBtnText: '下一页',
-                    showInfo: true,
-                    infoFormat: '{start} ~ {end}条，共{total}条',
-                  }).on("pageClicked", function (event, pageNumber) {
-                    // self.staffListCache.currentPage = pageNumber + 1;
-                    self.loadStaffList(pageNumber + 1);
-                  });
+                if (!isPaging) {
+                  $("#staffPaging").page({
+                      total: self.staffListCache.total,
+                      pageSize: 10,
+                      prevBtnText: '上一页',
+                      nextBtnText: '下一页',
+                      showInfo: true,
+                      infoFormat: '{start} ~ {end}条，共{total}条',
+                    }).on("pageClicked", function (event, pageNumber) {
+                      self.loadStaffList(pageNumber + 1, true);
+                    });
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
@@ -315,12 +317,20 @@ export default {
 
                 self.staffMapCache.staffList = data.staffList;
                 self.staffMapCache.total = data.countTotalPages;
+
+                // 渲染人员位置图层
+                self.doMapPointLayer();
               } else {
                 bootbox.alert({
                   message: meta.message
                 });
               }
             });
+    },
+    doMapPointLayer () {
+      let self = this;
+
+      
     }
   }
 };
