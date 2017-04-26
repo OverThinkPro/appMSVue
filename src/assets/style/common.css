@@ -359,6 +359,11 @@ select {
   min-height: 600px;
 }
 
+#map {
+  min-height: 600px;
+  max-height: 600px;
+}
+
 /* 页面主体部分包装盒样式（不包含查询条件） */
 .table-box {
   margin: 10px 0;

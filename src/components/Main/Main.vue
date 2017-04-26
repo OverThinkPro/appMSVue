@@ -16,24 +16,29 @@
             <button type="button" @click="fullScreen()" class="btn btn-primary fr" title="地图全屏查看">
               <i class="glyphicon glyphicon-fullscreen"></i>&nbsp;全屏查看
             </button>
-            <div class="input-group fr">
+            <!-- <div class="input-group fr">
               <select class="">
                 <option value="">-请选择工具-</option>
                 <option value="">标注</option>
                 <option value="">移动</option>
               </select>
-            </div>
+            </div> -->
             <div class="fr">
                 <div class="input-group">
                   <span>图层:</span>
-                  <input type="checkbox" checked="checked" value="stafflayer" id="staffLayer"/><span>人员位置&nbsp;&nbsp;</span>
-                  <input type="checkbox" checked="checked" value="readerlayer" id="readerLayer" /><span style="margin-right: 25px;">分站</span>
+                  <input type="checkbox" name="layers" checked="checked" value="stafflayer" id="staffLayer"/><span>人员位置&nbsp;&nbsp;</span>
+                  <input type="checkbox" name="layers" checked="checked" value="readerlayer" id="readerLayer" /><span style="margin-right: 25px;">分站</span>
                 </div>
             </div>
           </div>
         </div>
         <div class="map-box">
-          <div id="map"></div>
+          <div id="map">
+             <div id="popup" class="ol-popup">
+               <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+               <div id="popup-content"></div>
+             </div>
+          </div>
         </div>
       </div>
       <div class="main-right fl content-box">
@@ -66,7 +71,7 @@
             <label class="label-line-left">{{ unit.unit_name }}</label>
             <label class="label-line-right">
               <a href="javascript:void(0)" @click="loadUnitStaff(unit.unit_id)" data-toggle="modal" data-target="#unit_staff_modal">{{ unit.total }}人</a>
-              <a href="javascript:void(0)" @click="" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
+              <a href="javascript:void(0)" @click="loadMapStaffHighLight(unit.unit_id)" title="地图显示人员信息"><i class="glyphicon glyphicon-globe"></i></a>
             </label>
           </div>
         </div>
@@ -582,6 +587,17 @@ export default {
       realMap: {},
       stafflayer: {},
       readerlayer: {},
+      // 地图容器的缓存
+      mapCache: {
+        // 弹出框的缓存信息
+        popupInfo: {
+          container: {},
+          content: {},
+          closer: {}
+        },
+        popup: {}
+        //
+      },
       /* 报警类型,显示模态框时使用 */
       alarmTypes: {
         '超时报警': '#overtime_alarm_modal',
@@ -613,8 +629,14 @@ export default {
   computed: {
     ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm', 'pagination'])
   },
+  beforeDestroy () {
+    
+  },
   methods: {
     initEvent () {
+      let self = this;
+      /* 模态框中全选、取消全选功能 */
+      // 撤离呼叫模态框
       $("input[name='checkAllStaff']").click(function() {
         let child = $("input[name='staff']");
         if (this.checked) {
@@ -627,7 +649,7 @@ export default {
           });
         }
       });
-
+      // 回电呼叫
       $("input[name='checkAllRegion']").click(function() {
         let child = $("input[name='region']");
         if (this.checked) {
@@ -641,7 +663,6 @@ export default {
         }
       });
 
-      let self = this;
       $("#callback_modal").on('shown.bs.modal', self.loadUnitList());
 
       // $(":checkbox").prop("indeterminate", true);
@@ -667,8 +688,37 @@ export default {
       //               el.prop('checked',false);
       //       }
       //   });
+
+      /* Start map container element init */
+      self.mapCache = {
+        popupInfo: {
+          container: document.getElementById("popup"),
+          content: document.getElementById('popup-content'),
+          closer: document.getElementById('popup-closer')
+        },
+      };
+      self.mapCache.popup = new ol.Overlay(({
+        element: self.mapCache.popupInfo.container,
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        }
+      }));
+      self.mapCache.popupInfo.closer.onclick = function() {
+        self.mapCache.popup.setPosition(undefined);
+        self.mapCache.popupInfo.closer.blur();
+        return false;
+      };
+      /* End map container element init */
     },
+    /**
+     * Start map function module.
+     * description 地图功能模块
+     * author Zychaowill
+     */
     loadMap () {
+        let self = this;
+
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
   			taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
         beijing = ol.proj.fromLonLat([12950000, 4860000]);
@@ -691,10 +741,243 @@ export default {
   					maxZoom: 12,
   				})
   			});
+        this.loadMapStaffLayer();
+        this.readerlayer = new ol.layer.Vector({
+          source: new ol.source.Vector({})
+        });
+        this.regionLayer = new ol.layer.Vector({
+          source: new ol.source.Vector({})
+        });
+        this.realMap.addLayer(this.readerlayer);
+        this.realMap.addLayer(this.regionLayer);
+
+        this.realMap.addOverlay(this.mapCache.popup);
+
+        this.realMap.on('click', function(event) {
+          let coordinate = event.coordinate;
+          let feature = self.realMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+            return feature;
+          });
+          if (feature && feature.get('type') == 'Point') {
+            self.renderFeaturePopup(coordinate, feature);
+          }
+        });
+
+        this.addLayerChangeListener(document.getElementById('readerLayer'), this.readerlayer);
     },
+    /**
+     * description 地图事件、common方法模块
+     */
+    // 渲染popup
+    renderFeaturePopup (coordinate, feature) {
+      let self = this;
+      let staffId = feature.get('id'),
+          staffName = feature.get('name'),
+          staffInfoId = feature.get('staffInfoId');
+
+      let featureInfo = {
+        'geo': coordinate,
+        'att': {
+           staffId: staffId,
+           staffName: staffName,
+           staffInfoId: staffInfoId
+        }
+      };
+
+      self.setFeatureInfo(featureInfo);
+      self.mapCache.popup.setPosition(coordinate);
+    },
+    setFeatureInfo (featureInfo) {
+      let containerDiv = document.createElement('div');
+      containerDiv.className = 'popup-container';
+
+      let att = featureInfo.att;
+      containerDiv.innerText = 'staffId: ' + att.staffId + " staffName: " + att.staffName + " staffInfoId: " + att.staffInfoId;
+
+      this.mapCache.popupInfo.content.innerHTML = '';
+      this.mapCache.popupInfo.content.appendChild(containerDiv);
+    },
+    setInnerText (element, text) {
+        if (typeof element.textContent == "string") {
+            element.textContent = text;
+        } else {
+            element.innerText = text;
+        }
+    },
+    // 添加图层toggleShow监听事件
+    addLayerChangeListener (element, layer) {
+      let self = this;
+
+      element.onclick = function () {
+          if (element.checked) {
+            layer.setVisible(true);
+          } else {
+            self.mapCache.popupInfo.content.innerHTML = '';
+            self.mapCache.popup.setPosition(undefined);
+            layer.setVisible(false);
+          }
+      };
+    },
+    // 生产Feature
+    createPointFeature (geometry, properties) {
+      let feature = {
+        "type": "Feature",
+        "geometry": geometry,
+        "properties": properties
+      };
+      return feature;
+    },
+    // 生产FeatureCollection
+    createFeatureCollection (features) {
+      let featureCollection = {
+        "type": "FeatureCollection",
+        "features": features
+      };
+      return featureCollection;
+    },
+    /**
+     * description 地图图层功能模块
+     */
     doMapRealInfo () {
-      
+
     },
+    loadMapStaffLayer () {
+      let self = this;
+
+      axios.get('/map/realtime/staff/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                    let data = response.data.data;
+
+                    // 渲染人员实时位置图层
+                    let staffPointList = data.staffPointList;
+                    self.doMapStaffLayer(staffPointList);
+                }
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    doMapStaffLayer (staffPointList) {
+      let self = this;
+      // 构造Features集合
+      let featureList = new Array();
+      staffPointList.forEach(function(staff, index) {
+        let geometry = JSON.parse(staff.point),
+            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id};
+
+        // 装载员工pointFeature
+        geometry.coordinates[0] += index * 100000 * Math.random();
+        geometry.coordinates[0] += index * 1000 * Math.random();
+        featureList.push(self.createPointFeature(geometry, properties));
+      });
+
+      // 构造FeatureCollection装配的数据源
+      let featureCollection = self.createFeatureCollection(featureList);
+      let staffSource = new ol.source.Vector({
+        features: new ol.format.GeoJSON().readFeatures(featureCollection)
+      });
+
+      let newLayer = new ol.layer.Vector({
+        source: staffSource,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.2)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#ffcc33',
+                width: 2
+            }),
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({
+                    color: '#6699CC'
+                })
+            })
+        })
+      });
+
+      if (self.stafflayer) {
+        self.realMap.removeLayer(self.stafflayer);
+      }
+
+      self.stafflayer = newLayer;
+      self.realMap.addLayer(self.stafflayer);
+      self.addLayerChangeListener(document.getElementById('staffLayer'), self.stafflayer);
+
+      let newPoint = JSON.parse(staffPointList[0].point);
+      let coordinates = newPoint.coordinates;
+      self.realMap.getView().setCenter(coordinates);
+    },
+    loadMapStaffHighLight (unitId) {
+      let params = {};
+      params.unitId = unitId;
+      axios.get('/map/realtime/staff/', { params: params})
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                    let data = response.data.data;
+
+                    // 渲染人员实时位置图层
+
+                }
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    loadMapReaderLayer() {
+      let self = this;
+
+      axios.get('')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                    let data = response.data.data;
+
+                    // 渲染读卡器元素图层
+                }
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    loadMapRegionLayer () {
+      let self = this;
+
+      axios.get('')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                  let data = response.data.data;
+
+                  // 渲染区域元素图层
+                }
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /**
+     * End map function module.
+     */
     /* 清除查询条件内容 */
     clearSearchInfo () {
       $("input.refresh").val("");
@@ -1054,6 +1337,51 @@ main {
   height: 100%;
   min-height: 600px;
 }
+
+/* Start popup style */
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+}
+.ol-popup:after, .ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+.ol-popup-closer:after {
+  content: "✖";
+}
+/* End popup style */
 
 .main-right {
   width: 24%;

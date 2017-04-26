@@ -149,16 +149,20 @@ export default {
       },
       unitList: [],
       regionList: [],
-      readerList: []
+      readerList: [],
+      startInsearch: {}
     };
   },
   mounted () {
     this.loadMap();
     initLoad();
-    this.loadStaffList(null);
+    this.doInSearchOper();
     this.defaultLoadUnitInfo();
     this.defaultLoadRegionInfo();
     this.defaultLoadReaderInfo();
+  },
+  beforeDestroy() {
+    clearInterval(this.startInsearch);
   },
   methods: {
     clearSearch () {
@@ -249,8 +253,13 @@ export default {
     doInSearchOper () {
       let self = this;
       initPagination('staffPagingBox', 'staffPaging');
+      // 终止上一次实时查询定时器
+      clearInterval(this.startInsearch);
+
       this.loadStaffList(null);
-      setInterval(function() {
+      this.loadStaffMap();
+      // 开启新一次实时查询定时器
+      this.startInsearch = setInterval(function() {
         self.loadStaffMap();
       }, 3000);
     },
@@ -394,7 +403,7 @@ export default {
       function createFeatureCollection(features) {
         let featureCollection = {
           "type": "FeatureCollection",
-          features: features
+          "features": features
         };
         return featureCollection;
       }

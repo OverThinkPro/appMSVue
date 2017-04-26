@@ -130,7 +130,8 @@ export default {
         staffList: []
       },
       unitList: [],
-      replayMap: {}
+      replayMap: {},
+      currentlayer: {}
     };
   },
   mounted () {
@@ -140,6 +141,11 @@ export default {
     this.defaultLoadUnit();
   },
   methods: {
+    /**
+     * description 初始化时间
+     * author Zychaowill
+     * date 2017/04/26
+     */
     initEvent () {
       $("#startTime").jeDate({
         format: "YYYY-MM-DD hh:mm:ss",
@@ -155,10 +161,18 @@ export default {
         }
       });
     },
+    /**
+     * description 清除查询条件
+     * author Zychaowill
+     */
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
+    /**
+     * Start
+     * description 历史轨迹地图功能模块
+     */
     loadMap () {
         var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
         taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
@@ -307,6 +321,10 @@ export default {
           source: new ol.source.Vector({})
       });
 
+      if (self.currentlayer) {
+        self.replayMap.removeLayer(self.currentlayer);
+      }
+      self.currentlayer = replayLayer;
       self.replayMap.addLayer(replayLayer);
       // 获取全部坐标点
       self.staffMapCache.staffList.forEach(function(staff, index) {
@@ -370,7 +388,7 @@ export default {
           clearInterval(stopTime);
         }
         j++;
-      }, 3000);
+      }, 1000);
     }
   }
 };

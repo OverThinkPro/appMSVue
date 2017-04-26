@@ -345,7 +345,7 @@ export default {
       initPagination('overtimePagingBox', 'overtimePaging');
       this.loadOverTimeListPaging(null);
     },
-    loadOverTimeListPaging (page) {
+    loadOverTimeListPaging (page, isPaging) {
       let self = this;
       let params = this.getSearchParam();
 
