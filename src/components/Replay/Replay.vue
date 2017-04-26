@@ -328,7 +328,7 @@ export default {
       self.replayMap.addLayer(replayLayer);
       // 获取全部坐标点
       self.staffMapCache.staffList.forEach(function(staff, index) {
-        let x = staff.pointx + index, y = staff.pointy;
+        let x = staff.pointx, y = staff.pointy;
         let pointFeature = new ol.Feature({
           geometry: new ol.geom.Point(ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857'))
         });
@@ -388,7 +388,7 @@ export default {
           clearInterval(stopTime);
         }
         j++;
-      }, 1000);
+      }, 2000);
     }
   }
 };

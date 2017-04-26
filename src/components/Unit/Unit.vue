@@ -29,7 +29,7 @@
               </div>
               <div class="input-group btn-group fr">
                 <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
-                <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+                <button type="button" class="btn btn-primary" @click="defaultLoadUnitTable()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
               </div>
             </div>
           </div>
@@ -37,8 +37,8 @@
           <div class="btn-box" style="margin-bottom: 0;">
             <div class="fl">
               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_unit_modal">添加</button>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_unit_modal">修改</button>
-              <button type="button" class="btn btn-primary" @click="deleteUnit()">删除</button>
+              <button type="button" class="btn btn-primary" @click="checkSelect('UPDATE_UNIT')" data-toggle="modal" data-target="">修改</button>
+              <button type="button" class="btn btn-primary" @click="checkSelect('DELETE_UNIT')">删除</button>
             </div>
             <div class="fr">
               <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -49,24 +49,24 @@
             <table class="table table-bordered table-hover">
               <thead>
                 <tr>
-                  <th><input type="checkbox" name="allUnit"></th>
+                  <th>选择</th>
                   <th>序号</th>
                   <th>部门编号</th>
                   <th>部门名称</th>
-                  <th>部门简称</th>
+                  <th>部门联系人</th>
                   <th>联系方式</th>
                   <th>备注</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(elem, index) in unitList" :key="elem.key">
-                  <td><input type="checkbox" name="unit" :value="elem.unitId" /></td>
+                <tr v-for="(unit, index) in unitListCache.unitList" :key="unit.key">
+                  <td><input type="radio" name="unit" :value="unit.unitId" /></td>
                   <td>{{ index + 1 }}</td>
-                  <td>{{ elem.unitId }}</td>
-                  <td>{{ elem.unitName }}</td>
-                  <td>{{ elem.unitAbbr }}</td>
-                  <td>{{ elem.telephone }}</td>
-                  <td>{{ elem.remark }}</td>
+                  <td>{{ unit.unitId }}</td>
+                  <td>{{ unit.unitName }}</td>
+                  <td>{{ unit.contactPerson }}</td>
+                  <td>{{ unit.telephone }}</td>
+                  <td>{{ unit.remark }}</td>
                 </tr>
               </tbody>
             </table>
@@ -177,7 +177,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateUnit()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -196,13 +196,7 @@ export default {
   name: 'unit',
   data () {
     return {
-      unit: {
-        upUnitId: '001',
-        upUnitName: '屯兰煤矿',
-        unitId: '001001',
-        unitName: '掘进1队',
-        remark: '机电科机电科机电科机电科机电科'
-      },
+      unit: {},
       unitListCache: {
         unitList: [],
         total: 0
@@ -211,18 +205,14 @@ export default {
   },
   mounted () {
     this.initEvent();
+    this.defaultLoadUnitTable();
   },
   methods: {
     initEvent () {
       var self = this;
-      $("#add_unit_modal, #update_unit_modal").on('show.bs.modal', function() {
-        self.unit = {
-          upUnitId: '001',
-          upUnitName: '屯兰煤矿',
-          unitId: '001001',
-          unitName: '掘进1队',
-          remark: '机电科机电科机电科机电科机电科'
-        };
+      $("#add_unit_modal").on('show.bs.modal', function() {
+        self.unit.unitName = '';
+        self.unit.remark = '';
       });
     },
     clearSearch () {
@@ -242,7 +232,10 @@ export default {
       return params;
     },
     defaultLoadUnitTree () {
+      axios.get('/base/unit/')
+            .then((response) => {
 
+            });
     },
     defaultLoadUnitTable () {
       initPagination('unitPagingBox', 'unitPaging');
@@ -252,7 +245,8 @@ export default {
       let self = this;
       let params = this.getSearchParam();
 
-      axios.get('/p/' + page, { params: params })
+      page = page || 1;
+      axios.get('/base/unit/p/' + page, { params: params })
             .then((response) => {
               let meta = response.data.meta;
 
@@ -279,7 +273,63 @@ export default {
               }
             });
     },
-    deleteUnit () {
+    /* 检测选中的表格记录数 */
+    checkSelect (type) {
+      let self = this;
+      let size = $("input[name='unit']").filter(':checked').length;
+
+      if (size < 1) {
+        bootbox.alert({
+          message: '请选择一条记录,再进行添加部门'
+        });
+        return;
+      } else if (size == 1) {
+        let unitId = $("input[name='unit']:checked").val();
+
+        if (type == 'UPDATE_UNIT') {
+          self.unitListCache.unitList.forEach((unit, index) => {
+            if (unit.unitId == unitId) {
+              self.unit = unit;
+            }
+          });
+          $("#update_unit_modal").modal('show');
+        } else if (type == 'DELETE_UNIT') {
+          self.deleteUnit(unitId);
+        }
+      }
+    },
+    addUnit () {
+      let self = this;
+
+      axios.post('', self.unit)
+            .then((response) => {
+
+            });
+    },
+    updateUnit () {
+      let self = this;
+
+      axios.put('/base/unit/', self.unit)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                bootbox.alert({
+                  message: meta.message
+                });
+                self.unit = {};
+                $("#update_unit_modal").modal('hide');
+                $("input[name='unit']:checked").prop('checked', false);
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    deleteUnit (unitId) {
+      let self = this;
+
       bootbox.confirm({
         message: '部门一旦删除，不可恢复，是否确定删除？',
         buttons: {
@@ -290,15 +340,29 @@ export default {
             label: '取消'
           }
         },
-        callback: function() {
-          bootbox.alert("删除成功!");
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/unit/', { params: { "unitId": unitId}})
+                  .then((response) => {
+                    let meta = response.data.meta;
+
+                    if (meta.success) {
+                      bootbox.alert({
+                        message: meta.message
+                      });
+                      self.defaultLoadUnitTable();
+                      $("input[name='unit']:checked").prop('checked', false);
+                    } else {
+                      bootbox.alert({
+                        message: meta.message
+                      });
+                    }
+                  });
+          }
         }
       });
     }
-  },
-  loadUnitListPaging (page) {
-
-  },
+  }
 }
 </script>
 
