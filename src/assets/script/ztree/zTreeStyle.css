@@ -53,6 +53,13 @@ website:	http://code.google.com/p/jquerytree/
 .ztree li span.button.chk.radio_true_part_focus {background-position:-42px -42px}
 .ztree li span.button.chk.radio_true_disable {background-position:-42px -56px}
 
+.ztree li span.button.add {
+    margin-left: 2px;
+    margin-right: -1px;
+    background-position: -144px 0;
+    vertical-align: top;
+    *vertical-align: middle;
+}
 .ztree li span.button.switch {width:18px; height:18px}
 .ztree li span.button.root_open{background-position:-92px -54px}
 .ztree li span.button.root_close{background-position:-74px -54px}

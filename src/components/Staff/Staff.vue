@@ -15,35 +15,34 @@
           <div class="title-box">
             <h5>部门列表</h5>
           </div>
+          <ul id="unitTree" class="ztree"></ul>
         </div>
         <div class="table-box-right outside-box fr">
             <div class="search-bar-box">
               <div class="search-bar">
                 <div class="search-bar-select fl">
-                  <select class="form-control refresh" name="">
+                  <select class="form-control refresh" name="" id="unitId">
                     <option value="">- 请选择部门 -</option>
-                    <option value="">掘进1队</option>
-                    <option value="">掘进2队</option>
+                    <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
                   </select>
                 </div>
                 <div class="input-group search-bar-input fl">
                   <span class="input-group-addon">员工姓名</span>
-                  <input type="text" class="form-control refresh">
+                  <input type="text" class="form-control refresh" id="staffName">
                 </div>
                 <div class="input-group search-bar-input fl">
                   <span class="input-group-addon">员工编号</span>
-                  <input type="text" class="form-control refresh">
+                  <input type="text" class="form-control refresh" id="staffId">
                 </div>
                 <div class="search-bar-select fl">
-                  <select class="form-control refresh" name="">
+                  <select class="form-control refresh" name="" id="jobId">
                     <option value="">- 请选择工种 -</option>
-                    <option value="">工种1</option>
-                    <option value="">工种2</option>
+                    <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
                   </select>
                 </div>
                 <div class="input-group btn-group fr">
                   <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>重置</button>
-                  <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>查询</button>
+                  <button type="button" class="btn btn-primary" @click="defaultLoadStaffTable()"><i class="glyphicon glyphicon-search"></i>查询</button>
                 </div>
               </div>
             </div>
@@ -51,8 +50,8 @@
             <div class="btn-box" style="margin-bottom: 0;">
               <div class="fl">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_staff_modal">添加</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_staff_modal">修改</button>
-                <button type="button" class="btn btn-primary" @click="deleteStaff()">删除</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" @click="checkSelect('UPDATE_STAFF')">修改</button>
+                <button type="button" class="btn btn-primary" @click="checkSelect('DELETE_STAFF')">删除</button>
               </div>
               <div class="fr">
                 <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -63,7 +62,7 @@
               <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" name="allStaff" value=""></th>
+                    <th>选择</th>
                     <th>序号</th>
                     <th>姓名</th>
                     <th>员工编号</th>
@@ -74,28 +73,20 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(elem, index) in staffList" :key="elem.key">
-                    <td><input type="checkbox" name="staff" :value="elem.no"></td>
+                  <tr v-if="staffListCache.staffList != null" v-for="(staff, index) in staffListCache.staffList" :key="staff.key">
+                    <td><input type="radio" name="staff" :value="staff.staffId"></td>
                     <td>{{ index + 1 }}</td>
-                    <td>{{ elem.staffName }}</td>
-                    <td>{{ elem.no }}</td>
-                    <td>{{ elem.sex }}</td>
-                    <td>{{ elem.birthday }}</td>
-                    <td>{{ elem.unit }}</td>
-                    <td>{{ elem.job }}</td>
+                    <td>{{ staff.staffName }}</td>
+                    <td>{{ staff.staffId }}</td>
+                    <td>{{ staff.staffGender }}</td>
+                    <td>{{ staff.staffBirthday }}</td>
+                    <td>{{ staff.unitId }}</td>
+                    <td>{{ staff.jobId }}</td>
                   </tr>
                 </tbody>
               </table>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
+              <nav class="pagination-box" id="staffPagingBox">
+                <div id="staffPaging" class="pagination"></div>
               </nav>
             </div>
         </div>
@@ -124,31 +115,35 @@
               <div class="input-group-line">
                 <div class="group-left">工号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.no">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">身份证号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.cardId">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffIdCard">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">出生年月</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.birthday">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffBirthday">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">籍贯</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.origin">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffNativePlace">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">职务/工种</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.job">
+                  <!-- <input class="form-control refresh" type="text" name="" v-model="staff.job"> -->
+                  <select class="form-control refresh" name="" v-model="staff.jobId">
+                    <option value="">- 请选择工种 -</option>
+                    <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
+                  </select>
                 </div>
               </div>
               <div class="input-group-line">
@@ -160,19 +155,22 @@
               <div class="input-group-line">
                 <div class="group-left">部门</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.unitId">
+                  <select class="form-control refresh" name="" v-model="staff.unitId">
+                    <option value="">- 请选择部门 -</option>
+                    <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
+                  </select>
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">联系电话</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.telephone">
+                  <input class="form-control refresh" type="text" name="" v-model="staff.staffTelephone">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">参加工作时间</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.workTime">
+                  <input id="workDate" class="form-control refresh" type="text" name="" readonly="readonly" placeholder="请选择参加工作时间" v-model="staff.staffWorkDate">
                 </div>
               </div>
             </div>
@@ -201,61 +199,68 @@
               <div class="input-group-line">
                 <div class="group-left">姓名</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.staffName">
+                  <input class="form-control" type="text" name="" v-model="staff.staffName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">工号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="staff.no">
+                  <input class="form-control" type="text" name="" v-model="staff.staffId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">身份证号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.cardId">
+                  <input class="form-control" type="text" name="" v-model="staff.staffIdCard">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">出生年月</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.birthday">
+                  <input class="form-control" type="text" name="" v-model="staff.staffBirthday">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">籍贯</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.origin">
+                  <input class="form-control" type="text" name="" v-model="staff.staffNativePlace">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">职务/工种</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.job">
+                  <!-- <input class="form-control refresh" type="text" name="" v-model="staff.job"> -->
+                  <select class="form-control" name="" v-model="staff.jobId">
+                    <option value="">- 请选择工种 -</option>
+                    <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
+                  </select>
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">职称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.title">
+                  <input class="form-control" type="text" name="" v-model="staff.title">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">部门</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.unitId">
+                  <select class="form-control" name="" v-model="staff.unitId">
+                    <option value="">- 请选择部门 -</option>
+                    <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
+                  </select>
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">联系电话</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.telephone">
+                  <input class="form-control" type="text" name="" v-model="staff.staffTelephone">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">参加工作时间</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="staff.workTime">
+                  <input id="workDate2" class="form-control" type="text" name="" readonly="readonly" placeholder="请选择参加工作时间" v-model="staff.staffWorkDate">
                 </div>
               </div>
             </div>
@@ -273,87 +278,261 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
+import axios from 'axios';
+import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
+import jeDate from '../../assets/script/jedate/jquery.jedate.min';
+import { initPagination } from '../../assets/script/initplugin';
 
 export default {
   name: 'staff',
   data () {
     return {
-      staff: {
-        staffName: '李权良',
-        no: '001001',
-        cardId: '411082199411010633',
-        birthday: '1876-10-23',
-        origin: '山西太原',
-        sex: '男',
-        job: '检修工',
-        title: '高级检修工',
-        unitId: '机电科',
-        telephone: '18435156270',
-        workTime: '2017-10-20 8:00'
-      },
-      staffList: [
-        {
-          staffName: '李权良',
-          no: '001001',
-          sex: '男',
-          birthday: '1876-10-23',
-          unit: '机电科',
-          job: '检修工'
+      treeSetting: {
+        callback: {
+          onClick: this.zTreeOnClick
         },
-        {
-          staffName: '李权良',
-          no: '001001',
-          sex: '男',
-          birthday: '1876-10-23',
-          unit: '机电科',
-          job: '检修工'
-        },
-        {
-          staffName: '李权良',
-          no: '001001',
-          sex: '男',
-          birthday: '1876-10-23',
-          unit: '机电科',
-          job: '检修工'
-        },
-        {
-          staffName: '李权良',
-          no: '001001',
-          sex: '男',
-          birthday: '1876-10-23',
-          unit: '机电科',
-          job: '检修工'
+        data: {
+          simpleData: {
+            enable: true,
+            idKey: "unitId",
+            pIdKey: "upUnitId",
+            rootPId: 0
+          },
+          key: {
+            name: 'unitName'
+          }
         }
-      ]
+      },
+      unitId: '',
+      staff: {},
+      staffListCache: {
+        staffList: [],
+        total: 0
+      },
+      unitList: [],
+      jobTypeList: []
     };
   },
   mounted () {
     this.initEvent();
+    this.defaultLoadUnitTree();
+    this.defaultLoadUnit();
+    this.defaultLoadJob();
+    this.defaultLoadStaffTable();
   },
   methods: {
     initEvent () {
       var self = this;
-      $("#add_staff_modal, #update_staff_modal").on('show.bs.modal', function() {
-        self.staff = {
-          staffName: '李权良',
-          no: '001001',
-          cardId: '411082199411010633',
-          birthday: '1876-10-23',
-          origin: '山西太原',
-          sex: '男',
-          job: '检修工',
-          title: '高级检修工',
-          unitId: '机电科',
-          telephone: '18435156270',
-          workTime: '2017-10-20 8:00'
-        };
+
+      $("#workDate, #workDate2").jeDate({
+        format: 'YYYY-MM-DD',
+        isTime: false,
+        isinitVal: false
+      });
+
+      $("#add_staff_modal").on('show.bs.modal', function() {
+        self.staff = {};
       });
     },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
-    deleteStaff () {
+    getSearchParam () {
+      let params = {},
+          unitId, staffName, staffId, jobId;
+
+      unitId = $("#unitId").val();
+      if (unitId) { params.unitId = unitId; }
+
+      staffName = $("#staffName").val();
+      if (staffName) { params.staffName = staffName; }
+
+      staffId = $("#staffId").val();
+      if (staffId) { params.staffId = staffId; }
+
+      jobId = $("#jobId").val();
+      if (jobId) { params.jobId = jobId; }
+
+      return params;
+    },
+    /**
+     * Start click unit tree node to load staff table data
+     * and default load search data set.
+     */
+    defaultLoadUnitTree () {
+      let self = this;
+
+      axios.get('/base/unit/unittree')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                  // 部门树数据配置
+                  let unitList = response.data.data.unitList;
+                  let zNodes = unitList;
+                  zNodes[0].open = true;
+
+                  // 初始化部门树
+                  $.fn.zTree.init($("#unitTree"), self.treeSetting, zNodes);
+                }
+              }
+            });
+    },
+    zTreeOnClick (event, treeId, treeNode) {
+      let self = this;
+
+      initPagination('staffPagingBox', 'staffPaging');
+      self.unitId = treeNode.unitId;
+      self.loadTableData(null);
+    },
+    loadTableData (page, isPaging) {
+      let self = this;
+
+      page = page || 1;
+      axios.get('/base/staff/u/' + self.unitId + '/p/' + page)
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                if (data) {
+                  self.staffListCache.staffList = data.staffList;
+                  self.staffListCache.total = data.total;
+
+                  if (!isPaging) {
+                    $("#staffPaging").page({
+                      total: self.staffListCache.total,
+                      pageSize: 10,
+                      prevBtnText: '上一页',
+                      nextBtnText: '下一页',
+                      showInfo: true,
+                      infoFormat: '{start} ~ {end}条，共{total}条',
+                    }).on("pageClicked", function (event, pageNumber) {
+                      self.loadTableData(pageNumber + 1, true);
+                    });
+                  }
+                }
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    /**
+     * End click tree node to load  different table data.
+     */
+    // 默认装载查询框结果集data set
+    defaultLoadUnit () {
+      let self = this;
+      axios.get('/base/unit/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.unitList = data.unitList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+    defaultLoadJob () {
+      let self = this;
+      axios.get('/base/jobtype/')
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                let data = response.data.data;
+
+                self.jobTypeList = data.jobTypeList;
+              } else {
+                bootbox.alert({
+                  message: meta.message
+                });
+              }
+            });
+    },
+   /**
+    * End click unit tree node to load staff table data
+    * and default load search data set.
+    */
+    defaultLoadStaffTable () {
+      initPagination('staffPagingBox', 'staffPaging');
+      this.loadStaffListPaging(null);
+    },
+    loadStaffListPaging (page, isPaging) {
+      let self = this;
+      let params = this.getSearchParam();
+
+      page = page || 1;
+      axios.get('/base/staff/p/' + page, { params: params })
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                if (response.data.data) {
+                  let data = response.data.data;
+
+                  self.staffListCache.staffList = data.staffList;
+                  self.staffListCache.total = data.total;
+
+                  if (!isPaging) {
+                    $("#staffPaging").page({
+                      total: self.staffListCache.total,
+                      pageSize: 10,
+                      prevBtnText: '上一页',
+                      nextBtnText: '下一页',
+                      showInfo: true,
+                      infoFormat: '{start} ~ {end}条，共{total}条',
+                    }).on("pageClicked", function (event, pageNumber) {
+                      self.loadStaffListPaging(pageNumber + 1, true);
+                    });
+                  }
+                }
+              }
+            });
+    },
+    /* 检测选中的表格记录数 */
+    checkSelect (type) {
+      let self = this;
+      let size = $("input[name='staff']").filter(':checked').length;
+
+      if (size < 1) {
+        bootbox.alert({
+          message: '请选择一条记录,再进行操作!'
+        });
+        return;
+      } else if (size == 1) {
+        let staffId = $("input[name='staff']:checked").val();
+
+        if (type == 'UPDATE_STAFF') {
+          self.staffListCache.staffList.forEach((staff, index) => {
+            if (staff.staffId == staffId) {
+              self.staff = staff;
+            }
+          });
+          $("#update_staff_modal").modal('show');
+        } else if (type == 'DELETE_STAFF') {
+          self.deleteStaff(staffId);
+        }
+      }
+    },
+    // 添加员工信息
+    addStaff () {
+
+    },
+    // 删除员工信息
+    deleteStaff (staffId) {
+      let self = this;
+
       bootbox.confirm({
         message: '员工信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
@@ -364,16 +543,49 @@ export default {
             label: '取消'
           }
         },
-        callback: function() {
-          bootbox.alert("删除成功!");
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/staff/', { params: { "staffId": staffId }})
+                  .then((response) => {
+                    let meta = response.data.meta;
+
+                    if (meta.success) {
+                      let data = response.data.data;
+
+                      if (data && data.result == 1) {
+                        bootbox.alert({
+                          message: '删除成功!'
+                        });
+
+                        self.defaultLoadStaffTable();
+                        $("input[name='staff']:checked").each(function() { this.checked = false; });
+                      } else {
+                        bootbox.alert({
+                          message: '服务器错误,删除失败!'
+                        });
+                      }
+                    } else {
+                      bootbox.alert({
+                        message: meta.message
+                      });
+                    }
+                  });
+          }
         }
-      })
+      });
+    },
+    // 修改员工信息
+    updateStaff () {
+
     }
   }
 };
 </script>
 
 <style lang="css" scoped>
+@import "../../assets/script/ztree/zTreeStyle.css";
+@import "../../assets/script/jedate/skin/jedate.css";
+
 #staff {
   width: 100%;
 }

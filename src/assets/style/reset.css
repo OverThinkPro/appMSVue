@@ -12,6 +12,10 @@ body {
 	background-color: #FFF;
 	text-shadow: none;
 }
+body, body.modal-open {
+	overflow-y: auto !important;
+	padding-right: 0 !important;
+}
 a {
 	text-decoration: none;
 	text-shadow: none;

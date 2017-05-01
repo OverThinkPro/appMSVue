@@ -14,19 +14,18 @@
         <div class="search-bar-box">
           <div class="search-bar">
             <div class="search-bar-select fl">
-              <select class="form-control refresh" name="">
+              <select class="form-control refresh" name="" id="jobTypeId">
                 <option value="">- 请选择工种 -</option>
-                <option value="">工种1</option>
-                <option value="">工种2</option>
+                <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :value="jobType.jobId">{{ jobType.jobName }}</option>
               </select>
             </div>
-            <div class="input-group search-bar-input fl">
+            <!-- <div class="input-group search-bar-input fl">
               <span class="input-group-addon">工种编号</span>
               <input type="text" class="form-control refresh">
-            </div>
+            </div> -->
             <div class="input-group btn-group fr">
               <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>重置</button>
-              <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>查询</button>
+              <button type="button" class="btn btn-primary" @click="defaultLoadJobTypeList()"><i class="glyphicon glyphicon-search"></i>查询</button>
             </div>
           </div>
         </div>
@@ -47,7 +46,7 @@
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
-                <th><input type="checkbox" name="allJob"></th>
+                <th>删除</th>
                 <th>序号</th>
                 <th>工种名称</th>
                 <th>工种编号</th>
@@ -55,25 +54,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(elem, index) in jobList" :key="elem.key">
-                <td><input type="checkbox" name="job" :value="elem.jobId"></td>
+              <tr v-for="(jobType, index) in jobTypeListCache.jobTypeList" :key="jobType.key">
+                <td><input type="radio" name="job" :value="jobType.jobId"></td>
                 <td>{{ index + 1 }}</td>
-                <td>{{ elem.jobName }}</td>
-                <td>{{ elem.jobId }}</td>
-                <td>{{ elem.remark }}</td>
+                <td>{{ jobType.jobName }}</td>
+                <td>{{ jobType.jobId }}</td>
+                <td>{{ jobType.remark }}</td>
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="jobTypePagingBox">
+            <div id="jobTypePaging" class="pagination"></div>
           </nav>
         </div>
       </div>
@@ -166,58 +157,119 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
+import axios from 'axios';
+import { initPagination } from '../../assets/script/initplugin';
 
 export default {
   name: 'job',
   data () {
     return {
-      job: {
-        jobName: '掘进工',
-        jobId: '001',
-        remark: '掘进工'
+      job: {},
+      jobTypeListCache: {
+        jobTypeList: [],
+        total: 0
       },
-      jobList: [
-        {
-          jobName: '掘进工',
-          jobId: '001',
-          remark: '掘进工'
-        },
-        {
-          jobName: '掘进工',
-          jobId: '001',
-          remark: '掘进工'
-        },
-        {
-          jobName: '掘进工',
-          jobId: '001',
-          remark: '掘进工'
-        },
-        {
-          jobName: '掘进工',
-          jobId: '001',
-          remark: '掘进工'
-        }
-      ]
+      jobTypeList: [],
     };
   },
   mounted () {
     this.initEvent();
+    this.defaultLoadJobType();
+    this.defaultLoadJobTypeList();
   },
   methods: {
     initEvent () {
-      $("#add_job_modal, #update_job_modal").on('show.bs.modal', () => {
-        this.job = {
-          jobName: '掘进工',
-          jobId: '001',
-          remark: '掘进工'
-        }
+      $("#add_job_modal").on('show.bs.modal', () => {
+        this.job = {};
       });
     },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
-    deleteJob () {
+    getParams () {
+      let params = {},
+          jobTypeId;
+
+      jobTypeId = $("#jobTypeId").find("option:checked").val();
+
+      if (jobTypeId) { params.jobId = jobTypeId; }
+
+      return params;
+    },
+    /**
+     * Start default load data operation.
+     */
+     defaultLoadJobType () {
+       let self = this;
+       axios.get('/base/jobtype/')
+             .then((response) => {
+               let meta = response.data.meta;
+
+               if (meta.success) {
+                 let data = response.data.data;
+
+                 self.jobTypeList = data.jobTypeList;
+               } else {
+                 bootbox.alert({
+                   message: meta.message
+                 });
+               }
+             });
+     },
+     defaultLoadJobTypeList () {
+       initPagination('jobTypePagingBox', 'jobTypePaging');
+       this.loadJobTypeListPaging(null);
+     },
+     loadJobTypeListPaging(page, isPaging) {
+       let self = this,
+           params = self.getParams();
+
+       page = page || 1;
+
+       axios.get('/base/jobtype/p/' + page, { params: { "jobId": params.jobId }})
+              .then((response) => {
+                let meta = response.data.meta;
+
+                if (meta.success) {
+                  let data = response.data.data;
+
+                  if (data) {
+                    self.jobTypeListCache.jobTypeList = data.jobTypeList;
+                    self.jobTypeListCache.total = data.total;
+
+                    if (!isPaging) {
+                      $("#jobTypePaging").page({
+                        total: self.jobTypeListCache.total,
+                        pageSize: 10,
+                        prevBtnText: '上一页',
+                        nextBtnText: '下一页',
+                        showInfo: true,
+                        infoFormat: '{start} ~ {end}条，共{total}条',
+                      }).on("pageClicked", function (event, pageNumber) {
+                        self.loadJobTypeListPaging(pageNumber + 1, true);
+                      });
+                    }
+                  }
+                } else {
+                  bootbox.alert({
+                    message: meta.message
+                  });
+                }
+              });
+     },
+    /**
+     * End default load data operation.
+     */
+    /**
+     * Start job type operation.
+     */
+    // 添加工种信息
+    addJobType () {
+
+    },
+    // 删除工种信息
+    deleteJobType () {
       bootbox.confirm({
         message: '工种信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
@@ -231,8 +283,15 @@ export default {
         callback: function() {
           bootbox.alert("删除成功!");
         }
-      })
+      });
+    },
+    // 修改工种信息
+    updateJobType () {
+
     }
+    /**
+     * End job type operation.
+     */
   }
 };
 </script>

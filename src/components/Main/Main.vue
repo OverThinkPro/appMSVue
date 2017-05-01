@@ -598,6 +598,7 @@ export default {
         popup: {}
         //
       },
+      startRealStaffLayer: {},
       /* 报警类型,显示模态框时使用 */
       alarmTypes: {
         '超时报警': '#overtime_alarm_modal',
@@ -630,7 +631,7 @@ export default {
     ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm', 'pagination'])
   },
   beforeDestroy () {
-    
+    clearInterval(self.startRealStaffLayer);
   },
   methods: {
     initEvent () {
@@ -764,6 +765,10 @@ export default {
         });
 
         this.addLayerChangeListener(document.getElementById('readerLayer'), this.readerlayer);
+
+        this.startRealStaffLayer = setInterval(function() {
+          self.loadMapStaffLayer();
+        }, 3000);
     },
     /**
      * description 地图事件、common方法模块

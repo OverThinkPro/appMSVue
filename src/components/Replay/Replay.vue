@@ -302,11 +302,14 @@ export default {
               let meta = response.data.meta;
 
               if (meta.success) {
-                let data = response.data.data;
+                if (response.data.data.listMapPoint) {
+                  let data = response.data.data;
 
-                self.staffMapCache.staffList = data.listMapPoint;
-                // 在地图上显示轨迹
-                self.doMapPointLayer();
+
+                  self.staffMapCache.staffList = data.listMapPoint;
+                  // 在地图上显示轨迹
+                  self.doMapPointLayer();
+                }
               } else {
                 bootbox.alert({
                   message: meta.message
