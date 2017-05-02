@@ -34,8 +34,8 @@
         <div class="btn-box">
           <div class="fl">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_job_modal">添加</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_job_modal">修改</button>
-            <button type="button" class="btn btn-primary" @click="deleteJob()">删除</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" @click="checkSelect('UPDATE_JOBTYPE')">修改</button>
+            <button type="button" class="btn btn-primary" @click="checkSelect('DELETE_JOBTYPE')">删除</button>
           </div>
           <div class="fr">
             <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -55,10 +55,10 @@
             </thead>
             <tbody>
               <tr v-for="(jobType, index) in jobTypeListCache.jobTypeList" :key="jobType.key">
-                <td><input type="radio" name="job" :value="jobType.jobId"></td>
+                <td><input type="radio" name="jobType" :value="jobType.jobId"></td>
                 <td>{{ index + 1 }}</td>
                 <td>{{ jobType.jobName }}</td>
-                <td>{{ jobType.jobId }}</td>
+                <td>{{ jobType.jobCode }}</td>
                 <td>{{ jobType.remark }}</td>
               </tr>
             </tbody>
@@ -86,25 +86,25 @@
               <div class="input-group-line">
                 <div class="group-left">工种名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="job.jobName">
+                  <input class="form-control refresh" type="text" name="" v-model="jobType.jobName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">工种编号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="job.jobId">
+                  <input class="form-control refresh" type="text" name="" v-model="jobType.jobCode">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">备注</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="job.remark">
+                  <input class="form-control refresh" type="text" name="" v-model="jobType.remark">
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addJobType()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -127,25 +127,25 @@
               <div class="input-group-line">
                 <div class="group-left">工种名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="job.jobName">
+                  <input class="form-control" type="text" name="" v-model="jobType.jobName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">工种编号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="job.jobId">
+                  <input class="form-control" type="text" name="" v-model="jobType.jobCode">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">备注</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="job.remark">
+                  <input class="form-control" type="text" name="" v-model="jobType.remark">
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateJobType()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -169,6 +169,7 @@ export default {
         jobTypeList: [],
         total: 0
       },
+      jobType: {},
       jobTypeList: [],
     };
   },
@@ -264,12 +265,58 @@ export default {
     /**
      * Start job type operation.
      */
-    // 添加工种信息
-    addJobType () {
+     /* 检测选中的表格记录数 */
+   checkSelect (type) {
+     let self = this;
+     let size = $("input[name='jobType']").filter(':checked').length;
 
+     if (size < 1) {
+       bootbox.alert({
+         message: '请选择一条记录,再进行操作!'
+       });
+       return;
+     } else if (size == 1) {
+       let jobId = $("input[name='jobType']:checked").val();
+
+       if (type == 'UPDATE_JOBTYPE') {
+         self.jobTypeListCache.jobTypeList.forEach((jobType, index) => {
+           if (jobType.jobId == jobId) {
+             self.jobType = jobType;
+           }
+         });
+         $("#update_job_modal").modal('show');
+       } else if (type == 'DELETE_JOBTYPE') {
+         self.deleteJobType(jobId);
+       }
+     }
+   },
+   // 添加工种信息
+   addJobType () {
+    let self = this;
+
+    axios.post('/base/jobtype/', self.jobType)
+          .then((response) => {
+            let meta = response.data.meta;
+
+            if (meta.success) {
+              let data = response.data.data;
+
+              if (data && data.result == 1) { bootbox.alert({ message: '工种信息添加成功!' }); }
+                                       else { bootbox.alert({ message: '工种信息添加失败!' }); }
+              $("#add_job_modal").modal('hide');
+              $("input[name='jobType']:checked").each(function() { this.checked = false; });
+              self.defaultLoadJobTypeList();
+            } else {
+              bootbox.alert({
+                message: '服务器内部错误, 工种信息添加失败!'
+              });
+            }
+          });
     },
     // 删除工种信息
-    deleteJobType () {
+    deleteJobType (jobId) {
+      let self = this;
+
       bootbox.confirm({
         message: '工种信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
@@ -280,14 +327,39 @@ export default {
             label: '取消'
           }
         },
-        callback: function() {
-          bootbox.alert("删除成功!");
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/jobtype/', { params: { 'jobId': jobId }})
+                  .then((response) => {
+                    let { meta, data } = response.data;
+
+                    if (meta.success) {
+                      if (data && data.result == 1) { bootbox.alert({ message: '工种信息删除成功!' }); }
+                                               else { bootbox.alert({ message: '工种信息删除失败!' }); }
+                      $("input[name='jobType']:checked").each(function() { this.checked = false; });
+                      self.defaultLoadJobTypeList();
+                    } else { bootbox.alert({message: meta.message }); }
+                  });
+          }
         }
       });
     },
     // 修改工种信息
     updateJobType () {
+      let self = this;
 
+      axios.put('/base/jobtype/', self.jobType)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                  if (data && data.result == 1) { bootbox.alert({ message: '工种信息修改成功!' }); }
+                                           else { bootbox.alert({ message: '工种信息修改失败!' }); }
+                  $("#update_job_modal").modal('hide');
+                  $("input[name='jobType']:checked").each(function() { this.checked = false; });
+                  self.defaultLoadJobTypeList();
+              } else { bootbox.alert({ message: meta.message }); }
+            });
     }
     /**
      * End job type operation.

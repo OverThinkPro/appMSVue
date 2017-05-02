@@ -95,61 +95,61 @@
               <div class="input-group-line">
                 <div class="group-left">上级部门编号</div>
                 <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="addunit.upUnitId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">上级部门名称</div>
                 <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="addunit.upUnitName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">部门编号</div>
                 <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="addunit.unitId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">部门名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.unitName">
+                  <input class="form-control refresh" type="text" name="" v-model="addunit.unitName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">联系电话</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.telephone">
+                  <input class="form-control refresh" type="text" name="" v-model="addunit.telephone">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">联系人</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.contactPerson">
+                  <input class="form-control refresh" type="text" name="" v-model="addunit.contactPerson">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">负责人</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.header">
+                  <input class="form-control refresh" type="text" name="" v-model="addunit.header">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">创建时间</div>
                 <div class="group-right">
-                  <input id="createDate" class="form-control refresh" type="text" name="" readonly="readonly" v-model="unit.createDate">
+                  <input id="createDate" class="form-control refresh" type="text" name="" placeholder="请选择创建时间" readonly="readonly" v-model="addunit.createDate">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">描述</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.description">
+                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="addunit.description">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">备注</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.remark">
+                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="addunit.remark">
                 </div>
               </div>
             </div>
@@ -178,61 +178,61 @@
               <div class="input-group-line">
                 <div class="group-left">上级部门编号</div>
                 <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="updateunit.upUnitId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">上级部门名称</div>
                 <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="updateunit.upUnitName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">部门编号</div>
                 <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="updateunit.unitId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">部门名称</div>
                 <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="unit.unitName">
+                  <input class="form-control" type="text" name="" v-model="updateunit.unitName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">联系电话</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.telephone">
+                  <input class="form-control refresh" type="text" name="" v-model="updateunit.telephone">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">联系人</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.contactPerson">
+                  <input class="form-control refresh" type="text" name="" v-model="updateunit.contactPerson">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">负责人</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.header">
+                  <input class="form-control refresh" type="text" name="" v-model="updateunit.header">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">创建时间</div>
                 <div class="group-right">
-                  <input id="createDate2" class="form-control refresh" type="text" name="" readonly="readonly" v-model="unit.createDate">
+                  <input id="createDate2" class="form-control refresh" type="text" name="" placeholder="请选择创建时间" readonly="readonly" v-model="updateunit.createDate">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">描述</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.description">
+                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="updateunit.description">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">备注</div>
                 <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="unit.remark">
+                  <input class="form-control" type="text" name="" v-model="updateunit.remark">
                 </div>
               </div>
             </div>
@@ -280,7 +280,8 @@ export default {
         }
       },
       upUnitId: '',
-      unit: {},
+      addunit: {},
+      updateunit: {},
       unitListCache: {
         unitList: [],
         total: 0
@@ -414,7 +415,7 @@ export default {
                       if (response.data.data) {
                         let currentUnitId = response.data.data.currentUnitId;
 
-                        self.unit = {
+                        self.addunit = {
                           upUnitId: treeNode.unitId,
                           upUnitName: treeNode.unitName,
                           unitId: currentUnitId
@@ -489,7 +490,7 @@ export default {
         if (type == 'UPDATE_UNIT') {
           self.unitListCache.unitList.forEach((unit, index) => {
             if (unit.unitId == unitId) {
-              self.unit = unit;
+              self.updateunit = unit;
             }
           });
           $("#update_unit_modal").modal('show');
@@ -502,7 +503,7 @@ export default {
     addUnit () {
       let self = this;
 
-      axios.post('/base/unit/', self.unit)
+      axios.post('/base/unit/', self.addunit)
             .then((response) => {
               let meta = response.data.meta;
 
@@ -529,7 +530,7 @@ export default {
     updateUnit () {
       let self = this;
 
-      axios.put('/base/unit/', self.unit)
+      axios.put('/base/unit/', self.updateunit)
             .then((response) => {
               let meta = response.data.meta;
 
@@ -537,7 +538,7 @@ export default {
                 bootbox.alert({
                   message: meta.message
                 });
-                self.unit = {};
+                self.updateunit = {};
 
                 $("input[name='unit']:checked").each(function() { this.checked = false; });
                 $("#update_unit_modal").modal('hide');
