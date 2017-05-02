@@ -7,8 +7,8 @@ import store from './vuex/store';
 import axios from 'axios';
 
 // axios.defaults.baseURL = 'http://192.168.2.105:8080/appMSJava/api/v1/main/';
-axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
-// axios.defaults.baseURL = '/main/';
+// axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
+axios.defaults.baseURL = '/main/';
 
 Vue.config.productionTip = false;
 /* eslint-disable no-new */

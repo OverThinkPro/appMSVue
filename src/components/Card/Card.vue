@@ -14,7 +14,7 @@
           <div class="search-bar">
             <div class="input-group search-bar-input fl">
               <span class="input-group-addon">卡号</span>
-              <input class="form-control refresh" type="text" name="">
+              <input id="cardIdInput" class="form-control refresh" type="text" name="">
             </div>
             <div class="search-bar-select fl">
               <select id="cardStateSelect" class="form-control refresh" name="">
@@ -25,18 +25,14 @@
               </select>
             </div>
             <div class="search-bar-select fl">
-              <select class="form-control refresh" name="">
+              <select id="unitIdSelect" class="form-control refresh" name="">
                 <option value="">- 请选择部门 -</option>
-                <option value="">部门1</option>
-                <option value="">部门2</option>
-                <option value="">部门3</option>
-                <option value="">部门4</option>
-                <option value="">部门5</option>
+                <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
               </select>
             </div>
             <div class="input-group search-bar-input fl">
               <span class="input-group-addon">员工姓名</span>
-              <input class="form-control refresh" type="text" name="">
+              <input id="staffNameInput" class="form-control refresh" type="text" name="">
             </div>
             <div class="btn-group fr">
               <button class="btn btn-default" type="button" @click="clearAndInitSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
@@ -70,16 +66,8 @@
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="sendCardPagingBox">
+            <ul id="sendCardPaging" class="pagination"></ul>
           </nav>
         </div>
       </div>
@@ -116,16 +104,8 @@
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="rightCardPagingBox">
+            <ul id="rightCardPaging" class="pagination"></ul>
           </nav>
         </div>
       </div>
@@ -158,16 +138,8 @@
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="lostCardPagingBox">
+            <ul id="lostCardPaging" class="pagination"></ul>
           </nav>
         </div>
       </div>
@@ -200,16 +172,8 @@
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="exceptionCardPagingBox">
+            <ul id="exceptionCardPaging" class="pagination"></ul>
           </nav>
         </div>
       </div>
@@ -253,8 +217,7 @@
                   <div class="ms-bar-select fl" style="margin-left: 0px;">
                     <select class="form-control refresh" name="">
                       <option value="">- 请选择部门 -</option>
-                      <option value="">部门1</option>
-                      <option value="">部门2</option>
+                      <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
                     </select>
                   </div>
                   <div class="input-group ms-bar-input fl">
@@ -288,7 +251,8 @@
                       <td>{{ elem.name }}</td>
                       <td>{{ elem.unit }}</td>
                       <td>{{ elem.cardId }}</td>
-                      <td><a href="javascript: void(0);">选择</a></td>
+                      <td v-if="!elem.cardId"><a href="javascript: void(0);">选择</a></td>
+                      <td v-else>-</td>
                     </tr>
                   </tbody>
                 </table>
@@ -316,7 +280,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn" @click="show_time_alert()">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="sendCard()">发卡</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -426,8 +390,10 @@
 </template>
 
 <script>
-import {currentTime} from '../../assets/script/date';
 import bootbox from 'bootbox/bootbox.min';
+import axios from 'axios';
+import { currentTime } from '../../assets/script/date';
+import { initPagination } from '../../assets/script/initplugin';
 
 export default {
   name: 'card',
@@ -447,39 +413,18 @@ export default {
           unit: '机电科',
           user: '李建刚',
           time: '2014-10-08'
-        },
-        {
-          cardId: '001',
-          cardState: '故障',
-          name: '李权良',
-          no: '001001',
-          unit: '机电科',
-          user: '李建刚',
-          time: '2014-10-08'
-        },
-        {
-          cardId: '001',
-          cardState: '故障',
-          name: '李权良',
-          no: '001001',
-          unit: '机电科',
-          user: '李建刚',
-          time: '2014-10-08'
-        },
-        {
-          cardId: '001',
-          cardState: '故障',
-          name: '李权良',
-          no: '001001',
-          unit: '机电科',
-          user: '李建刚',
-          time: '2014-10-08'
         }
       ],
+      cardListCache: {
+        cardList: [],
+        total: 0
+      },
+      unitList: []
     };
   },
   mounted () {
     this.initEvent();
+    this.defaultLoadUnit();
   },
   methods: {
     initEvent () {
@@ -505,12 +450,60 @@ export default {
       $("select.refresh").find("option:eq(0)").prop('selected', true);
       this.cardState = 0;
     },
+    getSearchParam () {
+      let params = {},
+          cardId, cardState, unitId, staffName;
+
+      cardId = $("#cardIdInput").val();
+      if (cardId) { params.cardId = cardId; }
+
+      cardState = $("#cardStateSelect").find("option:selected").text();
+      if (cardState) { params.cardState = cardState; }
+
+      unitId = $("#unitIdSelect").find("option:selected").val();
+      if (unitId) { params.unitId = unitId; }
+
+      staffName = $("#staffNameInput").val();
+      if (staffName) { params.staffName = staffName; }
+
+      return params;
+    },
+    /**
+     * Start default load data set.
+     */
+    defaultLoadUnit () {
+      let self = this;
+
+      axios.get('/base/unit/')
+            .then((response) => {
+                let { meta, data } = response.data;
+
+                if (meta.success) {
+                  if (data && data.unitList) {
+                    self.unitList = data.unitList;
+                  }
+                } else {
+                  bootbox.alert({
+                    message: meta.message
+                  });
+                }
+            });
+    },
+    /**
+     * End default load data set.
+     */
+    /**
+     * Start business operation for staff card.
+     */
+    // 发卡
+    
     sendCard () {
 
     },
     checkCard () {
       bootbox.alert("核卡成功，信息无误!");
     },
+    // 收卡
     revokeCard () {
       bootbox.confirm({
         message: '定位卡收卡一旦操作，不可恢复，是否确定操作？',
@@ -526,11 +519,11 @@ export default {
           bootbox.alert("定位卡收卡成功！");
         }
       });
-    },
-    show_time_alert () {
-      alert("time: " + this.user.current);
     }
   }
+  /**
+   * End business operation for staff card.
+   */
 };
 </script>
 
