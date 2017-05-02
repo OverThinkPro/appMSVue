@@ -163,7 +163,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearchInfo()">
               <span aria-hidden="true">&times;</span>
               <span class="sr-only"></span>
             </button>
@@ -217,7 +217,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearchInfo()">退出</button>
           </div>
         </div>
       </div>

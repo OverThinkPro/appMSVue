@@ -159,6 +159,7 @@
 import bootbox from 'bootbox/bootbox.min';
 import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
+import { deepCopy } from '../../assets/script/extends';
 
 export default {
   name: 'job',
@@ -281,7 +282,8 @@ export default {
        if (type == 'UPDATE_JOBTYPE') {
          self.jobTypeListCache.jobTypeList.forEach((jobType, index) => {
            if (jobType.jobId == jobId) {
-             self.jobType = jobType;
+             self.jobType = deepCopy(jobType);
+             delete self.jobType.uber;
            }
          });
          $("#update_job_modal").modal('show');
