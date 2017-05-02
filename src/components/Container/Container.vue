@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import VHeader from './components/Header/Header.vue';
-import VFooter from './components/Footer/Footer.vue';
+import VHeader from '@/components/Header/Header.vue';
+import VFooter from '@/components/Footer/Footer.vue';
 
 export default {
   name: 'container-wrapper',

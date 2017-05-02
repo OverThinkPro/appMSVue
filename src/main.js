@@ -12,6 +12,18 @@ axios.defaults.baseURL = '/main/';
 
 Vue.config.productionTip = false;
 /* eslint-disable no-new */
+// router.beforeEach((to, from, next) => {
+//   if (to.path == '/Login') {
+//     sessionStorage.removeItem('user');
+//   }
+//   let user = JSON.parse(sessionStorage.getItem('user'));
+//   if (!user && to.path != '/Login') {
+//     next({ path: '/Login' });
+//   } else {
+//     next();
+//   }
+// });
+
 new Vue({
   el: '#app',
   router,

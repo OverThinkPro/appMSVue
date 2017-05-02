@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Hello from '@/components/Hello';
+import Hello from '@/components/Container/Container';
 import Login from '@/components/Login/Login';
 import Main from '@/components/Main/Main';
 
@@ -35,11 +35,6 @@ export default new Router({
       path: '/',
       name: '/',
       component: Main
-    },
-    {
-      path: '/Hello',
-      name: 'Hello',
-      component: Hello
     },
     {
       path: '/Login',
