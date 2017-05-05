@@ -16,6 +16,7 @@
     "bootstrap-table": "^1.11.2",
     "bootstrap-validator": "^0.11.9",
     "jquery": "^3.2.1",
+    "js-shortid": "^0.1.1",
     "openlayers": "^3.20.1",
     "vue": "^2.2.2",
     "vue-router": "^2.2.0",

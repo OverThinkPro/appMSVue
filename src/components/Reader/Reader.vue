@@ -13,44 +13,41 @@
         <div class="search-bar">
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" name="">
+              <select class="form-control refresh" name="regionTypeSel">
                 <option value="">- 请选择位置类型 -</option>
-                <option value="">井口</option>
-                <option value="">普通</option>
-                <option value="">危险区域</option>
-                <option value="">重点区域</option>
+                <option value="井口区域">井口区域</option>
+                <option value="普通区域">普通区域</option>
+                <option value="危险区域">危险区域</option>
+                <option value="重点区域">重点区域</option>
               </select>
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">分站名称</span>
-              <input type="text" class="form-control refresh">
+              <input type="text" class="form-control refresh" name="readerNameInp">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">分站IP</span>
-              <input type="text" class="form-control refresh">
+              <input type="text" class="form-control refresh" name="readerIpInp">
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" name="">
+              <select class="form-control refresh" name="readerStatusSel">
                 <option value="">- 请选择分站状态 -</option>
-                <option value="">正常</option>
-                <option value="">异常</option>
+                <option value="正常">正常</option>
+                <option value="异常">异常</option>
               </select>
             </div>
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" name="">
+              <select class="form-control refresh" name="readerRegionSel">
                 <option value="">- 请选择所属区域 -</option>
-                <option value="">井口</option>
-                <option value="">A平面</option>
-                <option value="">B平面</option>
-                <option value="">C平面</option>
+                <option v-if="regionList != null" v-for="region in regionList" :key="region.key" :value="region.regionId">{{ region.regionName }}</option>
               </select>
             </div>
           </div>
@@ -61,7 +58,7 @@
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-button">
-              <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+              <button type="button" class="btn btn-primary" @click="loadReaderList()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
             </div>
           </div>
         </div>
@@ -69,9 +66,11 @@
       <div class="table-box outside-box">
         <div class="btn-box">
           <div class="fl">
-            <button type="button" class="btn btn-primary" @click="loadDateToModal()" data-toggle="modal" data-target="#add_reader_modal">添加</button>
-            <button type="button" class="btn btn-primary" @click="loadDateToModal()" data-toggle="modal" data-target="#update_reader_modal">修改</button>
-            <button type="button" class="btn btn-primary" @click="deleteReader()">删除</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mark_reader_modal">
+              <i class="glyphicon glyphicon-screenshot"></i>新增
+            </button>
+            <button type="button" class="btn btn-primary" @click="checkType('UPDATE_READER')">修改</button>
+            <button type="button" class="btn btn-primary" @click="checkType('DELETE_READER')">删除</button>
           </div>
           <div class="fr">
             <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -82,9 +81,8 @@
           <table class="table table-bordered table-hover">
             <thead>
               <tr>
-                <th><input type="checkbox" name="allReader" value=""></th>
+                <th>选择</th>
                 <th>序号</th>
-                <th>分站ID</th>
                 <th>分站名称</th>
                 <th>安装位置</th>
                 <th>安装坐标</th>
@@ -96,35 +94,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(elem, index) in readerList" :key="elem.key">
-                <td><input type="checkbox" name="reader" :value="elem.readerId"></td>
+              <tr v-if="readerListCache.readerList != null" v-for="(reader, index) in readerListCache.readerList" :key="reader.key">
+                <td><input type="radio" name="reader" :value="reader.readerId"></td>
                 <td>{{ index + 1 }}</td>
-                <td>{{ elem.readerId }}</td>
-                <td>{{ elem.readerName }}</td>
-                <td>{{ elem.readerLocation }}</td>
-                <td>{{ elem.readerPosition }}</td>
-                <td>{{ elem.locationType }}</td>
-                <td>{{ elem.readerState }}</td>
-                <td>{{ elem.powerSupply }}</td>
-                <td>{{ elem.readerIP }}</td>
+                <td>{{ reader.readerName }}</td>
+                <td>{{ reader.regionName }}</td>
+                <td>{{ reader.geoPoint }}</td>
+                <td>{{ reader.regionType }}</td>
+                <td>{{ reader.readerStatus }}</td>
+                <td>{{ filterPowerSupply(reader.powerSupplyMode) }}</td>
+                <td>{{ reader.readerIp }}</td>
                 <td>
-                  <a href="javascript: void(0);" title="参数配置" data-toggle="modal" data-target="#set_reader_parameter_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
-                  <a href="javascript: void(0);" title="地图标注" data-toggle="modal" data-target="#mark_reader_modal"><i class="glyphicon glyphicon-screenshot"></i></a>&nbsp;|
+                  <a href="javascript: void(0);" title="参数配置" @click="setReaderParams(reader)" data-toggle="modal" data-target="#set_reader_parameter_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
+                  <a href="javascript: void(0);" title="移动分站" @click="openModal('MOVE_READER', reader.readerId)"><i class="glyphicon glyphicon-transfer"></i></a>&nbsp;|
                   <a href="javascript: void(0);" title="地图查看"><i class="glyphicon glyphicon-globe"></i></a>
                 </td>
               </tr>
             </tbody>
           </table>
-          <nav class="pagination-box">
-            <ul class="pagination">
-              <li><a href="#">&laquo;</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li><a href="#">&raquo;</a></li>
-            </ul>
+          <nav class="pagination-box" id="readerListPagingBox">
+            <div id="readerListPaging" class="pagination"></div>
           </nav>
         </div>
       </div>
@@ -147,38 +136,21 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="input-group-line">
-                <div class="group-left">分站ID</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerId">
-                </div>
-              </div>
-              <div class="input-group-line">
                 <div class="group-left">分站名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerName">
+                  <input class="form-control" type="text" name="" v-model="reader.readerName">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">位置坐标</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerLocation">
-                </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">位置类型</div>
-                <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.locationType">
-                    <option value="">- 请选择位置类型 -</option>
-                    <option value="井口区">井口区</option>
-                    <option value="重点区域">重点区域</option>
-                    <option value="危险区域">危险区域</option>
-                  </select>
+                  <input class="form-control" type="text" name="addReaderGeoPointInp" readonly="readonly" v-model="reader.geoPoint">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">分站状态</div>
                 <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.readerState">
+                  <select class="form-control" name="" v-model="reader.readerStatus">
                     <option value="">- 请选择分站状态 -</option>
                     <option value="正常">正常</option>
                     <option value="异常">异常</option>
@@ -188,30 +160,36 @@
               <div class="input-group-line">
                 <div class="group-left">供电方式</div>
                 <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.powerSupply">
+                  <select class="form-control" name="" v-model="reader.powerSupplyMode">
                     <option value="">- 请选择供电方式 -</option>
-                    <option value="直流电">直流电</option>
-                    <option value="交流电">交流电</option>
+                    <option value="0">电源</option>
+                    <option value="1">电池</option>
                   </select>
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">电池电量</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.battery_v">
+                  <input class="form-control" type="text" name="" v-model="reader.batteryCapacity">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">分站IP</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerIP">
+                  <input class="form-control" type="text" name="" v-model="reader.readerIp">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">安装时间</div>
+                <div class="group-right">
+                  <input id="installDate" class="form-control" type="text" readonly="readonly" placeholder="请选择安装时间" v-model="reader.installDate">
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addReaderOper()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="">退出</button>
           </div>
         </div>
       </div>
@@ -231,12 +209,6 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="input-group-line">
-                <div class="group-left">分站ID</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disable" type="text" name="" v-model="reader.readerId">
-                </div>
-              </div>
-              <div class="input-group-line">
                 <div class="group-left">分站名称</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="reader.readerName">
@@ -245,24 +217,13 @@
               <div class="input-group-line">
                 <div class="group-left">位置坐标</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerLocation">
-                </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">位置类型</div>
-                <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.locationType">
-                    <option value="">- 请选择位置类型 -</option>
-                    <option value="井口区">井口区</option>
-                    <option value="重点区域">重点区域</option>
-                    <option value="危险区域">危险区域</option>
-                  </select>
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="reader.geoPoint">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">分站状态</div>
                 <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.readerState">
+                  <select class="form-control refresh" name="" v-model="reader.readerStatus">
                     <option value="">- 请选择分站状态 -</option>
                     <option value="正常">正常</option>
                     <option value="异常">异常</option>
@@ -272,29 +233,35 @@
               <div class="input-group-line">
                 <div class="group-left">供电方式</div>
                 <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.powerSupply">
+                  <select class="form-control refresh" name="" v-model="reader.powerSupplyMode">
                     <option value="">- 请选择供电方式 -</option>
-                    <option value="直流电">直流电</option>
-                    <option value="交流电">交流电</option>
+                    <option value="0">电源</option>
+                    <option value="1">电池</option>
                   </select>
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">电池电量</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.battery_v">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.batteryCapacity">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">分站IP</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerIP">
+                  <input class="form-control refresh" type="text" name="" v-model="reader.readerIp">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">安装时间</div>
+                <div class="group-right">
+                  <input id="installDate2" class="form-control" type="text" readonly="readonly" placeholder="请选择安装时间" v-model="reader.installDate">
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateReaderOper()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -315,28 +282,28 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="show-info-group clear-bottom clear-radius-bottom">
-                <div class="group-left">分站ID</div>
-                <div class="group-right">FZ001</div>
                 <div class="group-left">分站名称</div>
-                <div class="group-right">井口分站</div>
+                <div class="group-right">{{ readerParams.readerName }}</div>
+                <div class="group-left">安装位置</div>
+                <div class="group-right">{{ readerParams.regionName }}</div>
               </div>
               <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="group-left">位置坐标</div>
-                <div class="group-right">(100, 200.2)</div>
+                <div class="group-right">{{ readerParams.geoPoint }}</div>
                 <div class="group-left">位置类型</div>
-                <div class="group-right">井口</div>
+                <div class="group-right">{{ readerParams.regionType }}</div>
               </div>
               <div class="show-info-group clear-bottom clear-border-radius">
                 <div class="group-left">分站状态</div>
-                <div class="group-right">正常</div>
+                <div class="group-right">{{ readerParams.readerStatus }}</div>
                 <div class="group-left">供电方式</div>
-                <div class="group-right">电源</div>
+                <div class="group-right">{{ filterPowerSupply(readerParams.powerSupplyMode) }}</div>
               </div>
               <div class="show-info-group clear-radius-top ">
                 <div class="group-left">电池电量</div>
-                <div class="group-right">220V</div>
+                <div class="group-right">{{ readerParams.batteryCapacity }}</div>
                 <div class="group-left">分站IP</div>
-                <div class="group-right">192.168.1.1</div>
+                <div class="group-right">{{ readerParams.readerIp }}</div>
               </div>
             </div>
             <div class="table-box content-box">
@@ -351,25 +318,25 @@
                     <div class="input-group-line">
                       <div class="group-left">设备名称</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.deviceName">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">密码</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="password" name="">
+                        <input class="form-control refresh" type="password" name="" v-model="readerParams.password">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">信息打印级别</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.printLevel">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">modbus端口</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.modbusPort">
                       </div>
                     </div>
                   </div>
@@ -431,25 +398,25 @@
                     <div class="input-group-line">
                       <div class="group-left">MAC地址</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.macAddr">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">IP地址</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.ip">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">子网掩码</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.mask">
                       </div>
                     </div>
                     <div class="input-group-line">
                       <div class="group-left">网关</div>
                       <div class="group-right">
-                        <input class="form-control refresh" type="text" name="">
+                        <input class="form-control refresh" type="text" name="" v-model="readerParams.gateway">
                       </div>
                     </div>
                     <div class="input-group-line">
@@ -489,138 +456,88 @@
             <div class="modal-table-box">
               <div class="table-box-right fl">
                 <div class="map-box">
-                  <div id="map"></div>
+                  <div id="markMap"></div>
+                  <div class="" style="display: none;">
+                    <div id="marker" class="marker">
+                      <a class="markerpos" id="markerpos" href="javascript: void(0);"></a>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="table-box-left fr">
-                <div class="document">
                   <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
+                    <h5 for="">操作</h5>
                   </div>
                   <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
+                    <input id="markInp" checked="checked" type="radio" name="mark" value="mark">
+                    <label for="markInp">标注</label>
+                  <!-- </div>
+                  <div class="document-line"> -->
+                    <input id="selectInp" style="margin-left: 16px;" type="radio" name="mark" value="select">
+                    <label for="selectInp">选取</label>
+                  <!-- </div>
+                  <div class="document-line"> -->
+                    <input id="removeInp" style="margin-left: 16px;" type="radio" name="mark" value="remove">
+                    <label for="removeInp">移除</label>
                   </div>
                   <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
+                    <button type="button" class="btn btn-primary" @click="fullScreen('markMap')">全屏查看</button>
                   </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-primary modal-btn">保存</button> -->
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分站地图移动模态框 -->
+    <div class="modal fade" id="move_reader_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width: 80%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">分站位置移动</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="table-box-right fl">
+                <div class="map-box">
+                  <div id="moveMap"></div>
                 </div>
-                <div class="document">
+              </div>
+              <div class="table-box-left fr">
                   <div class="document-line">
-                    <i class="glyphicon glyphicon-star fr"></i>
+                    <label for="">操作:</label>
+                    <input style="margin-left: 10%;" checked="checked" type="radio" name="move">
+                    <span>移动</span>
+                    <input style="margin-left: 10%;" type="radio" name="move">
+                    <span>选取</span>
                   </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
+                  <div class="document">
+                    <div class="document-line">
+                      <label class="label-line-left">分站名称:</label>
+                      <label class="label-line-right"></label>
+                    </div>
+                    <div class="document-line">
+                      <label class="label-line-left">区域名称:</label>
+                      <label class="label-line-right"></label>
+                    </div>
+                    <div class="document-line">
+                      <label class="label-line-left">分站编号:</label>
+                      <label class="label-line-right"></label>
+                    </div>
+                    <div class="document-line">
+                      <label class="label-line-left">分站编号:</label>
+                      <label class="label-line-right"></label>
+                    </div>
                   </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button" disabled="disabled">标注</button>
-                  </div>
-                </div>
-                <div class="document">
-                  <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
-                </div>
-                <div class="document">
-                  <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
-                </div>
-                <div class="document">
-                  <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
-                </div>
-                <div class="document">
-                  <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
-                </div>
-                <div class="document">
-                  <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
-                </div>
-                <div class="document">
-                  <div class="document-line">
-                    <i class="glyphicon glyphicon-star-empty fr"></i>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">名称:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <label class="label-line-left">位置:</label>
-                    <label class="label-line-right"></label>
-                  </div>
-                  <div class="document-line">
-                    <button class="btn btn-primary" type="button">标注</button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -631,137 +548,578 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import bootbox from 'bootbox';
-import initLoad from '../../assets/script/sidemenu';
 import ol from 'openlayers/dist/ol';
+import bootbox from 'bootbox';
+import axios from 'axios';
+import initLoad from '../../assets/script/sidemenu';
+import jeDate from '../../assets/script/jedate/jquery.jedate.min';
+import fullscreen from '../../assets/script/fullscreen';
+import { initPagination } from '../../assets/script/initplugin';
+import { deepCopy } from '../../assets/script/extends';
 
 export default {
   name: 'reader',
   data () {
     return {
-      reader: {
-        readerId: '10001',
-        readerName: '分站1',
-        readerLocation: '区域1',
-        readerPosition: '(120.38, 130.49)',
-        locationType: '重点区域',
-        readerState: '正常',
-        powerSupply: '交流电',
-        battery_v: '3.8v',
-        readerIP: '192.168.2.113'
+      mapCache: {
+        markMap: {},
+        markView: {},
+        regionLayer: {},
+        readerLayer: {},
+        readerSource: {},
+        readerPoint: {
+          flag: false,
+          readerFeature: {},
+          coordinate: {},
+        },
+        moveMap: {},
+        moveView: {},
+        pointStyle: {},
+        markerStyle: {},
       },
-      readerList: [
-        {
-          readerId: '10001',
-          readerName: '分站1',
-          readerLocation: '区域1',
-          readerPosition: '(120.38, 130.49)',
-          locationType: '重点区域',
-          readerState: '正常',
-          powerSupply: '交流电',
-          readerIP: '192.168.2.113'
-        },
-        {
-          readerId: '10001',
-          readerName: '分站1',
-          readerLocation: '区域1',
-          readerPosition: '(120.38, 130.49)',
-          locationType: '重点区域',
-          readerState: '正常',
-          powerSupply: '交流电',
-          readerIP: '192.168.2.113'
-        },
-        {
-          readerId: '10001',
-          readerName: '分站1',
-          readerLocation: '区域1',
-          readerPosition: '(120.38, 130.49)',
-          locationType: '重点区域',
-          readerState: '正常',
-          powerSupply: '交流电',
-          readerIP: '192.168.2.113'
-        },
-        {
-          readerId: '10001',
-          readerName: '分站1',
-          readerLocation: '区域1',
-          readerPosition: '(120.38, 130.49)',
-          locationType: '重点区域',
-          readerState: '正常',
-          powerSupply: '交流电',
-          readerIP: '192.168.2.113'
-        },
-        {
-          readerId: '10001',
-          readerName: '分站1',
-          readerLocation: '区域1',
-          readerPosition: '(120.38, 130.49)',
-          locationType: '重点区域',
-          readerState: '正常',
-          powerSupply: '交流电',
-          readerIP: '192.168.2.113'
-        }
-      ]
+      reader: {},
+      readerList: [],
+      readerListCache: {
+        readerList: [],
+        total: 0
+      },
+      regionList: [],
+      readerParams: {}
     };
   },
   mounted () {
     initLoad();
+    this.initEvent();
     this.loadMap();
+    this.defaultLoadRegion();
+    this.loadReaderList();
   },
   methods: {
+    initEvent () {
+      let self = this;
+
+      $("#installDate, #installDate2").jeDate({
+        format: 'YYYY-MM-DD hh:mm:ss',
+        isTime: true,
+        isinitVal: false
+      });
+
+      $("#add_reader_modal").on('show.bs.modal', function() {
+        $("input[name='mark']:radio").eq(0).prop('checked', true);
+        let geoPoint = self.reader.geoPoint,
+            geoPointRef = self.reader.geoPointRef,
+            regionId = self.reader.regionId;
+        self.reader = {};
+        self.reader.regionId = regionId;
+        self.reader.geoPoint = geoPoint;
+        self.reader.geoPointRef = geoPointRef;
+        self.reader.readerStatus = '';
+        self.reader.powerSupplyMode = '';
+      });
+      $("#mark_reader_modal").on('shown.bs.modal', function() {
+        self.mapCache.readerPoint.flag = false;
+      });
+      $("#move_reader_modal").on('shown.bs.modal', function() {
+        self.mapCache.readerPoint.flag = false;
+      });
+    },
     clearSearch () {
       $("input.refresh:not(:radio)").val("");
       $("input.refresh:radio").eq(0).prop('checked', true);
+      $("input[name='mark']:radio").eq(0).prop('checked', true);
+      $("input[name='move']:radio").eq(0).prop('checked', true);
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+      $("div.refresh").text("");
       $(".nav-tabs li.active").removeClass('active');
       $(".nav-tabs li:eq(0)").addClass('active');
     },
-    loadDateToModal () {
-      this.reader = {
-        readerId: '10001',
-        readerName: '分站1',
-        readerLocation: '区域1',
-        readerPosition: '(120.38, 130.49)',
-        locationType: '重点区域',
-        readerState: '正常',
-        powerSupply: '交流电',
-        battery_v: '3.8v',
-        readerIP: '192.168.2.113'
-      };
+    fullScreen(selector) {
+      fullscreen(selector);
     },
+    /**
+     * Start load map module.
+     */
     loadMap () {
+      let self = this;
+
+      let taiyuan = ol.proj.fromLonLat([0, 0]);
+      self.mapCache.moveView = self.mapCache.markView = new ol.View({
+        center: taiyuan,
+        zoom: 6,
+        minZoom: 6,
+        maxZoom: 20
+      });
       $("#mark_reader_modal").on('shown.bs.modal', function() {
-        var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
-        taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
-        beijing = ol.proj.fromLonLat([12950000, 4860000]);
-        var view = new ol.View({
-          center: taiyuan,
-          minZoom: 8,
-          zoom: 3
-        });
-        var map = new ol.Map({
-          target: 'map',
+        $(".ol-viewport").remove();
+        self.mapCache.markMap = new ol.Map({
+          target: 'markMap',
           layers: [
             new ol.layer.Tile({
               source: new ol.source.OSM()
             })
           ],
-          view: new ol.View({
-            center: taiyuan,
-            zoom: 8,
-            minZoom: 6,
-            maxZoom: 12,
-            rotation: Math.PI / 6
-          })
+          view: self.mapCache.markView
         });
+        self.addRadioEventToMap();
+        self.loadRegionMapLayer(self.mapCache.markMap);
+        self.loadReaderMapLayer(self.mapCache.markMap);
+      });
+
+      $("#move_reader_modal").on('shown.bs.modal', function() {
+        $(".ol-viewport").remove();
+        self.mapCache.moveMap = new ol.Map({
+          target: 'moveMap',
+          layers: [
+            new ol.layer.Tile({
+              source: new ol.source.OSM()
+            })
+          ],
+          view: self.mapCache.moveView
+        });
+        self.loadRegionMapLayer(self.mapCache.moveMap);
+        self.loadMoveReaderMapLayer(self.mapCache.moveMap, self.reader.readerId);
       });
     },
-    deleteReader () {
+    loadRegionMapLayer (currentMap) {
+      let self = this;
+
+      axios.get('/base/map/region/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.regionList) {
+                  let regionList = data.regionList,
+                      featureList = new Array(), featureCollection;
+
+                  regionList.forEach(function(region, index) {
+                    let geometry = JSON.parse(region.geoPolygon);
+
+                    featureList.push(self.createFeature(geometry, { "type": "Polygon", "id": region.regionId, "name": region.regionName }));
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.regionLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                      features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                        dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                        featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                      })
+                    }),
+                    style: new ol.style.Style({
+                      fill: new ol.style.Fill({
+                        color: 'rgba(255, 255, 255, 0)'
+                      }),
+                      stroke: new ol.style.Stroke({
+                        color: '#319FD3',
+                        width: 2
+                      })
+                    })
+                  });
+                  currentMap.addLayer(self.mapCache.regionLayer);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    loadReaderMapLayer (currentMap) {
+      let self = this;
+
+      axios.get('/base/map/reader/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.readerList) {
+                  let readerList = data.readerList,
+                      featureList = new Array(), featureCollection;
+
+                  readerList.forEach(function(reader, index) {
+                    let geometry = JSON.parse(reader.geoPoint),
+                        pointFeature = self.createFeature(geometry, { "type": "Point", "id": reader.readerId});
+
+                    featureList.push(pointFeature);
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.readerSource = new ol.source.Vector({
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    })
+                  });
+                  self.mapCache.readerLayer = new ol.layer.Vector({
+                    source: self.mapCache.readerSource,
+                    style: new ol.style.Style({
+                      image: new ol.style.Circle({
+                          radius: 7,
+                          fill: new ol.style.Fill({
+                              color: '#6699CC'
+                          })
+                      })
+                    })
+                  });
+                  currentMap.addLayer(self.mapCache.readerLayer);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    loadMoveReaderMapLayer (currentMap, readerId) {
+      let self = this;
+
+      axios.get('/base/map/reader/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.readerList) {
+                  let readerList = data.readerList,
+                      featureList = new Array();
+
+                  readerList.forEach(function(reader, index) {
+                    let geoPoint = JSON.parse(reader.geoPoint),
+                        newFeature = new ol.Feature(new ol.geom.Point(ol.proj.transform(geoPoint.coordinates, 'EPSG:4326', 'EPSG:3857')));
+
+                    if (reader.readerId == self.reader.readerId) {
+                      newFeature.setStyle(self.createElementStyle());
+                    } else {
+                      newFeature.setStyle(new ol.style.Style({
+                        image: new ol.style.Circle({
+                          radius: 7,
+                          fill: new ol.style.Fill({
+                              color: '#6699CC'
+                          })
+                        })
+                      }));
+                    }
+                    featureList.push(newFeature);
+                  });
+
+                  self.mapCache.readerSource = new ol.source.Vector({
+                    features: featureList
+                  });
+                  self.mapCache.readerLayer = new ol.layer.Vector({
+                    source: self.mapCache.readerSource
+                  });
+                  self.mapCache.moveMap.addLayer(self.mapCache.readerLayer);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    // 添加事件
+    addRadioEventToMap () {
+      let self = this;
+
+      self.mapCache.markMap.on('click', function(event) {
+        let type = $("input[name='mark']:radio:checked").val(),
+            currentPoint = event.coordinate;
+
+        let selectedFeature = self.mapCache.markMap.forEachFeatureAtPixel(event.pixel, (feature) => {
+          return feature;
+        });
+        if (type == 'mark') {
+
+          let point = ol.proj.transform(currentPoint, 'EPSG:3857', 'EPSG:4326'),
+              geoPoint = self.createPointJson(point);
+
+          axios.get('/base/reader/range/', { params: { 'geoPoint': geoPoint }})
+                .then((response) => {
+                  let { meta, data } = response.data;
+
+                  if (meta.success) {
+                    if (data && data.regionId) {
+                      self.reader.regionId = data.regionId;
+                      self.addNewReader(currentPoint, selectedFeature);
+                    } else { bootbox.alert("分站位置信息检测失败,请重新安置!"); return false;}
+                  } else { bootbox.alert("新增分站不再已划分区域中或在区域边界,请重新安置分站!"); return false; }
+                });
+        } else if (type == 'select') {
+          self.selectRefPoint(currentPoint, selectedFeature);
+        } else if (type == 'remove') {
+          self.removeNewReader(currentPoint, selectedFeature);
+        }
+      });
+    },
+    // 添加新的分站元素到图层
+    addNewReader (coordinate, selectedFeature) {
+      let self = this,
+          newFeature = new ol.Feature({
+            "geometry": new ol.geom.Point(coordinate)
+          });
+
+      if (self.mapCache.readerPoint.flag) {
+        self.mapCache.readerSource.removeFeature(self.mapCache.readerPoint.readerFeature);
+      }
+      newFeature.setStyle(self.createElementStyle());
+      self.mapCache.readerPoint = {
+        'readerFeature': newFeature,
+        'flag': true,
+        'coordinate': coordinate
+      };
+      console.log("readerPoint: ", self.mapCache.readerPoint);
+      self.mapCache.readerSource.addFeature(self.mapCache.readerPoint.readerFeature);
+      self.reader.geoPoint = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+      $("input[name='mark']:radio").eq(1).prop('checked', true);
+    },
+    // 选择参照点元素
+    selectRefPoint (coordinate, selectedFeature) {
+      let self = this;
+
+      if (!self.mapCache.readerPoint.flag) {
+        bootbox.alert("尚未添加新分站,设置参照点操作无效!");
+        $("input[name='mark']:radio").eq(0).prop('checked', true);
+        return false;
+      }
+
+      if (self.checkPointRange(coordinate, selectedFeature)) {
+        bootbox.alert("不可选择自身作为参照点!请重新选择!");
+        return false;
+      } else {
+        self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+        $("#add_reader_modal").modal('show');
+      }
+    },
+    // 移除元素
+    removeNewReader (coordinate, selectedFeature) {
+      let self = this;
+
+      if (!self.checkPointRange(coordinate, selectedFeature)) {
+        bootbox.alert("选择元素并非新添加分站,该移除操作无效!");
+        return false;
+      } else {
+        if (self.mapCache.readerPoint.flag) {
+          self.mapCache.readerSource.removeFeature(self.mapCache.readerPoint.readerFeature);
+          self.mapCache.readerPoint = {};
+          bootbox.alert("新分站移除成功,请重新添加新分站!");
+          $("input[name='mark']:radio").eq(0).prop('checked', true);
+        } else {
+          bootbox.alert("尚未添加新分站,该移除操作无效!");
+          return false;
+        }
+      }
+    },
+    // 检测点是否在范围内
+    checkPointRange (coordinate, selectedFeature) {
+      let self = this;
+          // x = self.mapCache.readerPoint.coordinate[0],
+          // y = self.mapCache.readerPoint.coordinate[1];
+      // return (coordinate[0] >= x - 7 && coordinate[0] <= x + 7)
+      //     || (coordinate[1] >= y - 7 && coordinate <= y + 7) ||
+          return (self.mapCache.readerPoint.readerFeature == selectedFeature);
+    },
+    // 构造点坐标
+    createPointJson (coordinate) {
+      return "Point(" + coordinate[0] + " " + coordinate[1] + ")";
+    },
+    // 构造元素样式
+    createElementStyle () {
+      return new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 7,
+            fill: new ol.style.Fill({
+                color: 'red'
+            })
+        })
+      });
+    },
+    // 构造元素
+    createFeature(geometry, properties) {
+      return {
+        "type": "Feature",
+        "geometry": geometry,
+        "properties": properties
+      };
+    },
+    createFeatureCollection (features) {
+      return {
+        "type": "FeatureCollection",
+        "features": features
+      };
+    },
+    // 检测打开不同的地图模态框
+    openModal (type, readerId) {
+      let self = this;
+
+      if (type == 'MOVE_READER') {
+          self.reader.readerId = readerId;
+          $("#move_reader_modal").modal('show');
+      }
+    },
+    /**
+     * End load map module.
+     */
+    /**
+     * Start filters function module.
+     */
+    filterPowerSupply (powerSupplyMode) {
+      let mode = ['电源', '电池'];
+      return mode[powerSupplyMode];
+    },
+    /**
+     * End filters function module.
+     */
+    /**
+     * Start default load data.
+     */
+    defaultLoadRegion () {
+      let self = this;
+
+      axios.get('/base/region/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.regionList) {
+                  self.regionList = data.regionList;
+                } else { bootbox.alert("区域信息装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域信息装载失败!"); }
+            });
+    },
+    getSearchParams () {
+      let params = {},
+          regionType, readerName, readerIp, readerStatus, regionId;
+
+      regionType = $("select[name='regionTypeSel']").find("option:selected").val();
+      if (regionType) { params.regionType = regionType; }
+
+      readerName = $("input[name='readerNameInp']").val();
+      if (readerName) { params.readerName = readerName; }
+
+      readerIp = $("input[name='readerIpInp']").val();
+      if (readerIp) { params.readerIp = readerIp; }
+
+      readerStatus = $("select[name='readerStatusSel']").find("option:selected").val();
+      if (readerStatus) { params.readerStatus = readerStatus; }
+
+      regionId = $("select[name='readerRegionSel']").val();
+      if (regionId) { params.regionId = regionId; }
+
+      return params;
+    },
+    loadReaderList () {
+      initPagination('readerListPagingBox', 'readerListPaging');
+      this.loadReaderListPaging(null);
+    },
+    loadReaderListPaging (page, isPaging) {
+      let self = this,
+          params = self.getSearchParams();
+
+      page = page || 1;
+      axios.post('/base/reader/p/' + page, params)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.readerList) {
+                  self.readerListCache.readerList = data.readerList;
+                  self.readerListCache.total = data.total;
+
+                  if (!isPaging) {
+                    $("#readerListPaging").page({
+                      total: self.readerListCache.total,
+                      pageSize: 10,
+                      prevBtnText: '上一页',
+                      nextBtnText: '下一页',
+                      showInfo: true,
+                      infoFormat: '{start} ~ {end}条，共{total}条',
+                    }).on("pageClicked", function (event, pageNumber) {
+                      self.loadReaderListPaging(pageNumber + 1, true);
+                    });
+                  }
+                } else { bootbox.alert("分站信息查询失败!"); }
+              } else { bootbox.alert("服务器内部错误, 分站信息查询失败!"); }
+            });
+    },
+     /**
+      * End default load data.
+      */
+    /**
+     * Start reader function module.
+     */
+    checkType (type) {
+      let self = this,
+          selectedReader = $("input[name='reader']:radio:checked"),
+          readerId = selectedReader.val();
+
+      if (selectedReader.length < 1) {
+        bootbox.alert({
+          message: '请先选择一条记录,再进行操作!'
+        });
+        return false;
+      } else {
+        if (type == 'UPDATE_READER') {
+          self.readerListCache.readerList.forEach(function(reader, index) {
+            if (readerId == reader.readerId) {
+              self.reader = deepCopy(reader);
+              delete self.reader.uber;
+              delete self.reader.regionType;
+            }
+          });
+
+          $("#update_reader_modal").modal('show');
+        } else if (type == 'DELETE_READER') {
+          self.deleteReaderOper(readerId);
+        }
+      }
+    },
+    // add reader
+    addReaderOper () {
+      let self = this;
+
+      self.reader.installDate = $("#installDate").val();
+
+      var shortid = require('js-shortid');
+      self.reader.readerId = shortid.gen();
+      axios.post('/base/reader/', self.reader)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  self.reader = {};
+                  $("#add_reader_modal").modal('hide');
+                  $("#mark_reader_modal").modal('hide');
+                  bootbox.alert("分站信息添加成功!");
+                  self.loadReaderList();
+                } else { bootbox.alert("分站信息添加失败!"); }
+              } else { bootbox.alert("服务器内部错误,分站信息添加失败!"); }
+            });
+    },
+    // update reader
+    updateReaderOper () {
+      let self = this;
+
+      self.reader.installDate = $("#installDate2").val();
+      // 转换区域名称为编号
+      for (let i = 0; i < self.regionList.length; i++) {
+        if (self.regionName = self.regionList[i].regionName) {
+          delete self.reader.regionName;
+          self.reader.regionId = self.regionList[i].regionId;
+          break;
+        }
+      }
+
+      axios.put('/base/reader/', self.reader)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  self.reader = {};
+                  bootbox.alert("分站信息修改成功!");
+                  $("#update_reader_modal").modal('hide');
+                  self.loadReaderList();
+                  $("input[name='reader']:radio:checked").prop('checked', false);
+                } else { bootbox.alert("分站信息修改失败!"); }
+              } else { bootbox.alert("服务器内部错误,分站信息修改失败!"); }
+            });
+    },
+    // delete reader
+    deleteReaderOper (readerId) {
+      let self = this;
       bootbox.confirm({
         message: "分站一旦删除，不可恢复！是否确定删除当前所选分站？",
         buttons: {
@@ -772,13 +1130,32 @@ export default {
             label: '取消'
           }
         },
-        callback: function () {
-          bootbox.alert({
-            message: "删除成功",
-          });
+        callback: function (result) {
+          if (result) {
+            axios.delete('/base/reader/' + readerId)
+                  .then((response) => {
+                    let { meta, data } = response.data;
+
+                    if (meta.success) {
+                      if (data && data.result == 1) {
+                        bootbox.alert("分站信息删除成功!");
+                        self.loadReaderList();
+                        $("input[name='reader']:radio:checked").prop('checked', false);
+                      } else { bootbox.alert("分站信息删除失败!"); }
+                    } else { bootbox.alert("服务器内部错误,分站信息删除失败!"); }
+                  });
+          }
         }
       });
-    }
+    },
+    setReaderParams (reader) {
+      let self = this;
+
+      self.readerParams = reader;
+    },
+    /**
+     * End reader function module.
+     */
   },
 };
 </script>
@@ -791,7 +1168,7 @@ export default {
 .table-box-left, .table-box-right {zoom: 1;}
 .table-box-left {width: 24%; height: 550px;overflow: scroll;}
 .table-box-right {width: 75%;}
-.map-box, #map {
+.map-box, #markMap, #moveMap {
   margin: 0;
   min-height: 555px;
   max-height: 555px;
@@ -805,7 +1182,10 @@ export default {
 }
 .document-line i {color: #337ab7; font-size: 16px;}
 .document-line button {width: 80%; float: right;}
-.label-line-left, .label-line-right {text-align: center;}
-.label-line-left {width: 20%;}
-.label-line-right {width: 80%;}
+.label-line-left {text-align: right; width: 30%;}
+.label-line-right {text-align: left; width: 70%;}
+
+#add_reader_modal {
+  z-index: 2000;
+}
 </style>

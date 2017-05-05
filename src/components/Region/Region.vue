@@ -13,10 +13,10 @@
         <div class="search-bar">
           <div class="ss-bar-line">
             <div class="ss-bar-select">
-              <select class="form-control refresh" id="regionType" name="">
+              <select class="form-control refresh" id="regionType" name="regionTypeSel">
                 <option value="">- 请选择区域类型 -</option>
-                <option value="普通区域">普通区域</option>
                 <option value="井口区域">井口区域</option>
+                <option value="普通区域">普通区域</option>
                 <option value="危险区域">危险区域</option>
                 <option value="重点区域">重点区域</option>
               </select>
@@ -25,7 +25,7 @@
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">区域名称</span>
-              <input class="form-control refresh" type="text" name="" value="">
+              <input class="form-control refresh" type="text" name="regionNameInp">
             </div>
           </div>
           <div class="ss-bar-line">
@@ -35,7 +35,7 @@
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-button">
-              <button class="btn btn-primary" type="button"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+              <button class="btn btn-primary" type="button" @click="loadRegionList()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
             </div>
           </div>
         </div>
@@ -62,17 +62,15 @@
               </div>
             </div>
             <div class="map-box" style="width: 100%;">
-              <div id="map">
-
-              </div>
+              <div id="map"></div>
             </div>
           </div>
           <div role="tabpanel" class="tab-pane" id="region_list_tab">
             <div class="btn-box">
               <div class="fl">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_region_modal">添加</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_region_modal">修改</button>
-                <button type="button" class="btn btn-primary" @click="deleteRegion()">批量删除</button>
+                <button type="button" class="btn btn-primary" @click="checkType('UPDATE_REGION')">修改</button>
+                <button type="button" class="btn btn-primary" @click="checkType('DELETE_REGION')">删除区域</button>
                 <button type="button" class="btn btn-primary" data-target="#region_map_tab" aria-controls="region_map_tab" role="tab" data-toggle="tab" @click="setRegion()">区域划分</button>
               </div>
               <div class="fr">
@@ -84,7 +82,7 @@
               <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" name="allRegion"></th>
+                    <th>选择</th>
                     <th>序号</th>
                     <th>区域名称</th>
                     <th>区域类型</th>
@@ -93,8 +91,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(region, index) in regionList" :key="region.key">
-                    <td><input type="checkbox" name="region" value="region.regionId" /></td>
+                  <tr v-if="regionListCache.regionList != null" v-for="(region, index) in regionListCache.regionList" :key="region.key">
+                    <td><input type="radio" name="region" value="region.regionId" /></td>
                     <td>{{ index + 1 }}</td>
                     <td>{{ region.regionName }}</td>
                     <td>{{ region.regionType }}</td>
@@ -103,16 +101,8 @@
                   </tr>
                 </tbody>
               </table>
-              <nav class="pagination-box">
-                <ul class="pagination">
-                  <li><a href="#">&laquo;</a></li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li><a href="#">&raquo;</a></li>
-                </ul>
+              <nav class="pagination-box" id="regionListPagingBox">
+                <div id="regionListPaging" class="pagination"></div>
               </nav>
             </div>
           </div>
@@ -138,20 +128,21 @@
               <div class="input-group-line">
                 <div class="group-left">区域编号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="regionNew.regionId">
+                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="region.regionId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">区域名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionNew.regionName
+                  <input class="form-control refresh" type="text" name="" v-model="region.regionName
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">区域类型</div>
                 <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="regionNew.regionType">
+                  <select class="form-control refresh" name="" v-model="region.regionType">
+                    <option value="">- 请选择区域类型 -</option>
                     <option value="普通区域">普通区域</option>
                     <option value="井口区域">井口区域</option>
                     <option value="危险区域">危险区域</option>
@@ -162,19 +153,19 @@
               <div class="input-group-line">
                 <div class="group-left">超员设置</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="number" name="" v-model="regionNew.regionMaxPeople">
+                  <input class="form-control refresh" type="text" name="" placeholder="请输入最大人数限制..." v-model="region.regionMaxPeople">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">区域描述</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionNew.description">
+                  <input class="form-control refresh" type="text" name="" v-model="region.description">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">备注</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionNew.remark">
+                  <input class="form-control refresh" type="text" name="" v-model="region.remark">
                 </div>
               </div>
             </div>
@@ -202,22 +193,23 @@
               <div class="input-group-line">
                 <div class="group-left">区域编号</div>
                 <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="regionOld.regionId">
+                  <input class="form-control" disabled="disabled" type="text" name="" v-model="region.regionId">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">区域名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionOld.regionName
+                  <input class="form-control" type="text" name="" v-model="region.regionName
                   ">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">区域类型</div>
                 <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="regionOld.regionType">
-                    <option value="普通区域">普通区域</option>
+                  <select class="form-control" name="" v-model="region.regionType">
+                    <option value="">- 请选择区域类型 -</option>
                     <option value="井口区域">井口区域</option>
+                    <option value="普通区域">普通区域</option>
                     <option value="危险区域">危险区域</option>
                     <option value="重点区域">重点区域</option>
                   </select>
@@ -226,19 +218,19 @@
               <div class="input-group-line">
                 <div class="group-left">超员设置</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionOld.regionMaxPeople">
+                  <input class="form-control" type="text" name="" v-model="region.regionMaxPeople">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">区域描述</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionOld.description">
+                  <input class="form-control" type="text" name="" v-model="region.description">
                 </div>
               </div>
               <div class="input-group-line">
                 <div class="group-left">备注</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="regionOld.remark">
+                  <input class="form-control" type="text" name="" v-model="region.remark">
                 </div>
               </div>
             </div>
@@ -255,125 +247,47 @@
 </template>
 
 <script>
-import bootbox from 'bootbox';
-import initLoad from '../../assets/script/sidemenu';
 import ol from 'openlayers/dist/ol';
+import bootbox from 'bootbox';
+import axios from 'axios';
+import initLoad from '../../assets/script/sidemenu';
+import fullscreen from '../../assets/script/fullscreen';
+import { initPagination } from '../../assets/script/initplugin';
+import { deepCopy } from '../../assets/script/extends';
 
 export default {
   name: 'region',
   data () {
     return {
-      regionNew:{},
-      regionOld:{},
-      regionList: [
-        {
-          regionId: 'R10001',
-          regionName: '1#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        },
-        {
-          regionId: 'R10001',
-          regionName: '2#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        },
-        {
-          regionId: 'R10001',
-          regionName: '1#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        },
-        {
-          regionId: 'R10001',
-          regionName: '1#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        },
-        {
-          regionId: 'R10001',
-          regionName: '1#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        },
-        {
-          regionId: 'R10001',
-          regionName: '1#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        }
-      ]
+      region:{},
+      regionList: [],
+      regionListCache: {
+        regionList: [
+          {
+            regionId: 'R10001',
+            regionName: '1#工作面',
+            regionType: '井口区域',
+            regionMaxPeople: '12',
+            geoPolygon: '',
+            description: '',
+            remark: ''
+          }
+        ],
+        total: 0
+      },
     };
   },
   mounted () {
-    this.loadMap();
     initLoad();
     this.initEvent();
+    this.loadMap();
   },
   methods: {
     initEvent () {
       var self = this;
       $("#add_region_modal").on('show.bs.modal', function() {
-        self.regionNew = {
-          regionId: 'R10004',
-          regionName: '',
-          regionType: '井口区域',
-          regionMaxPeople: '10',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        }
-      });
-      $("#update_region_modal").on('show.bs.modal', function() {
-        self.regionOld = {
-          regionId: 'R10001',
-          regionName: '1#工作面',
-          regionType: '井口区域',
-          regionMaxPeople: '12',
-          geoPolygon: '',
-          description: '',
-          remark: ''
-        };
-      });
-    },
-    clearSearch () {
-      $("input.refresh").val("");
-      $("select.refresh").find("option:eq(0)").prop('selected', true);
-    },
-    deleteRegion () {
-      bootbox.confirm({
-        message: "区域一旦删除，不可恢复！是否确定删除当前所选区域？",
-        buttons: {
-          confirm: {
-            label: '确定'
-          },
-          cancel: {
-            label: '取消'
-          }
-        },
-        callback: function () {
-          bootbox.alert({
-            message: "删除成功",
-          });
-        }
+        self.region = {};
+        self.region.regionType = '';
       });
     },
     setRegion(){
@@ -401,92 +315,156 @@ export default {
             center: taiyuan,
             zoom: 8,
             minZoom: 6,
-            maxZoom: 12,
-            rotation: Math.PI / 6
+            maxZoom: 12
           })
         });
     },
     fullScreen () {
-        var invokeFieldOrMethod = function(element, method) {
-          var usablePrefixMethod;
-          ["webkit", "moz", "ms", "o", ""].forEach(function(prefix) {
-           if (usablePrefixMethod) return;
-           if (prefix === "") {
-               // 无前缀，方法首字母小写
-               method = method.slice(0,1).toLowerCase() + method.slice(1);
-           }
-           var typePrefixMethod = typeof element[prefix + method];
-           if (typePrefixMethod + "" !== "undefined") {
-               if (typePrefixMethod === "function") {
-                   usablePrefixMethod = element[prefix + method]();
-               } else {
-                   usablePrefixMethod = element[prefix + method];
-               }
-           }
-       });
-         return usablePrefixMethod;
-       };
-       //進入全屏
-       function launchFullscreen(element) {
-          //此方法不可以在異步任務中執行，否則火狐無法全屏
-           if(element.requestFullscreen) {
-             element.requestFullscreen();
-           } else if(element.mozRequestFullScreen) {
-             element.mozRequestFullScreen();
-           } else if(element.msRequestFullscreen){
-             element.msRequestFullscreen();
-           } else if(element.oRequestFullscreen){
-              element.oRequestFullscreen();
-          }
-          else if(element.webkitRequestFullscreen)
-           {
-             element.webkitRequestFullScreen();
-           }else{
-
-              var docHtml  = document.documentElement;
-              var docBody  = document.body;
-              var videobox  = document.getElementById('map');
-              var  cssText = 'width:100%;height:100%;overflow:hidden;';
-              docHtml.style.cssText = cssText;
-              docBody.style.cssText = cssText;
-              videobox.style.cssText = cssText+';'+'margin:0px;padding:0px;';
-              document.IsFullScreen = true;
-
-            }
-         }
-          //退出全屏
-         function exitFullscreen() {
-             if (document.exitFullscreen) {
-                document.exitFullscreen();
-             } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-             } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-             } else if(document.oRequestFullscreen){
-                document.oCancelFullScreen();
-              }else if (document.webkitExitFullscreen){
-                document.webkitExitFullscreen();
-             }else{
-                var docHtml  = document.documentElement;
-                var docBody  = document.body;
-                var videobox  = document.getElementById('map');
-                docHtml.style.cssText = "";
-                docBody.style.cssText = "";
-                videobox.style.cssText = "";
-                document.IsFullScreen = false;
-             }
-        }
-        // document.getElementById('fullScreenBtn').addEventListener('click',function(){
-            launchFullscreen(document.getElementById('map'));
-            // window.setTimeout(function exit(){
-                if(invokeFieldOrMethod(document,'FullScreen')
-                    || invokeFieldOrMethod(document,'IsFullScreen')
-                    || document.IsFullScreen) {
-                      exitFullscreen();
-                }
-            // },5*1000);
-        // },false);
+      fullscreen('map');
     },
+    clearSearch () {
+      $("input.refresh").val("");
+      $("select.refresh").find("option:eq(0)").prop('selected', true);
+    },
+    getSearchParams () {
+      let params = {},
+          regionType, regionName;
+
+
+      return params;
+    },
+    loadRegionList () {
+      initPagination('regionListPagingBox', 'regionListPaging');
+      this.loadRegionListPaging(null);
+    },
+    loadRegionListPaging (page, isPaging) {
+      let self = this,
+          params = getSearchParams();
+
+      page = page || 1;
+      axios.post('/base/region/p/' + page, params)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.regionList) {
+                  self.regionListCache.regionList = data.regionList;
+                  self.regionListCache.total = data.total;
+
+                  if (!isPaging) {
+                    $("#regionListPaging").page({
+                      total: self.regionListCache.total,
+                      pageSize: 10,
+                      prevBtnText: '上一页',
+                      nextBtnText: '下一页',
+                      showInfo: true,
+                      infoFormat: '{start} ~ {end}条，共{total}条',
+                    }).on("pageClicked", function (event, pageNumber) {
+                      self.loadRegionListPaging(pageNumber + 1, true);
+                    });
+                } else {
+                  bootbox.alert("区域信息查询失败!");
+                }
+              } else { bootbox.alert("服务器内部错误,区域信息查询失败!"); }
+            }
+          });
+    },
+    /**
+     * Start region function module.
+     */
+    checkType (type) {
+      let self = this,
+          selectedRegion = $("input[name='region']:radio:checked"),
+          regionId = selectedRegion.val();
+
+      if (selectedRegion.length < 1) {
+        bootbox.alert("请先选择一条记录,在进行操作!");
+        return false;
+      } else {
+        if (type == 'UPDATE_REGION') {
+          self.regionListCache.regionList.forEach(function(region, index) {
+            if (regionId == region.regionId) {
+              self.region = deepCopy(region);
+              delete self.region.uber;
+            }
+            $("#update_region_modal").modal('show');
+          });
+        } else if (type == 'DELETE_REGION') {
+          self.deleteRegionOper(regionId);
+        }
+      }
+    },
+    // 添加区域
+    addRegionOper () {
+      let self = this;
+
+      axios.post('/base/region/', self.region)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("区域信息添加成功!");
+                  self.region = {};
+                  self.loadRegionList();
+                  $("#add_region_modal").modal('hide');
+                } else { bootbox.alert("区域信息添加失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域信息添加失败!"); }
+            });
+    },
+    // 修改区域
+    updateRegionOper () {
+      let self = this;
+
+      axios.put('/base/region/', self.region)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("区域信息修改成功!");
+                  self.region = {};
+                  self.loadRegionList();
+                  $("#update_region_modal").modal('hide');
+                } else { bootbox.alert("区域信息修改失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域信息修改失败!"); }
+            });
+    },
+    // 删除区域
+    deleteRegionOper (regionId) {
+      let self = this;
+      
+      bootbox.confirm({
+        message: "区域一旦删除，不可恢复！是否确定删除当前所选区域？",
+        buttons: {
+          confirm: {
+            label: '确定'
+          },
+          cancel: {
+            label: '取消'
+          }
+        },
+        callback: function (result) {
+          if (result) {
+            axios.delete('/base/region/' + regionId)
+                  .then((response) => {
+                    let { meta, data } = response.data;
+
+                    if (meta.success) {
+                      if (data && data.result == 1) {
+                        bootbox.alert("区域信息删除成功!");
+                        self.region = {};
+                        self.loadRegionList();
+                      } else { bootbox.alert("区域信息删除失败!"); }
+                    } else { bootbox.alert("服务器内部错误,区域信息删除失败!"); }
+                  });
+          }
+        }
+      });
+    },
+  /**
+   * End region function module.
+   */
   }
 };
 </script>

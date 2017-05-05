@@ -140,9 +140,9 @@
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left">出生年月</div>
+                <div class="group-left">出生日期</div>
                 <div class="group-right">
-                  <input id="birthday" class="form-control refresh" type="text" name="" readonly="readonly" placeholder="请选择出生年月" v-model="staff.staffBirthday">
+                  <input id="birthday" class="form-control refresh" type="text" name="" readonly="readonly" placeholder="请选择出生日期" v-model="staff.staffBirthday">
                 </div>
               </div>
               <div class="input-group-line">
@@ -244,9 +244,9 @@
                 </div>
               </div>
               <div class="input-group-line">
-                <div class="group-left">出生年月</div>
+                <div class="group-left">出生日期</div>
                 <div class="group-right">
-                  <input id="birthday2" class="form-control refresh" type="text" name="" readonly="readonly" placeholder="请选择出生年月" v-model="staff.staffBirthday">
+                  <input id="birthday2" class="form-control refresh" type="text" name="" readonly="readonly" placeholder="请选择出生日期" v-model="staff.staffBirthday">
                 </div>
               </div>
               <div class="input-group-line">

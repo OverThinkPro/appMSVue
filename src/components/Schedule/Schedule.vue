@@ -20,9 +20,9 @@
         <div class="table-box-right outside-box fr">
           <div class="btn-box" style="margin-bottom: 0;">
             <div class="fl">
-              <button type="button" class="btn btn-primary">添加班次</button>
-              <button type="button" class="btn btn-primary">修改班次</button>
-              <button type="button" class="btn btn-primary">删除班次</button>
+              <button type="button" class="btn btn-primary" @click="checkType('ADD_SCHEDULE')">添加班次</button>
+              <button type="button" class="btn btn-primary" @click="checkType('UPDATE_SCHEDULE')">修改班次</button>
+              <button type="button" class="btn btn-primary" @click="checkType('DELETE_SCHEDULE')">删除班次</button>
               <button type="button" class="btn btn-primary">排班</button>
             </div>
           </div>
@@ -49,6 +49,138 @@
         </div>
       </div>
     </main>
+
+    <!-- 添加班次模态框 -->
+    <div class="modal fade" id="add_schedule_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">添加班次信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">班制编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="schedule.upScheduleId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班制名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="schedule.upScheduleName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班次编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="schedule.scheduleId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班次名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="schedule.scheduleName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班次时间</div>
+                <div class="group-right">
+                  <input id="scheduleDateStart" class="form-control refresh fl" style="width: 50%;" type="text" name="" placeholder="请选择班次开始时间" readonly="readonly" v-model="schedule.scheduleTime">
+                  <input id="scheduleDateEnd" class="form-control refresh fr" style="width: 50%;" type="text" name="" placeholder="请选择班次结束时间" readonly="readonly" v-model="schedule.scheduleTime">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn" @click="addSchedule()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 修改班次模态框 -->
+    <div class="modal fade" id="update_schedule_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">修改班次信息</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div class="input-group-line">
+                <div class="group-left">班制编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="schedule.upScheduleId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班制名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="schedule.upScheduleName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班次编号</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="schedule.scheduleId">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班次名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="schedule.scheduleName">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">班次时间</div>
+                <div class="group-right">
+                  <input id="scheduleDateS" class="form-control refresh fl" style="width: 50%;" type="text" name="" placeholder="请选择班次开始时间" readonly="readonly" v-model="schedule.scheduleTime">
+                  <input id="scheduleDateE" class="form-control refresh fr" style="width: 50%;" type="text" name="" placeholder="请选择班次结束时间" readonly="readonly" v-model="schedule.scheduleTime">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn" @click="addSchedule()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 排班模态框 -->
+    <div class="modal fade" id="update_schedule_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">排班</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn" @click="">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -85,9 +217,9 @@ export default {
         }
       },
       scheduleList: [{
-        scheduleId: '1',
-        scheduleName: '早班',
-        scheduleTime: '08:00~16:00'
+          scheduleId: '1',
+          scheduleName: '早班',
+          scheduleTime: '08:00~16:00',
       },
       {
         scheduleId: '1',
@@ -103,27 +235,32 @@ export default {
         scheduleList: [],
         total: 0
       },
+      schedule: {},
       scheduleId: ''
     };
   },
   mounted () {
-
+    this.initEvent();
   },
   methods: {
     initEvent () {
       let self = this;
 
-      // $("#createDate, #createDate2").jeDate({
-      //   format: "YYYY-MM-DD",
-      //   isTime: false,
-      //   isinitVal: false,
-      // });
+      $("#scheduleDateStart, #scheduleDateEnd, #scheduleDateS, #scheduleDateE").jeDate({
+        format: "hh:mm",
+        isTime: true,
+        isinitVal: false,
+      });
+    },
+    clearSearch () {
+      $("input.refresh").val("");
+      $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
     // 默认装载班制树
     defaultLoadScheduleTree () {
       let self = this;
 
-      $.fn.zTree.init($("#scheduleTree"), self.treeSetting, self.scheduleList);
+      // $.fn.zTree.init($("#scheduleTree"), self.treeSetting, self.scheduleList);
       // axios.get('/base/schedule/')
       //       .then((response) => {
       //         let { meta, data } = response.data;
@@ -216,6 +353,82 @@ export default {
     /**
      * End unit tree operation.
      * description 部门数操作
+     */
+    /**
+     * Start schedule manage module.
+     */
+    checkType (type) {
+      let self = this,
+          selectedSchedule = $("input[name='schedule']:radio:checked"),
+          scheduleId = selectedSchedule.val();
+
+      if (selectedSchedule.length < 1) {
+        bootbox.alert("请先选择一条记录,再进行操作!");
+        return false;
+      } else {
+        self.scheduleListCache.scheduleList.forEach(function(schedule, index) {
+          if (scheduleId == schedule.scheduleId) {
+            self.schedule = deepCopy(schedule);
+            delete self.schedule.uber;
+
+            if (type == 'ADD_SCHEDULE') {
+              $("#add_schedule_modal").modal('show');
+            } else if (type == 'UPDATE_SCHEDULE') {
+              $("#update_schedule_modal").modal('show');
+            } else if (type == 'DELETE_SCHEDULE') {
+              self.deleteSchedule(scheduleId);
+            }
+          }
+        });
+      }
+    },
+   // 添加班次
+   addSchedule () {
+     let self = this;
+
+     axios.post('/base/schedule/', self.schedule)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("班次信息添加成功!");
+                } else { bootbox.alert("班次信息添加失败!"); }
+              } else { bootbox.alert("服务器内部错误,班次信息添加失败!"); }
+            });
+   },
+   // 修改班次
+   updateSchedule () {
+     let self = this;
+
+     axios.put('/base/schedule/', self.schedule)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("班次修改成功!");
+                } else { bootbox.alert("班次修改失败!"); }
+              } else { bootbox.alert("服务器内部错误,班次信息修改失败!"); }
+            });
+   },
+   // 删除班次
+   deleteSchedule (scheduleId) {
+     let self = this;
+
+     axios.delete('/base/schedule/' + scheduleId)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("班次信息删除成功!");
+                } else { bootbox.alert("班次信息删除失败!"); }
+              } else { bootbox.alert("服务器内部错误,班次信息删除失败!"); }
+            });
+   },
+    /**
+     * End schedule manage module.
      */
   }
 };
