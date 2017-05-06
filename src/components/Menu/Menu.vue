@@ -15,48 +15,48 @@
           <div class="title-box content-box">
             <h5>菜单列表</h5>
           </div>
+          <ul id="moduleTree" class="ztree"></ul>
         </div>
         <div class="table-box-right outside-box fr">
           <div class="search-bar-box">
             <div class="search-bar">
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">菜单名称</span>
-                <input type="text" class="form-control refresh">
+                <input type="text" class="form-control refresh" id="moduleNameParam">
               </div>
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">菜单编号</span>
-                <input type="text" class="form-control refresh">
+                <input type="text" class="form-control refresh" id="moduleIdParam">
               </div>
               <div class="input-group search-bar-input fl">
-                <select class="form-control refresh" name="">
+                <select class="form-control refresh" name="" id="moduleInUseParam">
                     <option value="">- 是否启用 -</option>
-                    <option value="">启用</option>
-                    <option value="">禁用</option>
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
                 </select>
               </div>
               <div class="input-group btn-group fr">
                 <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
-                <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+                <button type="button" class="btn btn-primary" @click="defaultLoadModuleTable()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
               </div>
             </div>
           </div>
           <div class="search-hr"></div>
           <div class="btn-box" style="margin-bottom: 0;">
             <div class="fl">
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_menu_modal">添加</button>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_menu_modal">修改</button>
-              <button type="button" class="btn btn-primary" @click="deleteMenu()">删除</button>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" @click="checkSelect('UPDATE_MODULE')">修改</button>
+              <button type="button" class="btn btn-primary" @click="checkSelect('DELETE_MODULE')">批量删除</button>
             </div>
-            <div class="fr">
+            <!-- <div class="fr">
               <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
               <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-print"></i>打印</button>
-            </div>
+            </div> -->
           </div>
           <div class="table-box data-box">
             <table class="table table-bordered table-hover">
               <thead>
                 <tr>
-                  <th><input type="checkbox" name="allMenu"></th>
+                  <th><input type="checkbox" name="allMenu" v-model="checked" @click="selectAllModuleCheckbox()"></th>
                   <th>序号</th>
                   <th>菜单编号</th>
                   <th>菜单名称</th>
@@ -66,28 +66,20 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(elem, index) in menuList" :key="elem.key">
-                  <td><input type="checkbox" name="menu" :value="elem.moduleId" /></td>
+                <tr v-for="(module, index) in moduleListCache.moduleList" :key="module.key">
+                  <td><input type="checkbox" name="menu" :value="module.moduleId" /></td>
                   <td>{{ index + 1 }}</td>
-                  <td>{{ elem.moduleId }}</td>
-                  <td>{{ elem.moduleName }}</td>
-                  <td v-if="elem.inUse ==='1'">启用</td>
+                  <td>{{ module.moduleId }}</td>
+                  <td>{{ module.moduleName }}</td>
+                  <td v-if="module.inUse ==='1'">启用</td>
                   <td v-else>禁用</td>
-                  <td>{{ elem.moduleUrl }}</td>
-                  <td>{{ elem.description }}</td>
+                  <td>{{ module.moduleUrl }}</td>
+                  <td>{{ module.description }}</td>
                 </tr>
               </tbody>
             </table>
-            <nav class="pagination-box">
-              <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">&raquo;</a></li>
-              </ul>
+            <nav class="pagination-box" id="modulePagingBox">
+              <div id="modulePaging" class="pagination"></div>
             </nav>
           </div>
         </div>
@@ -156,7 +148,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addModule()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -225,7 +217,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn"  @click="updateModule()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -236,131 +228,307 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
-
+import axios from 'axios';
+import { initPagination } from '../../assets/script/initplugin';
+import { deepCopy } from '../../assets/script/extends';
+import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
+import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min'
 export default {
-  name: 'menu',
+  name: 'module',
   data () {
     return {
+      /*moduleStatusCode: ['0','1'],
+      moduleStatusName: ['启用', '禁用'],*/
       menuNew:{},
       menuOld:{},
-      menuList:[
-        {'moduleId': '10', 'moduleName': '首页',  'upModuleId': '1','inUse': '1','description':'首页', "moduleUrl": "/Main",
-         'children': [],
+      moduleTreeCache:{
+        moduleList: []
+      },
+      moduleListCache: {
+        moduleList: [],
+        total: 0
+      },
+      checked: false,
+      upModuleId: '1',
+      treeSetting: {
+        view: {
+          addHoverDom: this.addHoverDom,
+          removeHoverDom: this.removeHoverDom,
+          selectedMulti: false,      
         },
-        {'moduleId': '11', 'moduleName': '查询统计', 'upModuleId': '1', 'inUse': '1','description':'查询统计', "moduleUrl": "/",
-         'children': [
-            {'moduleId': '1101', 'moduleName': '实时查询',  'upModuleId': '11','inUse': '1','description':'实时查询', "moduleUrl": "/Insearch",
-             'children': [],
-            },
-            {'moduleId': '1102', 'moduleName': '历史报警查询',  'upModuleId': '11','inUse': '1','description':'历史报警查询', "moduleUrl": "/Alarm",
-             'children': [],
-            },
-            {'moduleId': '1103', 'moduleName': '历史轨迹回放',  'upModuleId': '11','inUse': '1','description':'历史轨迹回放', "moduleUrl": "/Replay",
-             'children': [],
-            },
-          ]
+        data: {
+          simpleData: {
+            enable: true,
+            idKey: "moduleId",
+            pIdKey: "upModuleId",
+            rootPId: 1
+          },
+          key: {
+            name: 'moduleName'
+          }
         },
-        {'moduleId': '12', 'moduleName': '考勤管理', 'upModuleId': '1', 'inUse': '1','description':'考勤管理', "moduleUrl": "/",
-         'children': [
-            {'moduleId': '1201', 'moduleName': '日考勤报表',  'upModuleId': '12','inUse': '1','description':'日考勤报表', "moduleUrl": "/Daily",
-             'children': [],
-            },
-            {'moduleId': '1202', 'moduleName': '月考勤详情报表',  'upModuleId': '12','inUse': '1','description':'月考勤详情报表', "moduleUrl": "/Monthly",
-             'children': [],
-            },
-            {'moduleId': '1203', 'moduleName': '月考勤统计报表',  'upModuleId': '12','inUse': '1','description':'月考勤统计报表', "moduleUrl": "/",
-             'children': [],
-            },
-          ],
+        edit: {
+          enable: true, 
+          showRemoveBtn: this.showRemoveBtn,
+          showRenameBtn: this.showRenameBtn,
+          removeTitle: "删除节点",
+          renameTitle: "编辑节点名称",
         },
-        {'moduleId': '13', 'moduleName': '人员管理', 'upModuleId': '1', 'inUse': '1','description':'人员管理', "moduleUrl": "/",
-         'children': [
-            {'moduleId': '1301', 'moduleName': '菜单管理',  'upModuleId': '13','inUse': '1','description':'菜单管理', "moduleUrl": "/Unit",
-             'children': [],
-            },
-            {'moduleId': '1302', 'moduleName': '员工管理',  'upModuleId': '13','inUse': '1','description':'员工管理', "moduleUrl": "/Staff",
-             'children': [],
-            },
-            {'moduleId': '1303', 'moduleName': '工种管理',  'upModuleId': '13','inUse': '1','description':'员工管理', "moduleUrl": "/Job",
-             'children': [],
-            },
-            {'moduleId': '1304', 'moduleName': '班次管理',  'upModuleId': '13','inUse': '1','description':'班次管理', "moduleUrl": "/Schedule",
-             'children': [],
-            },
-          ],
+        callback: {
+          onClick: this.zTreeOnClick,
+          beforeRemove: this.beforeRemove,  
+          beforeEditName: this.beforeEditName,
         },
-        {'moduleId': '14', 'moduleName': '定位卡管理',  'upModuleId': '1','inUse': '1','description':'定位卡管理', "moduleUrl": "/Card",
-         'children': [],
-        },
-        {'moduleId': '15', 'moduleName': '分站管理',  'upModuleId': '1','inUse': '1','description':'分站管理', "moduleUrl": "/Reader",
-         'children': [],
-        },
-        {'moduleId': '16', 'moduleName': '区域设置',  'upModuleId': '16','inUse': '1','description':'区域设置', "moduleUrl": "/Region",
-         'children': [],
-        },
-        {'moduleId': '17', 'moduleName': '系统管理', 'upModuleId': '1', 'inUse': '1','description':'系统管理', "moduleUrl": "/",
-         'children': [
-            {'moduleId': '1701', 'moduleName': '用户管理',  'upModuleId': '17','inUse': '1','description':'用户管理', "moduleUrl": "/User",
-             'children': [],
-            },
-            {'moduleId': '1702', 'moduleName': '角色管理',  'upModuleId': '17','inUse': '1','description':'角色管理', "moduleUrl": "/Role",
-             'children': [],
-            },
-            {'moduleId': '1703', 'moduleName': '菜单管理',  'upModuleId': '17','inUse': '1','description':'菜单管理', "moduleUrl": "/Menu",
-             'children': [],
-            },
-            {'moduleId': '1704', 'moduleName': '字典管理',  'upModuleId': '17','inUse': '1','description':'字典管理', "moduleUrl": "/Dictionary",
-             'children': [],
-            },
-            {'moduleId': '1705', 'moduleName': '参数设置',  'upModuleId': '17','inUse': '1','description':'参数设置', "moduleUrl": "/Setting",
-             'children': [],
-            },
-            {'moduleId': '1706', 'moduleName': '日志管理',  'upModuleId': '17','inUse': '1','description':'日志管理', "moduleUrl": "/Log",
-             'children': [],
-            }
-          ],
-        },
-      ]
-    };
+      },
+    }
   },
- mounted () {
+  mounted () {
     this.initEvent();
+    this.defaultLoadModuleTree();
+    this.defaultLoadModuleTable();
   },
   methods: {
     initEvent () {
       var self = this;
       $("#add_menu_modal").on('show.bs.modal', function() {
-        self.menuNew = {
-          'moduleId': '19', 
-          'moduleName': '',  
-          'upModuleId': '1',
-          'upModuleName': '1',
-          'inUse': '1',
-          'description':'', 
-          "moduleUrl": "#",
-          'children': [], 
-        }
-      });
-      $("#update_menu_modal").on('show.bs.modal', function() {
-        self.menuOld = {
-          'moduleId': '10', 
-          'moduleName': '首页',  
-          'upModuleId': '1',
-          'upModuleName': '1',
-          'inUse': '1',
-          'description':'首页', 
-          "moduleUrl": "/Main",
-          'children': [],
-        };
       });
     },
+
+    /* 重置 */
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+      $("input[name='menu']:checked").each(function() { this.checked = false; });
     },
-    deleteMenu () {
+
+    // 默认装载部门树
+    defaultLoadModuleTree () {
+      let self = this;
+      axios.get('/base/module/moduleTree').then((response) => {
+        let {meta, data} = response.data;
+        if (meta.success) {
+          if (data) {
+            self.moduleTreeCache.moduleList = data.moduleList;
+            let zNodes = data.moduleList;
+            zNodes[0].open = true;
+            $.fn.zTree.init($("#moduleTree"), self.treeSetting, zNodes);
+            //var treeObj = $.fn.zTree.getZTreeObj("moduleTree"); 
+            //treeObj.expandAll(true); 
+          }
+        }
+      });
+    },
+    /* 点击树节点的触发事件 */
+    zTreeOnClick (event, treeId, treeNode) {
+      let self = this;
+      initPagination('modulePagingBox', 'modulePaging');
+      self.upModuleId = treeNode.moduleId;
+      self.loadModuleListPagingByUpModule(null);
+    },
+
+     /* 点击上级节点获得分页后的子菜单列表信息 */
+    loadModuleListPagingByUpModule(page, isPaging) {
+      let self = this;
+      page = page || 1;
+      axios.get('/base/module/up/' + self.upModuleId + '/p/' + page).then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success && data) {
+            self.moduleListCache.moduleList = data.moduleList;
+            self.moduleListCache.total = data.totalCounts;
+            if (!isPaging) {
+              $("#modulePaging").page({
+                total: self.moduleListCache.total,
+                pageSize: 10,
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+              }).on("pageClicked", function (event, pageNumber) {
+                self.loadModuleListPagingByUpModule(pageNumber + 1, true);
+              });
+            }
+        } else {
+          bootbox.alert({ title:'查看菜单信息', message: meta.message});
+        }
+      });
+    },
+
+    /* 决定删除按钮/图标是否显示，这里的根节点决定不显示 */
+    showRemoveBtn(treeId, treeNode) {
+      if(treeNode.moduleId=="1"){
+        return false;
+      }else{
+        return true;
+      }
+    },
+
+    /* 决定重命名按钮/图标是否显示，这里的根节点决定不显示  */
+    showRenameBtn(treeId, treeNode) {
+      if(treeNode.moduleId=="1"){
+        return false;
+      }else{
+        return true;
+      }
+    },
+        /* 修改节点信息 */
+    beforeEditName(treeId, treeNode) {
+      let self = this;
+      self.clickUpdateModule(treeNode.moduleId);
+    },
+  
+    /* 删除节点信息 */
+    beforeRemove(treeId, treeNode) {
+      let self = this;
+      self.deleteModule(treeNode.moduleId);
+    },
+
+    /* 添加按钮显示*/
+    addHoverDom(treeId, treeNode) {
+      let self = this;
+      var sObj = $("#" + treeNode.tId + "_span");
+      if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) { return; }
+      var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+        + "' title='add node' onfocus='this.blur();'></span>";
+      sObj.after(addStr);
+      var btn = $("#addBtn_" + treeNode.tId);
+      if (btn) {
+        btn.bind("click", function() {
+          let zTree = $.fn.zTree.getZTreeObj("moduleTree");
+          zTree.selectNode(treeNode);
+          axios.get('/base/module/up/' + treeNode.moduleId).then((response) => {
+            let {meta, data} = response.data;
+            if (meta.success) {
+              if (data) {
+                self.menuNew={};
+                self.menuNew.upModuleId = treeNode.moduleId;
+                self.menuNew.upModuleName = treeNode.moduleName;
+                self.menuNew.moduleId = data.currentModuleId;
+                self.menuNew.inUse = '1';
+                self.menuNew.moduleUrl = '/';
+              }
+              $("#add_menu_modal").modal('show');
+            } else {
+              bootbox.alert({title:'新增菜单', message: '新增菜单编号生成失败!'})
+            }
+          });
+        });
+      }
+    },
+    
+    /* 添加按钮不显示*/
+    removeHoverDom (treeId, treeNode) {
+      $("#addBtn_" + treeNode.tId).unbind().remove();
+    },
+
+    /* 得到查询条件 */
+    getSearchParam () {
+      let params = {}, moduleName,moduleId, inUse;
+      moduleName = $("#moduleNameParam").val();
+      if (moduleName) { params.moduleName = moduleName; }
+      moduleId = $("#moduleIdParam").val();
+      if (moduleId) { params.moduleId = moduleId; }
+      inUse = $("#moduleInUseParam").find("option:selected").val();
+      if (inUse) { params.inUse = inUse; }
+      return params;
+    },
+
+    /* 分页 */
+    defaultLoadModuleTable () {
+      initPagination('modulePagingBox', 'modulePaging');
+      this.loadModuleListPagingByCondition(null);
+    },
+
+    /* 获得分页后的菜单列表信息 */
+    loadModuleListPagingByCondition(page, isPaging) {
+      let self = this;
+      let params = self.getSearchParam();
+      page = page || 1;
+      axios.post('/base/module/p/' + page, params).then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success && data) {
+            self.moduleListCache.moduleList = data.moduleList;
+            self.moduleListCache.total = data.totalCounts;
+            //alert("page"+page);
+            if (!isPaging) {
+              $("#modulePaging").page({
+                total: self.moduleListCache.total,
+                pageSize: 10,
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+              }).on("pageClicked", function (event, pageNumber) {
+                self.loadModuleListPagingByCondition(pageNumber + 1, true);
+              });
+            }
+        } else {
+          bootbox.alert({ title:'查看菜单信息', message: meta.message });
+        }
+      });
+    },
+    /* 添加一个新的菜单 */
+    addModule() {
+      let self = this;
+      axios.post('/base/module', self.menuNew).then((response) => {
+        let meta = response.data.meta;
+        if (meta.success) {
+          let data = response.data.data;
+          if (data && data.result == 1) { 
+            bootbox.alert({ title:'添加菜单信息', message: '菜单信息添加成功!' }); 
+          }else { 
+            bootbox.alert({ title:'添加菜单信息', message: '菜单信息添加失败!' }); 
+          }
+          $("#add_menu_modal").modal('hide');
+          self.defaultLoadModuleTree();
+          self.defaultLoadModuleTable();
+        } else {
+          bootbox.alert({ title:'添加菜单信息', message: '服务器内部错误, 菜单信息添加失败!'});
+        }
+      });
+    },
+    
+    /* 选择要批量删除的菜单信息 */
+    checkSelect (type) {
+      let self = this;
+      let size = $("input[name='menu']").filter(':checked').length;
+      if (size < 1) {
+        bootbox.alert({ title:'选择菜单',  message: '请选择一条记录,再进行操作!'});
+        return;
+      }else if (size == 1) {
+        let moduleId = '';
+        $("input[name='menu']:checked").each(function() {
+          moduleId += $(this).val();
+        });
+        if (type == 'UPDATE_MODULE') {
+          self.clickUpdateModule(moduleId);
+        }else{
+          self.deleteModule(moduleId);
+        }
+      }else{
+        if (type == 'UPDATE_MODULE') {
+          bootbox.alert({ title:'选择菜单', message: '只能选择一项进行修改,请重试!'});
+          return;
+        }else{
+          self.getDeleteIds();
+        }
+      }
+    },
+    /* 获得要批量删除的菜单编号 */
+    getDeleteIds(){
+      let moduleIds = '';
+      $("input[name='menu']:checked").each(function() {
+        moduleIds += $(this).val() + ',';
+      });
+      moduleIds = moduleIds.substring(0, moduleIds.length-1);
+      this.deleteModule(moduleIds);
+    },
+
+    /* 删除菜单信息 */
+    deleteModule(moduleIds){
+      let self = this;
       bootbox.confirm({
-        message: '菜单一旦删除，不可恢复，是否确定删除？',
+        title: '删除菜单',
+        message: '菜单信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
           confirm: {
             label: '确定'
@@ -369,16 +537,77 @@ export default {
             label: '取消'
           }
         },
-        callback: function() {
-          bootbox.alert("删除成功!");
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/module/', { params: { 'moduleIds': moduleIds }}).then((response) => {
+              let { meta, data } = response.data;
+              if (meta.success) {
+                if (data && data.result) { 
+                  bootbox.alert({ title:'删除菜单信息', message: '菜单信息删除成功!' }); 
+                }else { 
+                  bootbox.alert({ title:'删除菜单信息', message: '菜单信息删除失败!' }); 
+                }
+                $("input[name='menu']:checked").each(function() { this.checked = false; });
+                self.defaultLoadModuleTree();
+                self.defaultLoadModuleTable();
+              } else { 
+                bootbox.alert({ title:'删除菜单信息', message: meta.message }); 
+              }
+            });
+          }
         }
       });
     },
+    /* 点击修改按钮 */
+    clickUpdateModule(moduleId){
+      let self = this;
+      self.menuOld={};
+      self.moduleTreeCache.moduleList.forEach((module, index) => {
+        if (module.moduleId == moduleId) {
+          self.menuOld = deepCopy(module);
+          delete self.menuOld.uber;
+        }
+      });
+      $("#update_menu_modal").modal('show');
+    },
+
+    /* 修改并更新菜单信息 */
+    updateModule () {
+      let self = this;
+      axios.put('/base/module/', self.menuOld).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改成功!' }); 
+            }else { 
+              bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改失败!' }); 
+            }
+            $("#update_menu_modal").modal('hide');
+            $("input[name='menu']:checked").each(function() { this.checked = false; });
+            self.defaultLoadModuleTree();
+            self.defaultLoadModuleTable();
+        } else { 
+          bootbox.alert({  title:'修改菜单信息',message: meta.message }); 
+        }
+      });
+    },
+
+    /* 复选框全选 */
+    selectAllModuleCheckbox(){
+        //如果当前点击的多选框被选中
+        if(this.checked){        
+          $('input[type=checkbox][name=menu]').prop("checked", true );
+        }else{                
+          $('input[type=checkbox][name=menu]').prop("checked", false );
+        }
+    },
+    
   }
-};
+}
 </script>
 
 <style lang="css" scoped>
+@import '../../assets/script/ztree/zTreeStyle.css';
 #menu {
   width: 100%;
 }
@@ -393,4 +622,5 @@ export default {
 .table-box-left {
   min-height: 600px;
 }
+
 </style>
