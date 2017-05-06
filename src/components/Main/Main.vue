@@ -718,11 +718,8 @@ export default {
      * author Zychaowill
      */
     loadMap () {
-        let self = this;
-
-        var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
-  			taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
-        beijing = ol.proj.fromLonLat([12950000, 4860000]);
+        let self = this,
+            taiyuan = ol.proj.fromLonLat([112.53, 37.87]);
   			var view = new ol.View({
   				center: taiyuan,
   				minZoom: 8,

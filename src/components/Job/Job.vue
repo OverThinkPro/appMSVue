@@ -57,8 +57,8 @@
               <tr v-for="(jobType, index) in jobTypeListCache.jobTypeList" :key="jobType.key">
                 <td><input type="radio" name="jobType" :value="jobType.jobId"></td>
                 <td>{{ index + 1 }}</td>
-                <td>{{ jobType.jobName }}</td>
                 <td>{{ jobType.jobCode }}</td>
+                <td>{{ jobType.jobName }}</td>
                 <td>{{ jobType.remark }}</td>
               </tr>
             </tbody>
@@ -84,15 +84,15 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="input-group-line">
-                <div class="group-left">工种名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="jobType.jobName">
-                </div>
-              </div>
-              <div class="input-group-line">
                 <div class="group-left">工种编号</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="jobType.jobCode">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">工种名称</div>
+                <div class="group-right">
+                  <input class="form-control refresh" type="text" name="" v-model="jobType.jobName">
                 </div>
               </div>
               <div class="input-group-line">
@@ -125,15 +125,15 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="input-group-line">
-                <div class="group-left">工种名称</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="jobType.jobName">
-                </div>
-              </div>
-              <div class="input-group-line">
                 <div class="group-left">工种编号</div>
                 <div class="group-right">
                   <input class="form-control" type="text" name="" v-model="jobType.jobCode">
+                </div>
+              </div>
+              <div class="input-group-line">
+                <div class="group-left">工种名称</div>
+                <div class="group-right">
+                  <input class="form-control" type="text" name="" v-model="jobType.jobName">
                 </div>
               </div>
               <div class="input-group-line">
