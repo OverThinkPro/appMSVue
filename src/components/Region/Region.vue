@@ -71,7 +71,6 @@
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_region_modal">添加</button>
                 <button type="button" class="btn btn-primary" @click="checkType('UPDATE_REGION')">修改</button>
                 <button type="button" class="btn btn-primary" @click="checkType('DELETE_REGION')">删除区域</button>
-                <button type="button" class="btn btn-primary" data-target="#region_map_tab" aria-controls="region_map_tab" role="tab" data-toggle="tab" @click="setRegion()">区域划分</button>
               </div>
               <div class="fr">
                 <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
@@ -290,17 +289,10 @@ export default {
         self.region.regionType = '';
       });
     },
-    setRegion(){
-      /* 点击划分区域按钮的时候切换地图tab*/
-      $("#regionTabs li:eq(1)").removeClass('active');
-      $("#regionTabs li:eq(0)").addClass('active');
-    },
     loadMap () {
-        var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
-        taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
-        beijing = ol.proj.fromLonLat([12950000, 4860000]);
+        let beijing = ol.proj.fromLonLat([12950000, 4860000]);
         var view = new ol.View({
-          center: taiyuan,
+          center: beijing,
           minZoom: 8,
           zoom: 3
         });
@@ -312,7 +304,7 @@ export default {
             })
           ],
           view: new ol.View({
-            center: taiyuan,
+            center: beijing,
             zoom: 8,
             minZoom: 6,
             maxZoom: 12
@@ -330,7 +322,11 @@ export default {
       let params = {},
           regionType, regionName;
 
+      regionType = $("input[name='regionTypeSel']").find("option:selected").val();
+      if (regionType) { params.regionType = regionType; }
 
+      regionName = $("input[name='regionNameInp']").val();
+      if (regionName) { params.regionName = regionName; }
       return params;
     },
     loadRegionList () {
@@ -405,9 +401,9 @@ export default {
               if (meta.success) {
                 if (data && data.result == 1) {
                   bootbox.alert("区域信息添加成功!");
+                  $("#add_region_modal").modal('hide');
                   self.region = {};
                   self.loadRegionList();
-                  $("#add_region_modal").modal('hide');
                 } else { bootbox.alert("区域信息添加失败!"); }
               } else { bootbox.alert("服务器内部错误,区域信息添加失败!"); }
             });
@@ -423,9 +419,10 @@ export default {
               if (meta.success) {
                 if (data && data.result == 1) {
                   bootbox.alert("区域信息修改成功!");
-                  self.region = {};
-                  self.loadRegionList();
                   $("#update_region_modal").modal('hide');
+                  self.region = {};
+                  $("input[name='region']:radio:checked").prop('checked', false);
+                  self.loadRegionList();
                 } else { bootbox.alert("区域信息修改失败!"); }
               } else { bootbox.alert("服务器内部错误,区域信息修改失败!"); }
             });
@@ -433,7 +430,7 @@ export default {
     // 删除区域
     deleteRegionOper (regionId) {
       let self = this;
-      
+
       bootbox.confirm({
         message: "区域一旦删除，不可恢复！是否确定删除当前所选区域？",
         buttons: {
@@ -454,6 +451,7 @@ export default {
                       if (data && data.result == 1) {
                         bootbox.alert("区域信息删除成功!");
                         self.region = {};
+                        $("input[name='region']:radio:checked").prop('checked', false);
                         self.loadRegionList();
                       } else { bootbox.alert("区域信息删除失败!"); }
                     } else { bootbox.alert("服务器内部错误,区域信息删除失败!"); }

@@ -107,7 +107,7 @@
                 <td>
                   <a href="javascript: void(0);" title="参数配置" @click="setReaderParams(reader)" data-toggle="modal" data-target="#set_reader_parameter_modal"><i class="glyphicon glyphicon-cog"></i></a>&nbsp;|
                   <a href="javascript: void(0);" title="移动分站" @click="openModal('MOVE_READER', reader.readerId)"><i class="glyphicon glyphicon-transfer"></i></a>&nbsp;|
-                  <a href="javascript: void(0);" title="地图查看"><i class="glyphicon glyphicon-globe"></i></a>
+                  <a href="javascript: void(0);" title="地图查看" @click="openModal('SHOW_READER', reader.readerId)"><i class="glyphicon glyphicon-globe"></i></a>
                 </td>
               </tr>
             </tbody>
@@ -455,13 +455,8 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="table-box-right fl">
-                <div class="map-box">
+                <div id="markMapBox" class="map-box">
                   <div id="markMap"></div>
-                  <div class="" style="display: none;">
-                    <div id="marker" class="marker">
-                      <a class="markerpos" id="markerpos" href="javascript: void(0);"></a>
-                    </div>
-                  </div>
                 </div>
               </div>
               <div class="table-box-left fr">
@@ -487,7 +482,6 @@
             </div>
           </div>
           <div class="modal-footer">
-            <!-- <button type="button" class="btn btn-primary modal-btn">保存</button> -->
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -508,16 +502,16 @@
           <div class="modal-body">
             <div class="modal-table-box">
               <div class="table-box-right fl">
-                <div class="map-box">
+                <div id="moveMapBox" class="map-box">
                   <div id="moveMap"></div>
                 </div>
               </div>
               <div class="table-box-left fr">
                   <div class="document-line">
                     <label for="">操作:</label>
-                    <input style="margin-left: 10%;" checked="checked" type="radio" name="move">
+                    <input style="margin-left: 10%;" checked="checked" type="radio" name="move" value="move">
                     <span>移动</span>
-                    <input style="margin-left: 10%;" type="radio" name="move">
+                    <input id="moveReaderSelect" style="margin-left: 10%;" type="radio" name="move" value="select">
                     <span>选取</span>
                   </div>
                   <div class="document">
@@ -538,6 +532,32 @@
                       <label class="label-line-right"></label>
                     </div>
                   </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary modal-btn" @click="updateMoveReaderOper()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分站地图显示模态框 -->
+    <div class="modal fade" id="show_reader_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width: 80%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only"></span>
+            </button>
+            <h4 class="modal-title">地图查看分站位置</h4>
+          </div>
+          <div class="modal-body">
+            <div class="modal-table-box">
+              <div id="moveMapBox" class="map-box">
+                <div id="showMap"></div>
               </div>
             </div>
           </div>
@@ -578,6 +598,8 @@ export default {
         },
         moveMap: {},
         moveView: {},
+        showMap: {},
+        showView: {},
         pointStyle: {},
         markerStyle: {},
       },
@@ -620,11 +642,35 @@ export default {
         self.reader.readerStatus = '';
         self.reader.powerSupplyMode = '';
       });
-      $("#mark_reader_modal").on('shown.bs.modal', function() {
-        self.mapCache.readerPoint.flag = false;
-      });
-      $("#move_reader_modal").on('shown.bs.modal', function() {
-        self.mapCache.readerPoint.flag = false;
+
+      $("#moveReaderSelect").on('click', function() {
+        axios.get('/base/reader/range/', { params: { 'geoPoint': self.reader.geoPoint }})
+              .then((response) => {
+                let { meta, data } = response.data;
+
+                if (meta.success) {
+                  if (data && data.regionId) {
+                    self.reader.regionId = data.regionId;
+
+                    self.mapCache.moveMap.on('click', function(event) {
+                      let type = ($("input[name='move']:radio:checked").val() == 'select');
+                      let coordinate = event.coordinate,
+                          feature = event.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+                            return feature;
+                          });
+
+                      if (feature && type) {
+                        self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+                      }
+                    });
+
+                  } else { bootbox.alert("分站位置信息检测失败,请重新安置!"); return false;}
+                } else {
+                  bootbox.alert("分站移动后位置不在已划分区域中或在区域边界,请重新安置分站!");
+                  $("input[name='move']:radio").eq(0).prop('checked', true);
+                  return false;
+                }
+              });
       });
     },
     clearSearch () {
@@ -647,14 +693,15 @@ export default {
       let self = this;
 
       let taiyuan = ol.proj.fromLonLat([0, 0]);
-      self.mapCache.moveView = self.mapCache.markView = new ol.View({
-        center: taiyuan,
-        zoom: 6,
-        minZoom: 6,
-        maxZoom: 20
-      });
       $("#mark_reader_modal").on('shown.bs.modal', function() {
-        $(".ol-viewport").remove();
+        self.mapCache.readerPoint.flag = false;
+        self.mapCache.markView = new ol.View({
+          center: [0, 0],
+          zoom: 6,
+          minZoom: 6,
+          maxZoom: 20
+        });
+        $("#markMap .ol-viewport").remove();
         self.mapCache.markMap = new ol.Map({
           target: 'markMap',
           layers: [
@@ -670,7 +717,14 @@ export default {
       });
 
       $("#move_reader_modal").on('shown.bs.modal', function() {
-        $(".ol-viewport").remove();
+        self.mapCache.readerPoint.flag = false;
+        self.mapCache.moveView = new ol.View({
+          center: [0, 0],
+          zoom: 6,
+          minZoom: 6,
+          maxZoom: 20
+        });
+        $("#moveMap .ol-viewport").remove();
         self.mapCache.moveMap = new ol.Map({
           target: 'moveMap',
           layers: [
@@ -681,7 +735,29 @@ export default {
           view: self.mapCache.moveView
         });
         self.loadRegionMapLayer(self.mapCache.moveMap);
-        self.loadMoveReaderMapLayer(self.mapCache.moveMap, self.reader.readerId);
+        self.loadMoveReaderMapLayer(self.mapCache.moveMap, self.reader.readerId, true);
+      });
+
+      $("#show_reader_modal").on('shown.bs.modal', function() {
+        self.mapCache.readerPoint.flag = false;
+        self.mapCache.showView = new ol.View({
+          center: [0, 0],
+          zoom: 6,
+          minZoom: 6,
+          maxZoom: 20
+        });
+        $("#showMap .ol-viewport").remove();
+        self.mapCache.showMap = new ol.Map({
+          target: 'showMap',
+          layers: [
+            new ol.layer.Tile({
+              source: new ol.source.OSM()
+            })
+          ],
+          view: self.mapCache.showView
+        });
+        self.loadRegionMapLayer(self.mapCache.showMap);
+        self.loadMoveReaderMapLayer(self.mapCache.showMap, self.reader.readerId);
       });
     },
     loadRegionMapLayer (currentMap) {
@@ -767,7 +843,7 @@ export default {
               } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
             });
     },
-    loadMoveReaderMapLayer (currentMap, readerId) {
+    loadMoveReaderMapLayer (currentMap, readerId, enableModifyEvent) {
       let self = this;
 
       axios.get('/base/map/reader/')
@@ -785,6 +861,10 @@ export default {
 
                     if (reader.readerId == self.reader.readerId) {
                       newFeature.setStyle(self.createElementStyle());
+                      newFeature.setProperties({ "type": "Point" , "readerId" : reader.readerId });
+                      if (enableModifyEvent) {
+                        self.addModifyInteractionEvent(currentMap);
+                      }
                     } else {
                       newFeature.setStyle(new ol.style.Style({
                         image: new ol.style.Circle({
@@ -804,10 +884,106 @@ export default {
                   self.mapCache.readerLayer = new ol.layer.Vector({
                     source: self.mapCache.readerSource
                   });
-                  self.mapCache.moveMap.addLayer(self.mapCache.readerLayer);
+                  currentMap.addLayer(self.mapCache.readerLayer);
                 } else { bootbox.alert("区域图层装载失败!"); }
               } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
             });
+    },
+    // 添加分站的移动事件
+    addModifyInteractionEvent (currentMap) {
+      let self = this;
+      let type = ($("input[name='move']:radio:checked").val() == 'move');
+      let readerId = self.reader.readerId;
+      let Modify = function() {
+        ol.interaction.Pointer.call(this, {
+          handleDownEvent: Modify.prototype.handleDownEvent,
+          handleDragEvent: Modify.prototype.handleDragEvent,
+          handleMoveEvent: Modify.prototype.handleMoveEvent,
+          handleUpEvent: Modify.prototype.handleUpEvent
+        });
+
+        this._coordinate = null;
+        this._cursor = 'pointer';
+        this._feature = null;
+        this._previousCursor = undefined;
+      };
+      ol.inherits(Modify, ol.interaction.Pointer);
+
+      Modify.prototype.handleDownEvent = function(event) {
+        let map = event.map;
+        let type = ($("input[name='move']:radio:checked").val() == 'move');
+        let feature = map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+          return feature;
+        });
+
+        if (feature && feature.get('readerId') == readerId && type) {
+          feature.setStyle(new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({
+                    color: '#ffcc33'
+                })
+            })
+          }));
+          this._coordinate = event.coordinate;
+          this._feature = feature;
+        }
+        return !!feature;
+      };
+
+      Modify.prototype.handleMoveEvent = function(event) {
+        if (this._cursor) {
+          let type = ($("input[name='move']:radio:checked").val() == 'move');
+            let map = event.map;
+            let feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+                    return feature;
+            });
+            let element = event.map.getTargetElement();
+            if (feature && feature.get('readerId') == readerId && type) {
+                if (element.style.cursor != this._cursor) {
+                    this._previousCursor = element.style.cursor;
+                    element.style.cursor = this._cursor;
+                }
+            } else if (this._previousCursor !== undefined) {
+                element.style.cursor = this._previousCursor;
+                this._previousCursor = undefined;
+            }
+        }
+      };
+
+      Modify.prototype.handleDragEvent = function(event) {
+        let type = ($("input[name='move']:radio:checked").val() == 'move');
+        let map = event.map;
+        let feature = map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+          return feature;
+        });
+
+        if (feature && feature.get('readerId') == readerId && type) {
+          let deltax = event.coordinate[0] - this._coordinate[0];
+          let deltay = event.coordinate[1] - this._coordinate[1];
+          let geometry = this._feature.getGeometry();
+          geometry.translate(deltax, deltay);
+
+          this._coordinate[0] = event.coordinate[0];
+          this._coordinate[1] = event.coordinate[1];
+        }
+      };
+
+      Modify.prototype.handleUpEvent = function() {
+        let type = ($("input[name='move']:radio:checked").val() == 'move');
+        if (this._coordinate && type) {
+          self.reader.geoPoint = self.createPointJson(ol.proj.transform(this._coordinate, 'EPSG:3857', 'EPSG:4326'));
+        }
+        this._coordinate = null;
+        this._feature = null;
+        return false;
+      };
+
+
+      let selectInteraction = new ol.interaction.Select();
+      let modify = new Modify();
+      currentMap.addInteraction(selectInteraction);
+      currentMap.addInteraction(modify);
     },
     // 添加事件
     addRadioEventToMap () {
@@ -904,11 +1080,7 @@ export default {
     // 检测点是否在范围内
     checkPointRange (coordinate, selectedFeature) {
       let self = this;
-          // x = self.mapCache.readerPoint.coordinate[0],
-          // y = self.mapCache.readerPoint.coordinate[1];
-      // return (coordinate[0] >= x - 7 && coordinate[0] <= x + 7)
-      //     || (coordinate[1] >= y - 7 && coordinate <= y + 7) ||
-          return (self.mapCache.readerPoint.readerFeature == selectedFeature);
+      return (self.mapCache.readerPoint.readerFeature == selectedFeature);
     },
     // 构造点坐标
     createPointJson (coordinate) {
@@ -944,8 +1116,12 @@ export default {
       let self = this;
 
       if (type == 'MOVE_READER') {
-          self.reader.readerId = readerId;
-          $("#move_reader_modal").modal('show');
+        self.reader = {};
+        self.reader.readerId = readerId;
+        $("#move_reader_modal").modal('show');
+      } else if (type == 'SHOW_READER') {
+        self.reader.readerId = readerId;
+        $("#show_reader_modal").modal('show');
       }
     },
     /**
@@ -1117,6 +1293,24 @@ export default {
               } else { bootbox.alert("服务器内部错误,分站信息修改失败!"); }
             });
     },
+    updateMoveReaderOper () {
+      let self = this;
+
+      axios.put('/base/reader/', self.reader)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  self.reader = {};
+                  bootbox.alert("分站位置安置成功!");
+                  $("#move_reader_modal").modal('hide');
+                  self.loadReaderList();
+                  $("input[name='reader']:radio:checked").prop('checked', false);
+                } else { bootbox.alert("分站位置安置失败!"); }
+              } else { bootbox.alert("服务器内部错误,分站位置安置失败!"); }
+            });
+    },
     // delete reader
     deleteReaderOper (readerId) {
       let self = this;
@@ -1168,7 +1362,7 @@ export default {
 .table-box-left, .table-box-right {zoom: 1;}
 .table-box-left {width: 24%; height: 550px;overflow: scroll;}
 .table-box-right {width: 75%;}
-.map-box, #markMap, #moveMap {
+.map-box, #markMap, #moveMap, #showMap {
   margin: 0;
   min-height: 555px;
   max-height: 555px;
