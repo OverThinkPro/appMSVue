@@ -12,11 +12,11 @@
       </div>
       <div class="table-box outside-box">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="javascript: void(0);" data-target="#coalmine_info_tab" aria-controls="coalmine_info_tab" role="tab" data-toggle="tab">煤矿信息</a></li>
-          <li role="presentation"><a href="javascript: void(0);" data-target="#period_setting_tab" aria-controls="period_setting_tab" role="tab" data-toggle="tab">人员位置数据采集周期</a></li>
-          <li role="presentation"><a href="javascript: void(0);" data-target="#alarm_type_tab" aria-controls="alarm_type_tab" role="tab" data-toggle="tab">报警声音</a></li>
-          <li role="presentation"><a href="javascript: void(0);" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab">地图底图</a></li>
-          <li role="presentation"><a href="javascript: void(0);" data-target="#job_type_tab" aria-controls="job_type_tab" role="tab" data-toggle="tab">工种图例</a></li>
+          <li role="presentation" class="active"><a href="" data-target="#coalmine_info_tab" aria-controls="coalmine_info_tab" role="tab" data-toggle="tab">煤矿信息</a></li>
+          <li role="presentation"><a href="" data-target="#period_setting_tab" aria-controls="period_setting_tab" role="tab" data-toggle="tab">人员位置数据采集周期</a></li>
+          <li role="presentation"><a href="" data-target="#alarm_type_tab" aria-controls="alarm_type_tab" role="tab" data-toggle="tab">报警声音</a></li>
+          <li role="presentation"><a href="" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab">地图底图</a></li>
+          <li role="presentation"><a href="" data-target="#job_type_tab" aria-controls="job_type_tab" role="tab" data-toggle="tab">工种图例</a></li>
         </ul>
         <div class="tab-content">
           <!-- 煤矿信息 -->
@@ -49,13 +49,13 @@
           <div role="tabpanel" class="tab-pane" id="period_setting_tab">
             <div class="btn-box">
               <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_period_modal">添加周期信息</button>
-              <button class="btn btn-primary fl" type="button" @click="deletePeriod()">批量删除</button>
+              <button class="btn btn-primary fl" type="button" @click="checkPeriodSelect()">批量删除</button>
             </div>
             <div class="data-box content-box">
               <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" name="allPeriod"></th>
+                    <th><input type="checkbox" name="allPeriod" v-model="checkedOfPeriod" @click="selectAllPeriodCheckbox()"></th>
                     <th>序号</th>
                     <th>周期类型</th>
                     <th>周期值</th>
@@ -65,14 +65,14 @@
                 </thead>
                 <tbody>
                   <tr v-for="(period, index) in periodList" :key="period.key">
-                    <td><input type="checkbox" name="period" value="period.periodId" /></td>
+                    <td><input type="checkbox" name="period" :value="period.periodId" /></td>
                     <td>{{ index + 1 }}</td>
                     <td>{{period.periodName}}</td>
                     <td>{{period.periodNum}}</td>
                     <td>{{period.description}}</td>
                     <td>
-                      <a href="javascript: void(0);" title="修改周期基本信息" data-toggle="modal" data-target="#update_period_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                      <a href="javascript: void(0);" title="删除周期" @click="deletePeriod()"><i class="glyphicon glyphicon-trash"></i></a>
+                      <a href="" title="修改周期基本信息" data-toggle="modal" data-target="" @click="clickUpdatePeriod(period.periodId)"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
+                      <a href="javascript: void(0);" title="删除周期" @click="deletePeriod(period.periodId)"><i class="glyphicon glyphicon-trash"></i></a>
                     </td>
                   </tr>
                 </tbody>
@@ -82,14 +82,14 @@
           <!-- 报警声音 -->
           <div role="tabpanel" class="tab-pane" id="alarm_type_tab">
             <div class="btn-box">
-              <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_alarm_modal">添加报警类型</button>
-              <button class="btn btn-primary fl" type="button" @click="deleteAlarm()">批量删除</button>
+              <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_alarmType_modal">添加报警类型</button>
+              <button class="btn btn-primary fl" type="button" @click="checkAlarmTypeSelect()">批量删除</button>
             </div>
             <div class="data-box content-box">
               <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" name="allAlarm"></th>
+                    <th><input type="checkbox" name="allAlarm" v-model="checkedOfAlarmType" @click="selectAllAlarmTypeCheckbox()"></th>
                     <th>序号</th>
                     <th>报警类型</th>
                     <th>启用声音</th>
@@ -99,15 +99,15 @@
                 </thead>
                 <tbody>
                   <tr v-for="(alarmType, index) in alarmTypeList" :key="alarmType.key">
-                    <td><input type="checkbox" name="alarmType" value="alarmType.alarmTypeId" /></td>
+                    <td><input type="checkbox" name="alarmType" :value="alarmType.alarmTypeId" /></td>
                     <td>{{ index + 1 }}</td>
                     <td>{{ alarmType.alarmName }}</td>
-                    <td v-if="alarmType.alarmInUse ==='1' ">启用</td>
+                    <td v-if="alarmType.alarmInUse">启用</td>
                     <td v-else>禁用</td>
                     <td>{{ alarmType.alarmFile }}</td>
                     <td>
-                      <a href="javascript: void(0);" title="修改报警类型基本信息" data-toggle="modal" data-target="#update_alarm_modal"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                      <a href="javascript: void(0);" title="删除报警类型" @click="deleteAlarm()"><i class="glyphicon glyphicon-trash"></i></a>
+                      <a href="" title="修改报警类型" data-toggle="modal" data-target="" @click="clickUpdateAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
+                      <a href="javascript: void(0);"  title="删除报警类型" @click="deleteAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-trash"></i></a>
                     </td>
                   </tr>
                 </tbody>
@@ -136,7 +136,7 @@
                     <img src="../../assets/logo.png" height="200" width="200" >
                     <div class="caption">
                      <!-- <h3>{{jobType.jobName}}</h3> -->
-                      <p><a href="#" class="strong" data-toggle="modal" data-target="#update_job_modal">{{jobType.jobName}}</a></p>
+                      <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobTypeId)">{{jobType.jobName}}</a></p>
                     </div>
                   </div>
                 </div>
@@ -151,7 +151,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+            <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span>
               <span class="sr-only"></span>
             </button>
@@ -204,14 +204,14 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateCoalmine()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
     </div>
     <!-- 添加报警声音模态框 -->
-    <div class="modal fade" id="add_alarm_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="add_alarmType_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -231,9 +231,9 @@
             <div class="input-group-line">
               <div class="group-left">启用声音</div>
               <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="alarmTypeNew.alarmInUse">
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="true" v-model="alarmTypeNew.alarmInUse">
                   <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="alarmTypeNew.alarmInUse">
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="false" v-model="alarmTypeNew.alarmInUse">
                   <span>禁用</span>
               </div>
             </div>
@@ -245,14 +245,14 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addAlarmType()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
       </div>
     </div>
     <!-- 修改报警声音模态框 -->
-    <div class="modal fade" id="update_alarm_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="update_alarmType_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -272,9 +272,9 @@
             <div class="input-group-line">
               <div class="group-left">启用声音</div>
               <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="alarmTypeOld.alarmInUse">
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="true" v-model="alarmTypeOld.alarmInUse">
                   <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="alarmTypeOld.alarmInUse">
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="false" v-model="alarmTypeOld.alarmInUse">
                   <span>禁用</span>
               </div>
             </div>
@@ -286,7 +286,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateAlarmType()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -324,7 +324,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addPeriod()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -362,7 +362,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updatePeriod()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -374,7 +374,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+            <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span>
               <span class="sr-only"></span>
             </button>
@@ -384,18 +384,18 @@
             <input id="input-gly" name="inputgly[]" type="file" multiple class="file-loading">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateMap()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
     </div>
     <!-- 修改工种图标模态框 -->
-    <div class="modal fade" id="update_job_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="update_job_pic_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" @click="clearSearch()">
+            <button type="button" class="close" data-dismiss="modal">
               <span aria-hidden="true">&times;</span>
               <span class="sr-only"></span>
             </button>
@@ -416,8 +416,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateJobTypePic()">保存</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
       </div>
@@ -427,191 +427,58 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
+import axios from 'axios';
+import { initPagination } from '../../assets/script/initplugin';
+import { deepCopy } from '../../assets/script/extends';
 export default {
   name: 'setting',
   data () {
     return {
       map:"./map.png",
-      coalmine:{
-        coalmineId:"1",
-        coalmineName:"山西省第一矿井",
-        coalmineAbbr:"一矿井",
-        coalmineNum:"240",
-        coalmineOutput:"233",
-        coalmineType:"生产矿井",
-        gasGrade:"低瓦斯",
-      },
+      coalmine:{},
+
       periodNew:{},
       periodOld:{},
-      periodList:[
-        {
-          periodId:"P100001",
-          periodName:"位置数据采集周期",
-          periodNum:"1000",
-          description:"设置井下分站以多长周期采集人员位置信息",
-          remark:"",
-        },
-        {
-          periodId:"P100002",
-          periodName:"历史数据保存周期",
-          periodNum:"1000",
-          description:"设置多长时间将内存位置数据保存到数据库中",
-          remark:"",
-        },
-        {
-          periodId:"P100003",
-          periodName:"页面实时数据刷新频率",
-          periodNum:"1000",
-          description:"设置页面多长时间刷新一次",
-          remark:"",
-        },
-      ],
+      periodList: [],
+
       alarmTypeNew:{},
       alarmTypeOld:{},
-      alarmTypeList:[
-        {
-          alarmTypeId:"AT100001",
-          alarmName:"超时报警",
-          alarmInUse:"1",
-          alarmFile:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          alarmTypeId:"AT100002",
-          alarmName:"超员报警",
-          alarmInUse:"1",
-          alarmFile:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          alarmTypeId:"AT100003",
-          alarmName:"限制区域报警",
-          alarmInUse:"1",
-          alarmFile:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          alarmTypeId:"AT100004",
-          alarmName:"呼叫报警",
-          alarmInUse:"0",
-          alarmFile:"../../assets/logo.png",
-          remark:"",
-        },
-      ],
+      alarmTypeList: [],
+
       jobType:{},
-      jobTypeList:[
-        {
-          jobId:"JT100001",
-          jobName:"掘进工",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100002",
-          jobName:"瓦检员",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100003",
-          jobName:"放炮员",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100004",
-          jobName:"采煤工",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100005",
-          jobName:"安检员",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100001",
-          jobName:"掘进工",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100002",
-          jobName:"瓦检员",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100003",
-          jobName:"放炮员",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100004",
-          jobName:"采煤工",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-        {
-          jobId:"JT100005",
-          jobName:"安检员",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        },
-      ],
+      jobTypeList: [],
+
+      checkedOfPeriod: false,
+      checkedOfAlarmType: false,
     };
   },
   mounted () {
     this.initEvent();
+    this.loadCoalmine();
+    this.loadAlarmTypeList();
+    this.loadPeriodList();
+    this.defaultLoadJobType();
   },
   methods: {
     initEvent () {
       var self = this;
-      $("#add_alarm_modal").on('show.bs.modal', function() {
+      $("#add_alarmType_modal").on('show.bs.modal', function() {
         self.alarmTypeNew = {
-          alarmTypeId:"AT100009",
+          alarmTypeId:"",
           alarmName:"",
-          alarmInUse:"1",
+          alarmInUse: true,
           alarmFile:"",
           remark:"",
         }
       });
-      $("#update_alarm_modal").on('show.bs.modal', function() {
-        self.alarmTypeOld = {
-          alarmTypeId:"AT100003",
-          alarmName:"限制区域报警",
-          alarmInUse:"1",
-          alarmFile:"../../assets/logo.png",
-          remark:"",
-        };
-      });
-      $("#update_job_modal").on('show.bs.modal', function() {
-        self.jobType = {
-          jobId:"JT100001",
-          jobName:"掘进工",
-          jobIconUrl:"../../assets/logo.png",
-          remark:"",
-        };
-      });
       $("#add_period_modal").on('show.bs.modal', function() {
         self.periodNew = {
-          periodId:"P100009",
+          periodId:"",
           periodName:"",
           periodNum:"1000",
           description:"",
           remark:"",
         }
-      });
-      $("#update_period_modal").on('show.bs.modal', function() {
-        self.periodOld = {
-          periodId:"P100001",
-          periodName:"位置数据采集周期",
-          periodNum:"1000",
-          description:"设置井下分站以多长周期采集人员位置信息",
-          remark:"",
-        };
       });
       $(".alarm-file").fileinput({
         language: 'zh',
@@ -674,13 +541,72 @@ export default {
           slugCallback: function(filename) {
             return filename.replace('(', '_').replace(']', '_');
           },
-         /* allowedPreviewTypes: ['image'],
-          allowedFileTypes: ['image'],*/
       });
     },
-    deletePeriod () {
+
+    clearSearch () {
+      $("input[name='peroid']:checked").each(function() { this.checked = false; });
+      $("input[name='alarmType']:checked").each(function() { this.checked = false; });
+    },
+
+    /* 默认加载周期列表 */
+    loadPeriodList() {
+      let self = this;
+      axios.get('/base/period/').then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success) {
+          if (data) {
+            self.periodList = data.periodList;
+          }
+        } else {
+          bootbox.alert({ title:'查看周期信息', message: meta.message });
+        }
+      });
+    },
+
+    /* 添加一个新的周期 */
+    addPeriod() {
+      let self = this;
+      axios.post('/base/period/', self.periodNew).then((response) => {
+        let meta = response.data.meta;
+        if (meta.success) {
+          let data = response.data.data;
+          if (data && data.result == 1) { 
+            $("#add_period_modal").modal('hide');
+            self.loadPeriodList();
+            bootbox.alert({ title:'添加周期信息',  message: '周期信息添加成功!' }); 
+          }else { 
+            bootbox.alert({ title:'添加周期信息',  message: '周期信息添加失败!' }); 
+          }
+        } else {
+          bootbox.alert({ title:'添加周期信息',  message: '服务器内部错误, 周期信息添加失败!'});
+        }
+      });
+    },
+
+    /* 选择要批量删除的周期信息 */
+    checkPeriodSelect () {
+      let self = this;
+      let periodIds = '';
+      let size = $("input[name='period']").filter(':checked').length;
+      if (size < 1) {
+        bootbox.alert({title:'选择周期', message: '请选择一条记录,再进行操作!'});
+        return;
+      }else{
+        $("input[name='period']:checked").each(function() {
+          periodIds += $(this).val() + ',';
+        });
+        periodIds = periodIds.substring(0, periodIds.length-1);
+        self.deletePeriod(periodIds);
+      }
+    },
+
+    /* 删除周期信息 */
+    deletePeriod (periodIds) {
+      let self = this;
       bootbox.confirm({
-        message: "周期一旦删除，不可恢复！是否确定删除当前所选周期？",
+        title: '删除周期',
+        message: '周期信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
           confirm: {
             label: '确定'
@@ -689,16 +615,123 @@ export default {
             label: '取消'
           }
         },
-        callback: function () {
-          bootbox.alert({
-            message: "删除成功",
-          });
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/period/', { params: { 'periodIds': periodIds }}).then((response) => {
+              let { meta, data } = response.data;
+              if (meta.success) {
+                if (data && data.result) { 
+                  bootbox.alert({ title:'删除周期信息', message: '周期信息删除成功!' }); 
+                }else { 
+                  bootbox.alert({ title:'删除周期信息', message: '周期信息删除失败!' }); 
+                }
+                $("input[name='period']:checked").each(function() { this.checked = false; });
+                self.loadPeriodList();
+              } else { 
+                bootbox.alert({ title:'删除周期信息', message: meta.message }); 
+              }
+            });
+          }
         }
       });
     },
-    deleteAlarm () {
+
+    /* 点击修改按钮 */
+    clickUpdatePeriod(periodId){
+      let self = this;
+      self.periodList.forEach((period, index) => {
+        if (period.periodId == periodId) {
+          self.periodOld = deepCopy(period);
+          delete self.periodOld.uber;
+        }
+      });
+      $("#update_period_modal").modal('show');
+    },
+
+    /* 修改并更新周期信息 */
+    updatePeriod() {
+      let self = this;
+      axios.put('/base/period/', self.periodOld).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'修改周期信息', message: '周期信息修改成功!' }); 
+            }else { 
+              bootbox.alert({ title:'修改周期信息', message: '周期信息修改失败!' }); 
+            }
+            $("#update_period_modal").modal('hide');
+            self.loadPeriodList();
+        } else { 
+          bootbox.alert({ title:'修改周期信息', message: meta.message }); 
+        }
+      });
+    },
+    /* 周期复选框全选 */
+    selectAllPeriodCheckbox(){
+      //如果当前点击的多选框被选中
+      if(this.checkedOfPeriod){        
+        $('input[type=checkbox][name=period]').prop("checked", true );
+      }else{                
+        $('input[type=checkbox][name=period]').prop("checked", false );
+      }
+    },
+
+    /* 默认加载报警类型列表 */
+    loadAlarmTypeList() {
+      let self = this;
+      axios.get('/base/alarmType/').then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success) {
+          if (data) {
+            self.alarmTypeList = data.alarmSettingList;
+          }
+        } else {
+          bootbox.alert({ title:'查看报警类型信息', message: meta.message });
+        }
+      });
+    },
+    /* 添加一个新的报警类型 */
+    addAlarmType() {
+      let self = this;
+      axios.post('/base/alarmType/', self.alarmTypeNew).then((response) => {
+        let meta = response.data.meta;
+        if (meta.success) {
+          let data = response.data.data;
+          if (data && data.result == 1) { 
+            $("#add_alarmType_modal").modal('hide');
+            self.loadAlarmTypeList();
+            bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' }); 
+          }else { 
+            bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' }); 
+          }
+        } else {
+          bootbox.alert({ title:'添加报警类型信息',  message: '服务器内部错误, 周期信息添加失败!'});
+        }
+      });
+    },
+    /* 选择要批量删除的报警类型信息 */
+    checkAlarmTypeSelect () {
+      let self = this;
+      let alarmTypeIds = '';
+      let size = $("input[name='alarmType']").filter(':checked').length;
+      if (size < 1) {
+        bootbox.alert({ title:'选择报警类型', message: '请选择一条记录,再进行操作!'});
+        return;
+      }else{
+        $("input[name='alarmType']:checked").each(function() {
+          alarmTypeIds += $(this).val() + ',';
+        });
+        alarmTypeIds = alarmTypeIds.substring(0, alarmTypeIds.length-1);
+        self.deleteAlarmType(alarmTypeIds);
+      }
+    },
+
+    /* 删除报警类型信息 */
+    deleteAlarmType (alarmTypeIds) {
+      let self = this;
       bootbox.confirm({
-        message: "报警类型一旦删除，不可恢复！是否确定删除当前所选报警类型？",
+        title: '删除报警类型',
+        message: '报警类型信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
           confirm: {
             label: '确定'
@@ -707,13 +740,147 @@ export default {
             label: '取消'
           }
         },
-        callback: function () {
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/alarmType/', { params: { 'alarmTypeIds': alarmTypeIds }}).then((response) => {
+              let { meta, data } = response.data;
+              if (meta.success) {
+                if (data && data.result) { 
+                  bootbox.alert({ title:'删除报警类型信息', message: '报警类型信息删除成功!'}); 
+                }else { 
+                  bootbox.alert({ title:'删除报警类型信息', message: '报警类型信息删除失败!'}); 
+                }
+                $("input[name='alarmType']:checked").each(function() { this.checked = false; });
+                self.loadAlarmTypeList();
+              } else { 
+                bootbox.alert({title:'删除报警类型信息', message: meta.message }); 
+              }
+            });
+          }
+        }
+      });
+    },
+    /* 点击修改按钮 */
+    clickUpdateAlarmType(alarmTypeId){
+      let self = this;
+      self.alarmTypeList.forEach((alarmType, index) => {
+        if (alarmType.alarmTypeId == alarmTypeId) {
+          self.alarmTypeOld = deepCopy(alarmType);
+          delete self.alarmTypeOld.uber;
+        }
+      });
+      $("#update_alarmType_modal").modal('show');
+    },
+
+    /* 修改并更新报警类型信息 */
+    updateAlarmType() {
+      let self = this;
+      axios.put('/base/alarmType/', self.alarmTypeOld).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' }); 
+            }else { 
+              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改失败!' }); 
+            }
+            $("#update_alarmType_modal").modal('hide');
+            self.loadAlarmTypeList();
+        } else { 
+          bootbox.alert({ title:'修改报警类型信息', message: meta.message }); 
+        }
+      });
+    },
+    /* 报警类型复选框全选 */
+    selectAllAlarmTypeCheckbox(){
+      //如果当前点击的多选框被选中
+      if(this.checkedOfAlarmType){        
+        $('input[type=checkbox][name=alarmType]').prop("checked", true );
+      }else{                
+        $('input[type=checkbox][name=alarmType]').prop("checked", false );
+      }
+    },
+
+    /* 默认加载煤矿信息 */
+    loadCoalmine() {
+      let self = this;
+      axios.get("/base/setting/coalmine").then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success) {
+          self.coalmine = data.coalmineInfo;
+        } else {
           bootbox.alert({
-            message: "删除成功",
+            title:"煤矿信息",
+            message: meta.message
           });
         }
       });
     },
+
+    /* 修改煤矿信息 */
+    updateCoalmine() {
+      let self = this;
+      axios.put('/base/coalmine/', self.coalmine).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'修改煤矿信息', message: '煤矿信息修改成功!' }); 
+            }else { 
+              bootbox.alert({title:'修改煤矿信息',  message: '煤矿信息修改失败!' }); 
+            }
+            $("#update_coalmine_modal").modal('hide');
+        } else { 
+          bootbox.alert({ title:'修改煤矿信息', message: meta.message }); 
+        }
+      });
+    },
+
+    /* 默认加载工种信息 */
+    defaultLoadJobType () {
+      let self = this;
+      axios.get('/base/jobtype/').then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+          self.jobTypeList = data.jobTypeList;
+        } else {
+          bootbox.alert({
+            message: meta.message
+          });
+        }
+      });
+    },
+
+    /* 点击修改工种图例 */
+    clickJobTypeName(jobTypeId){
+      let self = this;
+      self.jobTypeList.forEach((jobType, index) => {
+        if (jobType.jobTypeId == jobTypeId) {
+          self.jobType = deepCopy(jobType);
+          delete self.jobType.uber;
+        }
+      });
+      $("#update_job_pic_modal").modal('show');
+    },
+    // 修改工种信息
+    updateJobTypePic () {
+      let self = this;
+      axios.put('/base/jobtype/', self.jobType).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:"工种图例", message: '工种图例修改成功!' }); 
+            }else { 
+              bootbox.alert({ title:"工种图例", message: '工种信息修改失败!' }); 
+            }
+            $("#update_job_pic_modal").modal('hide');
+            self.defaultLoadJobType();
+        } else { bootbox.alert({ title:"工种图例", message: meta.message }); }
+      });
+    },
+
+    updateMap(){
+      alert("上传底图");
+    },
+
   }
 };
 </script>

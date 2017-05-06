@@ -39,7 +39,6 @@ export default {
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "../node_modules/bootstrap-fileinput/css/fileinput.min.css";
 /*@import "../node_modules/bootstrap-table/dist/bootstrap-table.min.css";*/
-
 @import "./assets/style/reset.css";
 @import "./assets/style/common.css";
 

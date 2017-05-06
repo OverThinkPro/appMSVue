@@ -15,48 +15,48 @@
           <div class="title-box content-box">
             <h5>字典列表</h5>
           </div>
+          <ul id="dictionaryTree" class="ztree"></ul>
         </div>
         <div class="table-box-right outside-box fr">
           <div class="search-bar-box">
             <div class="search-bar">
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">字典名称</span>
-                <input type="text" class="form-control refresh">
+                <input type="text" class="form-control refresh" id="dictionaryNameParam">
               </div>
               <div class="input-group search-bar-input fl">
                 <span class="input-group-addon">字典编号</span>
-                <input type="text" class="form-control refresh">
+                <input type="text" class="form-control refresh"  id="dictionaryIdParam">
               </div>
               <div class="input-group search-bar-input fl">
-                <select class="form-control refresh" name="">
+                <select class="form-control refresh" name="" id="dictionaryInUseParam">
                     <option value="">- 是否启用 -</option>
-                    <option value="">启用</option>
-                    <option value="">禁用</option>
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
                 </select>
               </div>
               <div class="input-group btn-group fr">
                 <button type="button" class="btn btn-default" @click="clearSearch()"><i class="glyphicon glyphicon-refresh"></i>&nbsp;重置</button>
-                <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+                <button type="button" class="btn btn-primary"  @click="defaultLoadDictionaryTable()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
               </div>
             </div>
           </div>
           <div class="search-hr"></div>
           <div class="btn-box" style="margin-bottom: 0;">
             <div class="fl">
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_dictionary_modal">添加</button>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_dictionary_modal">修改</button>
-              <button type="button" class="btn btn-primary" @click="deleteDictionary()">删除</button>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" @click="checkSelect('UPDATE_DICTIONARY')">修改</button>
+              <button type="button" class="btn btn-primary"  @click="checkSelect('DELETE_MODULE')">批量删除</button>
             </div>
-            <div class="fr">
+            <!-- <div class="fr">
               <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i>导出</button>
               <button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-print"></i>打印</button>
-            </div>
+            </div> -->
           </div>
           <div class="table-box data-box">
             <table class="table table-bordered table-hover">
               <thead>
                 <tr>
-                  <th><input type="checkbox" name="allDictionary"></th>
+                  <th><input type="checkbox" name="allDictionary" v-model="checked" @click="selectAllDictionaryCheckbox()"></th>
                   <th>序号</th>
                   <th>字典编号</th>
                   <th>字典名称</th>
@@ -66,7 +66,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(elem, index) in dictionaryList" :key="elem.key">
+                <tr v-for="(elem, index) in dictionaryListCache.dictionaryList" :key="elem.key">
                   <td><input type="checkbox" name="dictionary" :value="elem.dictionaryId" /></td>
                   <td>{{ index + 1 }}</td>
                   <td>{{ elem.dictionaryId }}</td>
@@ -78,16 +78,8 @@
                 </tr>
               </tbody>
             </table>
-            <nav class="pagination-box">
-              <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">&raquo;</a></li>
-              </ul>
+            <nav class="pagination-box" id="dictionaryPagingBox">
+              <div id="dictionaryPaging" class="pagination"></div>
             </nav>
           </div>
         </div>
@@ -173,7 +165,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addDictionary()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -258,7 +250,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateDictionary()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -269,130 +261,310 @@
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
-
+import axios from 'axios';
+import { initPagination } from '../../assets/script/initplugin';
+import { deepCopy } from '../../assets/script/extends';
+import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
+import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min'
 export default {
   name: 'dictionary',
   data () {
     return {
+      /*dictionaryStatusCode: ['0','1'],
+      dictionaryStatusName: ['启用', '禁用'],*/
       dictionaryNew:{},
       dictionaryOld:{},
-      dictionaryList:[
-        {'dictionaryId': '10', 'dictionaryName': '首页',  'upDictionaryId': '1','inUse': '1','description':'首页', 'dataType':'字符型', 'remark':'', 'englishName': 'Main',
-         'children': [],
+      dictionaryTreeCache:{
+        dictionaryList: []
+      },
+      dictionaryListCache: {
+        dictionaryList: [],
+        total: 0
+      },
+      checked: false,
+      upDictionaryId: '1',
+      treeSetting: {
+        view: {
+          addHoverDom: this.addHoverDom,
+          removeHoverDom: this.removeHoverDom,
+          selectedMulti: false,      
         },
-        {'dictionaryId': '11', 'dictionaryName': '查询统计', 'upDictionaryId': '1', 'inUse': '1','description':'查询统计', 'dataType':'字符型', 'remark':'', 'englishName': '',
-         'children': [
-            {'dictionaryId': '1101', 'dictionaryName': '实时查询',  'upDictionaryId': '11','inUse': '1','description':'实时查询', 'dataType':'字符型', 'remark':'', 'englishName': 'Insearch',
-             'children': [],
-            },
-            {'dictionaryId': '1102', 'dictionaryName': '历史报警查询',  'upDictionaryId': '11','inUse': '1','description':'历史报警查询', 'dataType':'字符型', 'remark':'', 'englishName': 'Alarm',
-             'children': [],
-            },
-            {'dictionaryId': '1103', 'dictionaryName': '历史轨迹回放',  'upDictionaryId': '11','inUse': '1','description':'历史轨迹回放', 'dataType':'字符型', 'remark':'', 'englishName': 'Replay',
-             'children': [],
-            },
-          ]
+        data: {
+          simpleData: {
+            enable: true,
+            idKey: "dictionaryId",
+            pIdKey: "upDictionaryId",
+            rootPId: 1
+          },
+          key: {
+            name: 'dictionaryName'
+          }
         },
-        {'dictionaryId': '12', 'dictionaryName': '考勤管理', 'upDictionaryId': '1', 'inUse': '1','description':'考勤管理', 'dataType':'字符型', 'remark':'', 'englishName': '',
-         'children': [
-            {'dictionaryId': '1201', 'dictionaryName': '日考勤报表',  'upDictionaryId': '12','inUse': '1','description':'日考勤报表', 'dataType':'字符型', 'remark':'', 'englishName': 'Daily',
-             'children': [],
-            },
-            {'dictionaryId': '1202', 'dictionaryName': '月考勤详情报表',  'upDictionaryId': '12','inUse': '1','description':'月考勤详情报表', 'dataType':'字符型', 'remark':'', 'englishName': 'Monthly',
-             'children': [],
-            },
-            {'dictionaryId': '1203', 'dictionaryName': '月考勤统计报表',  'upDictionaryId': '12','inUse': '1','description':'月考勤统计报表', 'dataType':'字符型', 'remark':'', 'englishName': '',
-             'children': [],
-            },
-          ],
+        edit: {
+          enable: true, 
+          showRemoveBtn: this.showRemoveBtn,
+          showRenameBtn: this.showRenameBtn,
+          removeTitle: "删除节点",
+          renameTitle: "编辑节点名称",
         },
-        {'dictionaryId': '13', 'dictionaryName': '人员管理', 'upDictionaryId': '1', 'inUse': '1','description':'人员管理', 'dataType':'字符型', 'remark':'', 'englishName': '',
-         'children': [
-            {'dictionaryId': '1301', 'dictionaryName': '菜单管理',  'upDictionaryId': '13','inUse': '1','description':'菜单管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Unit',
-             'children': [],
-            },
-            {'dictionaryId': '1302', 'dictionaryName': '员工管理',  'upDictionaryId': '13','inUse': '1','description':'员工管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Staff',
-             'children': [],
-            },
-            {'dictionaryId': '1303', 'dictionaryName': '工种管理',  'upDictionaryId': '13','inUse': '1','description':'员工管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Job',
-             'children': [],
-            },
-            {'dictionaryId': '1304', 'dictionaryName': '班次管理',  'upDictionaryId': '13','inUse': '1','description':'班次管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Schedule',
-             'children': [],
-            },
-          ],
+        callback: {
+          onClick: this.zTreeOnClick,
+          beforeRemove: this.beforeRemove,  
+          beforeEditName: this.beforeEditName,
         },
-        {'dictionaryId': '14', 'dictionaryName': '定位卡管理',  'upDictionaryId': '1','inUse': '1','description':'定位卡管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Card',
-         'children': [],
-        },
-        {'dictionaryId': '15', 'dictionaryName': '分站管理',  'upDictionaryId': '1','inUse': '1','description':'分站管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Reader',
-         'children': [],
-        },
-        {'dictionaryId': '16', 'dictionaryName': '区域设置',  'upDictionaryId': '16','inUse': '1','description':'区域设置', 'dataType':'字符型', 'remark':'', 'englishName': 'Region',
-         'children': [],
-        },
-        {'dictionaryId': '17', 'dictionaryName': '系统管理', 'upDictionaryId': '1', 'inUse': '1','description':'系统管理', 'dataType':'字符型', 'remark':'', 'englishName': '',
-         'children': [
-            {'dictionaryId': '1701', 'dictionaryName': '用户管理',  'upDictionaryId': '17','inUse': '1','description':'用户管理', 'dataType':'字符型', 'remark':'', 'englishName': 'User',
-             'children': [],
-            },
-            {'dictionaryId': '1702', 'dictionaryName': '角色管理',  'upDictionaryId': '17','inUse': '1','description':'角色管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Role',
-             'children': [],
-            },
-            {'dictionaryId': '1703', 'dictionaryName': '菜单管理',  'upDictionaryId': '17','inUse': '1','description':'菜单管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Menu',
-             'children': [],
-            },
-            {'dictionaryId': '1703', 'dictionaryName': '字典管理',  'upDictionaryId': '17','inUse': '1','description':'字典管理', 'dataType':'字符型', 'remark':'', 'englishName': 'Dictionary',
-             'children': [],
-            },
-            {'dictionaryId': '1704', 'dictionaryName': '参数设置',  'upDictionaryId': '17','inUse': '1','description':'参数设置', 'dataType':'字符型', 'remark':'', 'englishName': 'Setting',
-             'children': [],
-            }
-          ],
-        },
-      ]
-    };
+      },
+    }
   },
   mounted () {
     this.initEvent();
+    this.defaultLoadDictionaryTree();
+    this.defaultLoadDictionaryTable();
   },
   methods: {
     initEvent () {
       var self = this;
       $("#add_dictionary_modal").on('show.bs.modal', function() {
-        self.dictionaryNew = {
-          'dictionaryId': '19', 
-          'dictionaryName': '',  
-          'upDictionaryId': '1',
-          'upDictionaryName': '1',
-          'inUse': '1',
-          'description':'', 
-          'dataType':'字符型',
-          "englishName": "",
-          'children': [], 
-        }
-      });
-      $("#update_dictionary_modal").on('show.bs.modal', function() {
-        self.dictionaryOld = {
-          'dictionaryId': '10', 
-          'dictionaryName': '首页',  
-          'upDictionaryId': '1',
-          'upDictionaryName': '1',
-          'inUse': '1',
-          'description':'首页', 
-          'dataType':'字符型',
-          "englishName": "Main",
-          'children': [],
-        };
       });
     },
+
+    /* 重置 */
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
+      $("input[name='dictionary']:checked").each(function() { this.checked = false; });
     },
-    deleteDictionary () {
+
+    // 默认装载部门树
+    defaultLoadDictionaryTree () {
+      let self = this;
+      axios.get('/base/dictionary/dictionaryTree').then((response) => {
+        let {meta, data} = response.data;
+        if (meta.success) {
+          if (data) {
+            self.dictionaryTreeCache.dictionaryList = data.dictionaryList;
+            let zNodes = data.dictionaryList;
+            zNodes[0].open = true;
+            $.fn.zTree.init($("#dictionaryTree"), self.treeSetting, zNodes);
+            //var treeObj = $.fn.zTree.getZTreeObj("dictionaryTree"); 
+            //treeObj.expandAll(true); 
+          }
+        }
+      });
+    },
+    /* 点击树节点的触发事件 */
+    zTreeOnClick (event, treeId, treeNode) {
+      let self = this;
+      initPagination('dictionaryPagingBox', 'dictionaryPaging');
+      self.upDictionaryId = treeNode.dictionaryId;
+      self.loadDictionaryListPagingByUpDictionary(null);
+    },
+
+     /* 点击上级节点获得分页后的子字典列表信息 */
+    loadDictionaryListPagingByUpDictionary(page, isPaging) {
+      let self = this;
+      page = page || 1;
+      axios.get('/base/dictionary/up/' + self.upDictionaryId + '/p/' + page).then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success && data) {
+            self.dictionaryListCache.dictionaryList = data.dictionaryList;
+            self.dictionaryListCache.total = data.totalCounts;
+            if (!isPaging) {
+              $("#dictionaryPaging").page({
+                total: self.dictionaryListCache.total,
+                pageSize: 10,
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+              }).on("pageClicked", function (event, pageNumber) {
+                self.loadDictionaryListPagingByUpDictionary(pageNumber + 1, true);
+              });
+            }
+        } else {
+          bootbox.alert({
+            title:'查看字典信息',
+            message: meta.message
+          });
+        }
+      });
+    },
+
+    /* 决定删除按钮/图标是否显示，这里的根节点决定不显示 */
+    showRemoveBtn(treeId, treeNode) {
+      if(treeNode.dictionaryId=="1"){
+        return false;
+      }else{
+        return true;
+      }
+    },
+
+    /* 决定重命名按钮/图标是否显示，这里的根节点决定不显示  */
+    showRenameBtn(treeId, treeNode) {
+      if(treeNode.dictionaryId=="1"){
+        return false;
+      }else{
+        return true;
+      }
+    },
+        /* 修改节点信息 */
+    beforeEditName(treeId, treeNode) {
+      let self = this;
+      self.clickUpdateDictionary(treeNode.dictionaryId);
+    },
+  
+    /* 删除节点信息 */
+    beforeRemove(treeId, treeNode) {
+      let self = this;
+      self.deleteDictionary(treeNode.dictionaryId);
+    },
+
+    /* 添加按钮显示*/
+    addHoverDom(treeId, treeNode) {
+      let self = this;
+      var sObj = $("#" + treeNode.tId + "_span");
+      if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) { return; }
+      var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+        + "' title='add node' onfocus='this.blur();'></span>";
+      sObj.after(addStr);
+      var btn = $("#addBtn_" + treeNode.tId);
+      if (btn) {
+        btn.bind("click", function() {
+          let zTree = $.fn.zTree.getZTreeObj("dictionaryTree");
+          zTree.selectNode(treeNode);
+          axios.get('/base/dictionary/up/' + treeNode.dictionaryId).then((response) => {
+            let {meta, data} = response.data;
+            if (meta.success) {
+              if (data) {
+                self.dictionaryNew={};
+                self.dictionaryNew.upDictionaryId = treeNode.dictionaryId;
+                self.dictionaryNew.upDictionaryName = treeNode.dictionaryName;
+                self.dictionaryNew.dictionaryId = data.currentDictionaryId;
+                self.dictionaryNew.inUse = '1';
+              }
+              $("#add_dictionary_modal").modal('show');
+            } else {
+              bootbox.alert({title:'新增字典', message: '新增字典编号生成失败!'})
+            }
+          });
+        });
+      }
+    },
+    
+    /* 添加按钮不显示*/
+    removeHoverDom (treeId, treeNode) {
+      $("#addBtn_" + treeNode.tId).unbind().remove();
+    },
+
+    /* 得到查询条件 */
+    getSearchParam () {
+      let params = {}, dictionaryName,dictionaryId, inUse;
+      dictionaryName = $("#dictionaryNameParam").val();
+      if (dictionaryName) { params.dictionaryName = dictionaryName; }
+      dictionaryId = $("#dictionaryIdParam").val();
+      if (dictionaryId) { params.dictionaryId = dictionaryId; }
+      inUse = $("#dictionaryInUseParam").find("option:selected").val();
+      if (inUse) { params.inUse = inUse; }
+      return params;
+    },
+
+    /* 分页 */
+    defaultLoadDictionaryTable () {
+      initPagination('dictionaryPagingBox', 'dictionaryPaging');
+      this.loadDictionaryListPagingByCondition(null);
+    },
+
+    /* 获得分页后的字典列表信息 */
+    loadDictionaryListPagingByCondition(page, isPaging) {
+      let self = this;
+      let params = self.getSearchParam();
+      page = page || 1;
+      axios.post('/base/dictionary/p/' + page, params).then((response) => {
+        let {meta,data} = response.data;
+        if (meta.success && data) {
+            self.dictionaryListCache.dictionaryList = data.dictionaryList;
+            self.dictionaryListCache.total = data.totalCounts;
+            //alert("page"+page);
+            if (!isPaging) {
+              $("#dictionaryPaging").page({
+                total: self.dictionaryListCache.total,
+                pageSize: 10,
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+              }).on("pageClicked", function (event, pageNumber) {
+                self.loadDictionaryListPagingByCondition(pageNumber + 1, true);
+              });
+            }
+        } else {
+          bootbox.alert({ title:'查看字典信息', message: meta.message });
+        }
+      });
+    },
+    /* 添加一个新的字典 */
+    addDictionary() {
+      let self = this;
+      axios.post('/base/dictionary', self.dictionaryNew).then((response) => {
+        let meta = response.data.meta;
+        if (meta.success) {
+          let data = response.data.data;
+          if (data && data.result == 1) { 
+            bootbox.alert({ title:'添加字典信息', message: '字典信息添加成功!' }); 
+          }else { 
+            bootbox.alert({ title:'添加字典信息', message: '字典信息添加失败!' }); 
+          }
+          $("#add_dictionary_modal").modal('hide');
+          self.defaultLoadDictionaryTree();
+          self.defaultLoadDictionaryTable();
+        } else {
+          bootbox.alert({ title:'添加字典信息', message: '服务器内部错误, 字典信息添加失败!'});
+        }
+      });
+    },
+    
+    /* 选择要批量删除的字典信息 */
+    checkSelect (type) {
+      let self = this;
+      let size = $("input[name='dictionary']").filter(':checked').length;
+      if (size < 1) {
+        bootbox.alert({ title:'选择字典', message: '请选择一条记录,再进行操作!'});
+        return;
+      }else if (size == 1) {
+        let dictionaryId = '';
+        $("input[name='dictionary']:checked").each(function() {
+          dictionaryId += $(this).val();
+        });
+        if (type == 'UPDATE_DICTIONARY') {
+          self.clickUpdateDictionary(dictionaryId);
+        }else{
+          self.deleteDictionary(dictionaryId);
+        }
+      }else{
+        if (type == 'UPDATE_DICTIONARY') {
+          bootbox.alert({ title:'选择字典', message: '只能选择一项进行修改,请重试!'});
+          return;
+        }else{
+          self.getDeleteIds();
+        }
+       
+      }
+    },
+    /* 获得要批量删除的字典编号 */
+    getDeleteIds(){
+      let dictionaryIds = '';
+      $("input[name='dictionary']:checked").each(function() {
+        dictionaryIds += $(this).val() + ',';
+      });
+      dictionaryIds = dictionaryIds.substring(0, dictionaryIds.length-1);
+      this.deleteDictionary(dictionaryIds);
+    },
+
+    /* 删除字典信息 */
+    deleteDictionary(dictionaryIds){
+      let self = this;
       bootbox.confirm({
-        message: '字典一旦删除，不可恢复，是否确定删除？',
+        title: '删除字典',
+        message: '字典信息一旦删除，不可恢复，是否确定删除？',
         buttons: {
           confirm: {
             label: '确定'
@@ -401,14 +573,73 @@ export default {
             label: '取消'
           }
         },
-        callback: function() {
-          bootbox.alert("删除成功!");
+        callback: function(result) {
+          if (result) {
+            axios.delete('/base/dictionary/', { params: { 'dictionaryIds': dictionaryIds }}).then((response) => {
+              let { meta, data } = response.data;
+              if (meta.success) {
+                if (data && data.result) { 
+                  bootbox.alert({ title:'删除字典信息', message: '字典信息删除成功!' }); 
+                }else { 
+                  bootbox.alert({ title:'删除字典信息', message: '字典信息删除失败!' }); 
+                }
+                $("input[name='dictionary']:checked").each(function() { this.checked = false; });
+                self.defaultLoadDictionaryTree();
+                self.defaultLoadDictionaryTable();
+              } else { 
+                bootbox.alert({ title:'删除字典信息', message: meta.message }); 
+              }
+            });
+          }
         }
       });
-    }
+    },
+    /* 点击修改按钮 */
+    clickUpdateDictionary(dictionaryId){
+      let self = this;
+      self.dictionaryOld={};
+      self.dictionaryTreeCache.dictionaryList.forEach((dictionary, index) => {
+        if (dictionary.dictionaryId == dictionaryId) {
+          self.dictionaryOld = deepCopy(dictionary);
+          delete self.dictionaryOld.uber;
+        }
+      });
+      $("#update_dictionary_modal").modal('show');
+    },
+
+    /* 修改并更新字典信息 */
+    updateDictionary () {
+      let self = this;
+      axios.put('/base/dictionary/', self.dictionaryOld).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'修改字典信息', message: '字典信息修改成功!' }); 
+            }else { 
+              bootbox.alert({ title:'修改字典信息', message: '字典信息修改失败!' }); 
+            }
+            $("#update_dictionary_modal").modal('hide');
+            $("input[name='dictionary']:checked").each(function() { this.checked = false; });
+            self.defaultLoadDictionaryTree();
+            self.defaultLoadDictionaryTable();
+        } else { 
+          bootbox.alert({ title:'修改字典信息', message: meta.message }); 
+        }
+      });
+    },
+
+    /* 复选框全选 */
+    selectAllDictionaryCheckbox(){
+        //如果当前点击的多选框被选中
+        if(this.checked){        
+          $('input[type=checkbox][name=dictionary]').prop("checked", true );
+        }else{                
+          $('input[type=checkbox][name=dictionary]').prop("checked", false );
+        }
+    },
+    
   }
-};
-</script>
+}
 </script>
 
 <style lang="css" scoped>
