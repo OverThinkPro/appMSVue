@@ -49,6 +49,7 @@
           <div role="tabpanel" class="tab-pane active" id="region_map_tab">
             <div class="btn-box">
               <div class="fr">
+                <!-- <button type="button" class="btn btn-primary" @click="show()">show</button> -->
                 <button type="button" @click="fullScreen()" class="btn btn-primary fr" title="地图全屏查看">
                   <i class="glyphicon glyphicon-fullscreen"></i>&nbsp;全屏查看
                 </button>
@@ -61,14 +62,14 @@
                 </div>
               </div>
             </div>
-            <div class="map-box" style="width: 100%;">
+            <div class="map-box">
               <div id="map"></div>
             </div>
           </div>
           <div role="tabpanel" class="tab-pane" id="region_list_tab">
             <div class="btn-box">
               <div class="fl">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_region_modal">添加</button>
+                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_region_modal">添加</button> -->
                 <button type="button" class="btn btn-primary" @click="checkType('UPDATE_REGION')">修改</button>
                 <button type="button" class="btn btn-primary" @click="checkType('DELETE_REGION')">删除区域</button>
               </div>
@@ -87,16 +88,20 @@
                     <th>区域类型</th>
                     <th>超员设置</th>
                     <th>描述</th>
+                    <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-if="regionListCache.regionList != null" v-for="(region, index) in regionListCache.regionList" :key="region.key">
-                    <td><input type="radio" name="region" value="region.regionId" /></td>
+                    <td><input type="radio" name="region" :value="region.regionId" /></td>
                     <td>{{ index + 1 }}</td>
                     <td>{{ region.regionName }}</td>
                     <td>{{ region.regionType }}</td>
                     <td>{{ region.regionMaxPeople }}</td>
                     <td>{{ region.description }}</td>
+                    <td>
+                      <a href="javascript: void(0);" title="修改区域" @click="openModal('MOVE_READER', region.regionId)"><i class="glyphicon glyphicon-transfer"></i></a>&nbsp;
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -235,7 +240,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateRegionOper()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -258,20 +263,18 @@ export default {
   name: 'region',
   data () {
     return {
+      mapCache: {
+        regionMap: {},
+        regionView: {},
+        regionStyle: {},
+        highLightStyle: {},
+        regionSource: {},
+        regionLayer: {},
+      },
       region:{},
       regionList: [],
       regionListCache: {
-        regionList: [
-          {
-            regionId: 'R10001',
-            regionName: '1#工作面',
-            regionType: '井口区域',
-            regionMaxPeople: '12',
-            geoPolygon: '',
-            description: '',
-            remark: ''
-          }
-        ],
+        regionList: [],
         total: 0
       },
     };
@@ -280,36 +283,33 @@ export default {
     initLoad();
     this.initEvent();
     this.loadMap();
+    this.loadRegionList();
   },
   methods: {
+    show () {
+      let self = this;
+
+      // let source = self.mapCache.regionLayer.getSource();
+      // let featureList = source.getFeatures();
+      // for (let i = 0; i < featureList.length; i++) {
+      //   if (featureList[i].get('id') == 'd') {
+      //     featureList[i].setStyle(self.mapCache.highLightStyle);
+      //     console.log("id: ", featureList[i].getGeometry().getCoordinates());
+      //   }
+      // }
+
+    },
     initEvent () {
-      var self = this;
+      let self = this;
+
       $("#add_region_modal").on('show.bs.modal', function() {
         self.region = {};
         self.region.regionType = '';
       });
-    },
-    loadMap () {
-        let beijing = ol.proj.fromLonLat([12950000, 4860000]);
-        var view = new ol.View({
-          center: beijing,
-          minZoom: 8,
-          zoom: 3
-        });
-        var map = new ol.Map({
-          target: 'map',
-          layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
-            })
-          ],
-          view: new ol.View({
-            center: beijing,
-            zoom: 8,
-            minZoom: 6,
-            maxZoom: 12
-          })
-        });
+
+      $("#update_region_modal").on('shown.bs.modal', function() {
+
+      });
     },
     fullScreen () {
       fullscreen('map');
@@ -318,6 +318,119 @@ export default {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
+    /**
+     * Start map function module.
+     */
+    loadMap () {
+      let self = this;
+
+      let beijing = ol.proj.fromLonLat([12950000, 4860000]);
+      $("#map .ol-viewport").remove();
+      // 视图
+      self.mapCache.regionView = new ol.View({
+        center: [0, 0],
+        zoom: 6,
+        minZoom: 3,
+        maxZoom: 12
+      });
+      // 普通区域样式
+      self.mapCache.regionStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(255, 255, 255, 0)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#319FD3',
+          width: 2
+        })
+      });
+      // 高亮区域样式
+      self.mapCache.highLightStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(255, 255, 255, 0)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'red',
+          width: 2
+        })
+      });
+      // 地图
+      self.mapCache.regionMap = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          })
+        ],
+        view: self.mapCache.regionView
+      });
+      // 添加地图点击事件
+      self.mapCache.regionMap.on('click', function(event) {
+        let feature = event.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+          return feature;
+        });
+
+        if (feature) {
+          console.log(feature.getGeometry().getCoordinates());
+        }
+      });
+      // 渲染区域图层
+      self.loadRegionMapLayer(self.mapCache.regionMap);
+    },
+    loadRegionMapLayer (currentMap) {
+      let self = this;
+
+      currentMap = currentMap || self.mapCache.regionMap;
+      axios.get('/base/map/region/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.regionList) {
+                  let regionList = data.regionList,
+                      featureList = new Array(), featureCollection;
+
+                  regionList.forEach(function(region, index) {
+                    let geometry = JSON.parse(region.geoPolygon),
+                        newFeature = self.createFeature(geometry, { "type": "Polygon", "id": region.regionId, "name": region.regionName });
+
+                    featureList.push(newFeature);
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.regionLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                      features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                        dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                        featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                      })
+                    }),
+                    style: self.mapCache.regionStyle
+                  });
+                  currentMap.addLayer(self.mapCache.regionLayer);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    openModal (type, regionId) {
+
+    },
+    // 构造元素
+    createFeature(geometry, properties) {
+      return {
+        "type": "Feature",
+        "geometry": geometry,
+        "properties": properties
+      };
+    },
+    createFeatureCollection (features) {
+      return {
+        "type": "FeatureCollection",
+        "features": features
+      };
+    },
+    /**
+     * End map function module.
+     */
     getSearchParams () {
       let params = {},
           regionType, regionName;
@@ -335,7 +448,7 @@ export default {
     },
     loadRegionListPaging (page, isPaging) {
       let self = this,
-          params = getSearchParams();
+          params = self.getSearchParams();
 
       page = page || 1;
       axios.post('/base/region/p/' + page, params)
@@ -378,13 +491,15 @@ export default {
         return false;
       } else {
         if (type == 'UPDATE_REGION') {
-          self.regionListCache.regionList.forEach(function(region, index) {
-            if (regionId == region.regionId) {
-              self.region = deepCopy(region);
+          let regionList = self.regionListCache.regionList;
+
+          for (let i = 0; i < regionList.length; i++) {
+            if (regionId == regionList[i].regionId) {
+              self.region = deepCopy(regionList[i]);
               delete self.region.uber;
             }
             $("#update_region_modal").modal('show');
-          });
+          }
         } else if (type == 'DELETE_REGION') {
           self.deleteRegionOper(regionId);
         }

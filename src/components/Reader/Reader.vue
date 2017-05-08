@@ -516,27 +516,27 @@
                   </div>
                   <div class="document">
                     <div class="document-line">
+                      <label class="label-line-left">分站编号:</label>
+                      <label class="label-line-right" v-text="reader.readerId"></label>
+                    </div>
+                    <div class="document-line">
                       <label class="label-line-left">分站名称:</label>
-                      <label class="label-line-right"></label>
+                      <label class="label-line-right" v-text="reader.readerName"></label>
                     </div>
                     <div class="document-line">
-                      <label class="label-line-left">区域名称:</label>
-                      <label class="label-line-right"></label>
+                      <label class="label-line-left">分站坐标:</label>
+                      <label id="geoPointLabel" class="label-line-right" v-text="reader.geoPoint"></label>
                     </div>
                     <div class="document-line">
-                      <label class="label-line-left">分站编号:</label>
-                      <label class="label-line-right"></label>
-                    </div>
-                    <div class="document-line">
-                      <label class="label-line-left">分站编号:</label>
-                      <label class="label-line-right"></label>
+                      <label class="label-line-left">参照坐标:</label>
+                      <label id="geoPointRefLabel" class="label-line-right" v-text="reader.geoPointRef"></label>
                     </div>
                   </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn" @click="updateMoveReaderOper()">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" id="updateMoveReaderToggle" @click="updateMoveReaderOper()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -562,7 +562,6 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -661,6 +660,8 @@ export default {
 
                       if (feature && type) {
                         self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+                        $("#geoPointRefLabel").text(self.reader.geoPointRef);
+                        $("#updateMoveReaderToggle").prop('disabled', false);
                       }
                     });
 
@@ -668,6 +669,7 @@ export default {
                 } else {
                   bootbox.alert("分站移动后位置不在已划分区域中或在区域边界,请重新安置分站!");
                   $("input[name='move']:radio").eq(0).prop('checked', true);
+                  $("#updateMoveReaderToggle").prop('disabled', true);
                   return false;
                 }
               });
@@ -717,6 +719,8 @@ export default {
       });
 
       $("#move_reader_modal").on('shown.bs.modal', function() {
+        $("input[name='move']").eq(0).prop('checked', true);
+        $("#updateMoveReaderToggle").prop('disabled', true);
         self.mapCache.readerPoint.flag = false;
         self.mapCache.moveView = new ol.View({
           center: [0, 0],
@@ -919,7 +923,7 @@ export default {
         if (feature && feature.get('readerId') == readerId && type) {
           feature.setStyle(new ol.style.Style({
             image: new ol.style.Circle({
-                radius: 7,
+                radius: 15,
                 fill: new ol.style.Fill({
                     color: '#ffcc33'
                 })
@@ -973,6 +977,7 @@ export default {
         let type = ($("input[name='move']:radio:checked").val() == 'move');
         if (this._coordinate && type) {
           self.reader.geoPoint = self.createPointJson(ol.proj.transform(this._coordinate, 'EPSG:3857', 'EPSG:4326'));
+          $("#geoPointLabel").text(self.reader.geoPoint);
         }
         this._coordinate = null;
         this._feature = null;
@@ -980,9 +985,9 @@ export default {
       };
 
 
-      let selectInteraction = new ol.interaction.Select();
+      // let selectInteraction = new ol.interaction.Select();
       let modify = new Modify();
-      currentMap.addInteraction(selectInteraction);
+      // currentMap.addInteraction(selectInteraction);
       currentMap.addInteraction(modify);
     },
     // 添加事件
@@ -1035,7 +1040,7 @@ export default {
         'flag': true,
         'coordinate': coordinate
       };
-      console.log("readerPoint: ", self.mapCache.readerPoint);
+
       self.mapCache.readerSource.addFeature(self.mapCache.readerPoint.readerFeature);
       self.reader.geoPoint = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
       $("input[name='mark']:radio").eq(1).prop('checked', true);
@@ -1090,7 +1095,7 @@ export default {
     createElementStyle () {
       return new ol.style.Style({
         image: new ol.style.Circle({
-            radius: 7,
+            radius: 15,
             fill: new ol.style.Fill({
                 color: 'red'
             })
@@ -1117,7 +1122,17 @@ export default {
 
       if (type == 'MOVE_READER') {
         self.reader = {};
+
+        let readerList = self.readerListCache.readerList;
+
         self.reader.readerId = readerId;
+        for (let i = 0; i < readerList.length; i++) {
+          if (readerList[i].readerId == readerId) {
+            self.reader.readerName = readerList[i].readerName;
+            break;
+          }
+        }
+
         $("#move_reader_modal").modal('show');
       } else if (type == 'SHOW_READER') {
         self.reader.readerId = readerId;
@@ -1296,6 +1311,7 @@ export default {
     updateMoveReaderOper () {
       let self = this;
 
+      delete self.reader.readerName;
       axios.put('/base/reader/', self.reader)
             .then((response) => {
               let { meta, data } = response.data;
@@ -1360,7 +1376,7 @@ export default {
 }
 
 .table-box-left, .table-box-right {zoom: 1;}
-.table-box-left {width: 24%; height: 550px;overflow: scroll;}
+.table-box-left {width: 23%; height: 550px; margin-left: 2%;}
 .table-box-right {width: 75%;}
 .map-box, #markMap, #moveMap, #showMap {
   margin: 0;
@@ -1374,10 +1390,15 @@ export default {
   border: 1px solid #E5E5E5;
   margin-bottom: 5px;
 }
+.document-line {
+  overflow: hidden;
+  zoom: 1;
+  margin-bottom: 45px;
+}
 .document-line i {color: #337ab7; font-size: 16px;}
-.document-line button {width: 80%; float: right;}
-.label-line-left {text-align: right; width: 30%;}
-.label-line-right {text-align: left; width: 70%;}
+.document-line button {width: 80%; }
+.label-line-left { float: left; text-align: right; width: 30%; margin-right: 0;}
+.label-line-right { float: right; text-align: left; width: 70%; margin-left: 0;}
 
 #add_reader_modal {
   z-index: 2000;
