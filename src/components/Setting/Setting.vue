@@ -12,11 +12,11 @@
       </div>
       <div class="table-box outside-box">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="" data-target="#coalmine_info_tab" aria-controls="coalmine_info_tab" role="tab" data-toggle="tab">煤矿信息</a></li>
-          <li role="presentation"><a href="" data-target="#period_setting_tab" aria-controls="period_setting_tab" role="tab" data-toggle="tab">人员位置数据采集周期</a></li>
-          <li role="presentation"><a href="" data-target="#alarm_type_tab" aria-controls="alarm_type_tab" role="tab" data-toggle="tab">报警声音</a></li>
-          <li role="presentation"><a href="" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab">地图底图</a></li>
-          <li role="presentation"><a href="" data-target="#job_type_tab" aria-controls="job_type_tab" role="tab" data-toggle="tab">工种图例</a></li>
+          <li role="presentation" class="active"><a href="" data-target="#coalmine_info_tab" aria-controls="coalmine_info_tab" role="tab" data-toggle="tab" @click="clickCoalmineTab()">煤矿信息</a></li>
+          <li role="presentation"><a href="" data-target="#period_setting_tab" aria-controls="period_setting_tab" role="tab" data-toggle="tab" @click="clickPeriodTab()">人员位置数据采集周期</a></li>
+          <li role="presentation"><a href="" data-target="#alarm_type_tab" aria-controls="alarm_type_tab" role="tab" data-toggle="tab" @click="clickAlarmTypeTab()">报警声音</a></li>
+          <li role="presentation"><a href="" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab" @click="clickMapTab()">地图底图</a></li>
+          <li role="presentation"><a href="" data-target="#job_type_tab" aria-controls="job_type_tab" role="tab" data-toggle="tab" @click="clickJobTypeTab()">工种图例</a></li>
         </ul>
         <div class="tab-content">
           <!-- 煤矿信息 -->
@@ -104,7 +104,15 @@
                     <td>{{ alarmType.alarmName }}</td>
                     <td v-if="alarmType.alarmInUse">启用</td>
                     <td v-else>禁用</td>
-                    <td>{{ alarmType.alarmFile }}</td>
+                    <!-- <td>{{ alarmType.alarmFile }}</td> -->
+                    <td>
+                      <audio v-if="alarmType.alarmFile!=''" controls   height="20" width="100">
+                        <source :src="alarmType.alarmFile" type="audio/mpeg">
+                        <!-- <source :src="horse.ogg" type="audio/ogg"> -->
+                       <!-- <embed height="50" width="100" src="horse.mp3"> -->
+                      </audio>
+
+                    </td>
                     <td>
                       <a href="" title="修改报警类型" data-toggle="modal" data-target="" @click="clickUpdateAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
                       <a href="javascript: void(0);"  title="删除报警类型" @click="deleteAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-trash"></i></a>
@@ -122,7 +130,10 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="thumbnail">
-                  <img src="./map.png" alt="底图">
+                 <!--  <img :src="mapPic" alt="底图" :onerror="defaultMap"> -->
+                 <!--  <img src="http://localhost:9000/main/base/map/getMapPicByStream" alt="底图" :onerror="defaultMap"> -->
+                  <img :src="mapPic" alt="底图" :onerror="defaultMap">
+                  <!-- <img src="D:\install\apache-tomcat-8.0.35-windows-x64\apache-tomcat-8.0.35\webapps\appMSJava\fileLibrary\map\map.jpg" alt=""> -->
                 </div>
               </div>
             </div>
@@ -131,12 +142,13 @@
           <div role="tabpanel" class="tab-pane" id="job_type_tab">
             <div class="job-type-wrap">
               <div class="row">
-                <div class="col-sm-6 col-md-2" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
+                <div class="col-sm-6 col-md-2" style="height:230px" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
                   <div class="thumbnail">
-                    <img src="../../assets/logo.png" height="200" width="200" >
+                    <img v-if="jobType.jobIconUrl!=''" :src="jobType.jobIconUrl" height="200" width="200" :onerror="defaultJobTypePic">
+                    <img v-else src="../../assets/logo.png" height="200" width="200" :onerror="defaultJobTypePic">
                     <div class="caption">
                      <!-- <h3>{{jobType.jobName}}</h3> -->
-                      <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobTypeId)">{{jobType.jobName}}</a></p>
+                      <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p>
                     </div>
                   </div>
                 </div>
@@ -240,7 +252,7 @@
             <div class="input-group-line">
               <div class="group-left">报警声音文件</div>
               <div class="group-right">
-                <input type="file" class="alarm-file" data-show-preview="false"/>
+                <input type="file" class="alarm-file" data-show-preview="false" id="input-alarm-add">
               </div>
             </div>
           </div>
@@ -281,7 +293,7 @@
             <div class="input-group-line">
               <div class="group-left">报警声音文件</div>
               <div class="group-right">
-                <input type="file" class="alarm-file" data-show-preview="false"/>
+                <input type="file" class="alarm-file" data-show-preview="false" id="input-alarm-update">
               </div>
             </div>
           </div>
@@ -381,10 +393,10 @@
             <h4 class="modal-title">修改地图底图</h4>
           </div>
           <div class="modal-body">
-            <input id="input-gly" name="inputgly[]" type="file" multiple class="file-loading">
+            <input id="input-gly" name="inputgly[]" type="file" class="file-loading" :accept="accepts">
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn" @click="updateMap()">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="updateMap">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
           </div>
         </div>
@@ -405,13 +417,13 @@
             <div class="input-group-line">
               <div class="group-left">工种类型</div>
               <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="jobType.jobName">
+                <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="jobType.jobName">
               </div>
             </div>
             <div class="input-group-line">
-              <div class="group-left">公种图标</div>
+              <div class="group-left">工种图标</div>
               <div class="group-right">
-                <input type="file" class="job-file" data-show-preview="false"/>
+                <input type="file" class="file" data-show-preview="false" id="input-job">
               </div>
             </div>
           </div>
@@ -430,11 +442,13 @@ import bootbox from 'bootbox/bootbox.min';
 import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
+import {currentTime} from '../../assets/script/date';
 export default {
   name: 'setting',
   data () {
     return {
-      map:"./map.png",
+      baseUrl:"http://localhost:9000/main/",
+      basePath:"../../../static",
       coalmine:{},
 
       periodNew:{},
@@ -447,21 +461,29 @@ export default {
 
       jobType:{},
       jobTypeList: [],
+      defaultJobTypePic:'this.src="' + require('../../assets/img/jobType/yellow.png') + '"',
 
       checkedOfPeriod: false,
       checkedOfAlarmType: false,
+
+     // mapPic:"http://localhost:9000/main/base/map/getMapPicByStream",
+     // picUrl:"./map.png",
+      defaultMap:'this.src="' + require('./map.png') + '"',
+      mapPic:"",
+      accepts : { //允许的上传类型
+          type : String,
+          default : 'image/jpeg,image/jpg,image/png,image/gif'
+      },
     };
   },
   mounted () {
     this.initEvent();
     this.loadCoalmine();
-    this.loadAlarmTypeList();
-    this.loadPeriodList();
-    this.defaultLoadJobType();
   },
   methods: {
     initEvent () {
       var self = this;
+      
       $("#add_alarmType_modal").on('show.bs.modal', function() {
         self.alarmTypeNew = {
           alarmTypeId:"",
@@ -480,14 +502,14 @@ export default {
           remark:"",
         }
       });
-      $(".alarm-file").fileinput({
+      $("#input-alarm-add").fileinput({
         language: 'zh',
-        uploadUrl: '',
+        //uploadUrl: '',
         uploadAsync: true,
         removeLabel: '删除',
-        uploadLabel: '上传',
+        //uploadLabel: '上传',
         cancelLabel: '取消',
-        //showUpload: true,   //是否显示上传按钮
+        showUpload: false,   //是否显示上传按钮
         browseLabel: '选择文件',
         initialCaption: '选择音频格式文件',
         msgValidationError:'文件上传错误',
@@ -501,14 +523,35 @@ export default {
           return filename.replace('(', '_').replace(']', '_');
         }
       });
-      $(".job-file").fileinput({
+       $("#input-alarm-update").fileinput({
         language: 'zh',
-        uploadUrl: '',
+        //uploadUrl: '',
         uploadAsync: true,
         removeLabel: '删除',
-        uploadLabel: '上传',
+        //uploadLabel: '上传',
         cancelLabel: '取消',
-        showUpload: true,
+        showUpload: false,   //是否显示上传按钮
+        browseLabel: '选择文件',
+        initialCaption: '选择音频格式文件',
+        msgValidationError:'文件上传错误',
+        uploadExtraData: {},
+        allowedFileExtensions : ['wav', 'ogg', 'mp3'],  //允许的文件类型
+        overwriteInitial: false,
+        //maxFileSize: 1000,  //文件的最大大小
+        maxFilesNum: 1,     //最多文件数量
+        enctype: 'multipart/form-data',
+        slugCallback: function(filename) {
+          return filename.replace('(', '_').replace(']', '_');
+        }
+      });
+      $("#input-job").fileinput({
+        language: 'zh',
+        //uploadUrl: '',
+        //uploadAsync: true,
+        removeLabel: '删除',
+        //uploadLabel: '上传',
+        cancelLabel: '取消',
+        showUpload: false,
         browseLabel: '上传图例',
         initialCaption: '选择图片格式文件,支持jpg、jpeg、png格式',
         msgValidationError:'文件上传错误',
@@ -524,12 +567,12 @@ export default {
       $("#input-gly").fileinput({
           theme: "gly",
           language: 'zh',
-          uploadUrl: '/',
-          uploadAsync: true,
+          //uploadUrl: '/',
+          //uploadAsync: true,
           removeLabel: '删除',
           uploadLabel: '上传',
           cancelLabel: '取消',
-          showUpload: true,
+          showUpload: false,
           browseLabel: '上传底图',
           initialCaption: '选择图片格式文件,支持jpg、jpeg、png格式，大小不超过2.0M',
           msgValidationError:'文件上传错误',
@@ -544,9 +587,36 @@ export default {
       });
     },
 
+    /* 获得当前时间 */
+    current () {
+      return currentTime();
+    },
+
+
     clearSearch () {
       $("input[name='peroid']:checked").each(function() { this.checked = false; });
       $("input[name='alarmType']:checked").each(function() { this.checked = false; });
+    },
+
+    clickCoalmineTab(){  
+      this.loadCoalmine();
+    },
+
+    clickPeriodTab(){ 
+      this.loadPeriodList(); 
+    },
+
+    clickAlarmTypeTab(){ 
+      this.loadAlarmTypeList(); 
+    },
+    
+    clickMapTab(){ 
+      let self = this;
+      self.mapPic = self.baseUrl+"/base/map/getMapPicByStream"; 
+    },
+    
+    clickJobTypeTab(){ 
+      this.defaultLoadJobType(); 
     },
 
     /* 默认加载周期列表 */
@@ -684,12 +754,22 @@ export default {
         if (meta.success) {
           if (data) {
             self.alarmTypeList = data.alarmSettingList;
+            for (var i = 0; i < self.alarmTypeList.length; i++) {
+              let url = self.alarmTypeList[i].alarmFile;
+              if(url && url!=null && url!=""){
+                self.alarmTypeList[i].alarmFile = self.baseUrl + "/base/alarmType/getAlarmSoundByStream?alarmSoundUrl="+ url+"&rand="+ self.current();
+              }else{
+                self.alarmTypeList[i].alarmFile="";
+              }
+            };
           }
         } else {
           bootbox.alert({ title:'查看报警类型信息', message: meta.message });
         }
       });
     },
+
+
     /* 添加一个新的报警类型 */
     addAlarmType() {
       let self = this;
@@ -697,15 +777,44 @@ export default {
         let meta = response.data.meta;
         if (meta.success) {
           let data = response.data.data;
-          if (data && data.result == 1) { 
-            $("#add_alarmType_modal").modal('hide');
-            self.loadAlarmTypeList();
-            bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' }); 
-          }else { 
-            bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' }); 
+          if (data && data.result == 1 && data.alarmTypeId!="") {
+            if($('#input-alarm-add')[0].files.length>0){
+              const formData = new FormData();
+              formData.append('file', $('#input-alarm-add')[0].files[0]); 
+              //alert(data.alarmTypeId);
+              formData.append('alarmTypeId', data.alarmTypeId); 
+              self.uploadAlarmTypePicInAdd(formData);
+            }else{
+              bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' }); 
+              $("#add_alarmType_modal").modal('hide');
+              self.loadAlarmTypeList();
+            }
+          } else {
+            bootbox.alert({ title:'添加报警类型信息',  message: '服务器内部错误, 报警类型添加失败!'});
           }
         } else {
-          bootbox.alert({ title:'添加报警类型信息',  message: '服务器内部错误, 周期信息添加失败!'});
+          bootbox.alert({ title:'添加报警类型信息',  message: '服务器内部错误, 报警类型添加失败!'});
+        }
+      });
+    },
+    /* 新增报警类型的声音文件文件的上传 */
+    uploadAlarmTypePicInAdd(formData){
+      let self = this;
+      axios.post('/base/alarmType/upload', formData, {
+        method: 'post',
+        headers: {'Content-Type': 'multipart/form-data'}
+      }).then((response) => {
+        let { meta, data } = response.data;
+        if (meta.success) {
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' }); 
+            }else { 
+              bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' }); 
+            }
+            $("#add_alarmType_modal").modal('hide');
+            self.loadAlarmTypeList();
+        } else { 
+          bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' });
         }
       });
     },
@@ -776,16 +885,51 @@ export default {
     updateAlarmType() {
       let self = this;
       axios.put('/base/alarmType/', self.alarmTypeOld).then((response) => {
+        let meta = response.data.meta;
+        if (meta.success) {
+          //alert(meta.success);
+          let data = response.data.data;
+          if (data && data.result == 1) {
+            if($('#input-alarm-update')[0].files.length>0){
+              const formData = new FormData();
+              formData.append('file', $('#input-alarm-update')[0].files[0]); 
+              formData.append('alarmTypeId', self.alarmTypeOld.alarmTypeId); 
+              self.uploadAlarmTypePicInUpdate(formData);
+            }else{
+              $("#update_alarmType_modal").modal('hide');
+              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' });  
+              self.loadAlarmTypeList();
+            }
+          } else {
+            $("#update_alarmType_modal").modal('hide');
+            bootbox.alert({ title:'修改报警类型信息',  message: '服务器内部错误, 报警类型修改失败!'});
+          }
+        }else {
+          $("#update_alarmType_modal").modal('hide');
+          bootbox.alert({ title:'修改报警类型信息',  message: '服务器内部错误, 报警类型修改失败!'});
+        }
+      });
+    },
+    /* 更新后的报警类型文件的上传 */
+    uploadAlarmTypePicInUpdate(formData){
+      let self = this;
+      axios.post('/base/alarmType/upload', formData, {
+        method: 'post',
+        headers: {'Content-Type': 'multipart/form-data'}
+      }).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
             if (data && data.result == 1) { 
+              //$("#update_alarmType_modal").modal('hide');
               bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' }); 
             }else { 
+             // $("#update_alarmType_modal").modal('hide');
               bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改失败!' }); 
             }
             $("#update_alarmType_modal").modal('hide');
             self.loadAlarmTypeList();
         } else { 
+          $("#update_alarmType_modal").modal('hide');
           bootbox.alert({ title:'修改报警类型信息', message: meta.message }); 
         }
       });
@@ -841,6 +985,14 @@ export default {
         let { meta, data } = response.data;
         if (meta.success) {
           self.jobTypeList = data.jobTypeList;
+          for (var i = 0; i < self.jobTypeList.length; i++) {
+            let url = self.jobTypeList[i].jobIconUrl;
+            if(url && url!=null && url!=""){
+              self.jobTypeList[i].jobIconUrl = self.baseUrl + "/base/jobType/getJobPicByStream?jobIconUrl="+ url+"&rand="+ self.current();
+            }else{
+              self.jobTypeList[i].jobIconUrl="";
+            }
+          };
         } else {
           bootbox.alert({
             message: meta.message
@@ -850,20 +1002,28 @@ export default {
     },
 
     /* 点击修改工种图例 */
-    clickJobTypeName(jobTypeId){
+    clickJobTypeName(jobId){
       let self = this;
       self.jobTypeList.forEach((jobType, index) => {
-        if (jobType.jobTypeId == jobTypeId) {
+        if (jobType.jobId == jobId) {
           self.jobType = deepCopy(jobType);
           delete self.jobType.uber;
         }
       });
       $("#update_job_pic_modal").modal('show');
     },
-    // 修改工种信息
+
+    // 修改工种图例信息
     updateJobTypePic () {
       let self = this;
-      axios.put('/base/jobtype/', self.jobType).then((response) => {
+      const formData = new FormData();
+      formData.append('file', $('#input-job')[0].files[0]); 
+      formData.append('jobId', self.jobType.jobId); 
+      
+      axios.post('/base/jobtype/upload', formData,{
+        method: 'post',
+        headers: {'Content-Type': 'multipart/form-data'}
+      }).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
             if (data && data.result == 1) { 
@@ -877,10 +1037,27 @@ export default {
       });
     },
 
+    /* 上传文件 */
     updateMap(){
-      alert("上传底图");
+      let self = this;
+      const formData = new FormData();
+      formData.append('file',  $("#input-gly")[0].files[0]);  
+      axios.post('/base/map/upload', formData, {
+          method: 'post',
+          headers: {'Content-Type': 'multipart/form-data'}
+      }).then((response) => {//根据服务器返回进行处理
+        let { meta,data } = response.data;
+        if (meta.success) {
+          $("#update_map_modal").modal('hide');
+          bootbox.alert({ title:"上传底图", message: '成功!' }); 
+          /*this.mapPic = require("D:/install/apache-tomcat-8.0.35-windows-x64/apache-tomcat-8.0.35/webapps/appMSJava/fileLibrary/map/map.jpg");*/
+          self.mapPic = self.baseUrl + "/base/map/getMapPicByStream?rand="+ self.current();
+        }else{ 
+          bootbox.alert({ title:"上传底图", message: '失败!' });
+          $("#update_map_modal").modal('hide'); 
+        }
+      });
     },
-
   }
 };
 </script>
@@ -902,5 +1079,11 @@ export default {
 }
 .job-type-wrap{
   margin:25px 20px; 
+}
+/* #alarm_type_tab{
+  margin-bottom: 30px;
+} */
+.table > tbody > tr > td{
+  line-height: 1.4;
 }
 </style>

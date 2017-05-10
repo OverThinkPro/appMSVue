@@ -353,10 +353,11 @@ export default {
       let self = this;
       let userIds = '';
       let size = $("input[name='user']").filter(':checked').length;
+      
       if (size < 1) {
         bootbox.alert({ title:'选择用户', message: '请选择一条记录,再进行操作!' });
         return;
-      }else{
+      } else {
         $("input[name='user']:checked").each(function() {
           userIds += $(this).val() + ',';
         });
@@ -368,6 +369,7 @@ export default {
     /* 删除用户信息 */
     deleteUser (userIds) {
       let self = this;
+      
       bootbox.confirm({
         title: '删除用户',
         message: '用户信息一旦删除，不可恢复，是否确定删除？',
