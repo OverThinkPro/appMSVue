@@ -1,5 +1,5 @@
 <template lang="html">
-  <div name="container-wrapper">
+  <div id="container-wrapper">
     <v-header class="header-wrap"></v-header>
     <router-view class="content-wrap"></router-view>
     <v-footer class="footer-wrap"></v-footer>

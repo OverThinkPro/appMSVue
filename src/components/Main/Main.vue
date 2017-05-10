@@ -16,18 +16,12 @@
             <button type="button" @click="fullScreen()" class="btn btn-primary fr" title="地图全屏查看">
               <i class="glyphicon glyphicon-fullscreen"></i>&nbsp;全屏查看
             </button>
-            <!-- <div class="input-group fr">
-              <select class="">
-                <option value="">-请选择工具-</option>
-                <option value="">标注</option>
-                <option value="">移动</option>
-              </select>
-            </div> -->
             <div class="fr">
                 <div class="input-group">
                   <span>图层:</span>
                   <input type="checkbox" name="layers" checked="checked" value="stafflayer" id="staffLayer"/><span>人员位置&nbsp;&nbsp;</span>
-                  <input type="checkbox" name="layers" checked="checked" value="readerlayer" id="readerLayer" /><span style="margin-right: 25px;">分站</span>
+                  <input type="checkbox" name="layers" checked="checked" value="readerlayer" id="readerLayer" /><span>分站&nbsp;&nbsp;</span>
+                  <input type="checkbox" name="layers" checked="checked" value="regionlayer" id="regionLayer" /><span style="margin-right: 25px;">区域</span>
                 </div>
             </div>
           </div>
@@ -94,7 +88,7 @@
           <div class="document-line" v-if="realAlarm != null" v-for="(alarm, index) in realAlarm" :key="alarm.key">
             <label class="label-line-left">{{ alarm.alarm_name }}</label>
             <label class="label-line-right">
-              <a href="javascript:void(0)" @click="loadAlarmInfo(alarm.alarm_type_id)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
+              <a href="javascript:void(0)" @click="checkLoadAlarmType(alarm.alarm_type_id)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
             </label>
           </div>
         </div>
@@ -414,17 +408,11 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>001</td>
-                      <td>张三</td>
-                      <td>8:20</td>
-                      <td>A工作面</td>
-                    </tr>
-                    <tr>
-                      <td>002</td>
-                      <td>李四</td>
-                      <td>8:20</td>
-                      <td>B工作面</td>
+                    <tr v-if="alarmListCache.alarmResultList != null" v-for="(staff, index) in alarmListCache.alarmResultList" :key="staff.key">
+                      <td>{{ staff.cardId }}</td>
+                      <td>{{ staff.staffName }}</td>
+                      <td>{{ staff.arrivalTime }}</td>
+                      <td>{{ staff.regionName }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -461,18 +449,15 @@
                       <th>区域名称</th>
                       <th>应到人数</th>
                       <th>实到人数</th>
+                      <th>处理情况</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>A工作面</td>
-                      <td>15</td>
-                      <td>16</td>
-                    </tr>
-                    <tr>
-                      <td>B工作面</td>
-                      <td>16</td>
-                      <td>17</td>
+                    <tr v-if="alarmListCache.alarmResultList != null" v-for="(region, index) in alarmListCache.alarmResultList" :key="region.key">
+                      <td>{{ region.regionName }}</td>
+                      <td>{{ region.reqNumber }}</td>
+                      <td>{{ region.realNumber }}</td>
+                      <td>{{ filterAlarmHandler(region.alarmInHandle) }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -506,12 +491,20 @@
                 <table class="table table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th>-</th>
-                      <th>-</th>
-                      <th>-</th>
+                      <th>区域名称</th>
+                      <th>员工卡号</th>
+                      <th>员工姓名</th>
+                      <th>处理情况</th>
                     </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    <tr v-if="alarmListCache.alarmResultList != null" v-for="(region, index) in alarmListCache.alarmResultList" :key="region.key">
+                      <td>{{ region.regionName }}</td>
+                      <td>{{ region.cardId }}</td>
+                      <td>{{ region.staffName }}</td>
+                      <td>{{ filterAlarmHandler(region.alarmInHandle) }}</td>
+                    </tr>
+                  </tbody>
                 </table>
                 <nav class="pagination-box" id="limitregionPagingBox">
                   <div id="limitregionPaging" class="pagination"></div>
@@ -546,13 +539,15 @@
                       <th>呼叫员工</th>
                       <th>所在区域名称</th>
                       <th>呼叫时间</th>
+                      <th>处理情况</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="staffListCache.realStaffList != null" v-for="(staff, index) in staffListCache.realStaffList" :key="staff.key">
-                      <td>{{ staff.staffName }}</td>
-                      <td>{{ staff.readerId }}</td>
-                      <td>{{ staff.alarmStartTime }}</td>
+                    <tr v-if="alarmListCache.alarmResultList != null" v-for="(alarm, index) in alarmListCache.alarmResultList" :key="alarm.key">
+                      <td>{{ alarm.staffName }}</td>
+                      <td>{{ alarm.readerId }}</td>
+                      <td>{{ alarm.alarmStartTime }}</td>
+                      <td>{{ filterAlarmHandler(alarm.alarmInHandle) }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -584,9 +579,6 @@ export default {
   name: "main",
   data() {
     return {
-      realMap: {},
-      stafflayer: {},
-      readerlayer: {},
       // 地图容器的缓存
       mapCache: {
         // 弹出框的缓存信息
@@ -595,9 +587,39 @@ export default {
           content: {},
           closer: {}
         },
-        popup: {}
-        //
+        popup: {},
+        // 实时地图
+        realMap: {},
+        /**
+         * [staffLayer description] 人员图层
+         * @type {Object}
+         */
+        staffLayer: {},
+        staffSource: {},
+        /**
+         * [readerLayer description] 分站图层
+         * @type {Object}
+         */
+        readerLayer: {},
+        readerSource: {},
+        /**
+         * [regionLayer description] 区域图层
+         * @type {Object}
+         */
+        regionLayer: {},
+        regionSource: {},
+        /**
+         * 样式
+         * @type {Object}
+         */
+        staffStyle: {},
+        readerStyle: {},
+        regionStyle: {},
+        hightLightStyle: {},
+        // 展示图层与否
+        showlayer: [true, true, true]
       },
+      // 实时渲染图层方法
       startRealStaffLayer: {},
       /* 报警类型,显示模态框时使用 */
       alarmTypes: {
@@ -605,6 +627,25 @@ export default {
         '超员报警': '#overman_alarm_modal',
         '限制区域报警': '#region_limit_alarm_modal',
         '呼叫报警': '#staff_call_alarm_modal'
+      },
+      // 报警信息分页包装盒
+      alarmBox: {
+        '1': {
+          'parent': 'overtimePagingBox',
+          'child': 'overtimePaging'
+        },
+        '2': {
+          'parent': 'overmanPagingBox',
+          'child': 'overmanPaging'
+        },
+        '3': {
+          'parent': 'limitregionPagingBox',
+          'child': 'limitregionPaging'
+        },
+        '4': {
+          'parent': 'alarmInfoPagingBox',
+          'child': 'alarmInfoPaging'
+        }
       },
       status: ['未呼叫', '已呼叫'],
       unitId: '',
@@ -616,7 +657,11 @@ export default {
       alarmTypeId: '',
       staffListCache: {
         realStaffList: [],
-        countTotalPages: 1
+        total: 0
+      },
+      alarmListCache: {
+        alarmResultList: [],
+        total: 0
       },
       unitList: []
     };
@@ -666,37 +711,11 @@ export default {
 
       $("#callback_modal").on('shown.bs.modal', self.loadUnitList());
 
-      // $(":checkbox").prop("indeterminate", true);
-      // var $check = $("input[type=checkbox]"), el;
-      //   $check.data('checked', 0).click(function(e) {
-      //       el = $(this);
-      //       switch(el.data('checked')) {
-      //           // unchecked, going indeterminate
-      //           case 0:
-      //               el.data('checked',1);
-      //               el.prop('indeterminate',true);
-      //               break;
-      //           // indeterminate, going checked
-      //           case 1:
-      //               el.data('checked',2);
-      //               el.prop('indeterminate',false);
-      //               el.prop('checked',true);
-      //               break;
-      //           // checked, going unchecked
-      //           default:
-      //               el.data('checked',0);
-      //               el.prop('indeterminate',false);
-      //               el.prop('checked',false);
-      //       }
-      //   });
-
       /* Start map container element init */
-      self.mapCache = {
-        popupInfo: {
+      self.mapCache.popupInfo = {
           container: document.getElementById("popup"),
           content: document.getElementById('popup-content'),
           closer: document.getElementById('popup-closer')
-        },
       };
       self.mapCache.popup = new ol.Overlay(({
         element: self.mapCache.popupInfo.container,
@@ -710,9 +729,18 @@ export default {
         self.mapCache.popupInfo.closer.blur();
         return false;
       };
+      self.mapCache.hightLightStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 4,
+            fill: new ol.style.Fill({
+                color: 'red'
+            })
+        })
+      });
       /* End map container element init */
     },
     /**
+     * ----------------------------------------------------------------------
      * Start map function module.
      * description 地图功能模块
      * author Zychaowill
@@ -720,12 +748,8 @@ export default {
     loadMap () {
         let self = this,
             taiyuan = ol.proj.fromLonLat([112.53, 37.87]);
-  			var view = new ol.View({
-  				center: taiyuan,
-  				minZoom: 8,
-  				zoom: 3
-  			});
-  			this.realMap = new ol.Map({
+
+  			self.mapCache.realMap = new ol.Map({
   				target: 'map',
   				layers: [
   					new ol.layer.Tile({
@@ -734,38 +758,83 @@ export default {
   				],
   				view: new ol.View({
   					center: taiyuan,
-  					zoom: 8,
-  					minZoom: 6,
+  					zoom: 5,
+  					minZoom: 2,
   					maxZoom: 12,
   				})
   			});
-        this.loadMapStaffLayer();
-        this.readerlayer = new ol.layer.Vector({
-          source: new ol.source.Vector({})
-        });
-        this.regionLayer = new ol.layer.Vector({
-          source: new ol.source.Vector({})
-        });
-        this.realMap.addLayer(this.readerlayer);
-        this.realMap.addLayer(this.regionLayer);
+        // 装载人员位置图层
+        // self.loadMapStaffLayer();
 
-        this.realMap.addOverlay(this.mapCache.popup);
+        // 添加人员、分站、区域图层
+        self.mapCache.staffSource = new ol.source.Vector();
+        self.mapCache.staffStyle = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 4,
+                fill: new ol.style.Fill({
+                    color: '#6699CC'
+                })
+            })
+        });
+        self.mapCache.staffLayer = new ol.layer.Vector({
+          source: self.mapCache.staffSource,
+          style: self.mapCache.staffStyle
+        });
 
-        this.realMap.on('click', function(event) {
+        self.mapCache.readerSource = new ol.source.Vector();
+        self.mapCache.readerStyle = new ol.style.Style({
+          image: new ol.style.Icon(({
+            src: 'static/icon/reader.png',
+            scale: 0.4,  //图标缩放比例
+          })),
+        });
+        self.mapCache.readerLayer = new ol.layer.Vector({
+          source: self.mapCache.readerSource,
+          style: self.mapCache.readerStyle
+        });
+
+        self.mapCache.regionSource = new ol.source.Vector();
+        self.mapCache.regionStyle = new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color: '#D6ABD0',
+            width: 2
+          })
+        });
+        self.mapCache.regionLayer = new ol.layer.Vector({
+          source: self.mapCache.regionSource,
+          style: self.mapCache.regionStyle
+        });
+        self.mapCache.realMap.addLayer(self.mapCache.regionLayer);
+        self.mapCache.realMap.addLayer(self.mapCache.readerLayer);
+        self.mapCache.realMap.addLayer(self.mapCache.staffLayer);
+
+        // 添加元素响应图层
+        self.mapCache.realMap.addOverlay(self.mapCache.popup);
+        self.mapCache.realMap.on('click', function(event) {
           let coordinate = event.coordinate;
-          let feature = self.realMap.forEachFeatureAtPixel(event.pixel, (feature) => {
-            return feature;
+          let feature = event.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+            if (layer == self.mapCache.staffLayer) {
+              return feature;
+            }
           });
           if (feature && feature.get('type') == 'Point') {
             self.renderFeaturePopup(coordinate, feature);
           }
         });
 
-        this.addLayerChangeListener(document.getElementById('readerLayer'), this.readerlayer);
+        // 添加图层的toggle show 事件
+        self.addLayerChangeListener(document.getElementById('staffLayer'), self.mapCache.staffLayer, 0);
+        self.addLayerChangeListener(document.getElementById('readerLayer'), self.mapCache.readerLayer, 1);
+        self.addLayerChangeListener(document.getElementById('regionLayer'), self.mapCache.regionLayer, 2);
 
-        this.startRealStaffLayer = setInterval(function() {
+        // 开启实时人员图层
+        self.startRealStaffLayer = setInterval(function() {
           self.loadMapStaffLayer();
         }, 3000);
+
+        // self.loadMapStaffLayer();
+        self.loadMapReaderLayer();
+        self.loadMapRegionLayer();
     },
     /**
      * description 地图事件、common方法模块
@@ -775,14 +844,14 @@ export default {
       let self = this;
       let staffId = feature.get('id'),
           staffName = feature.get('name'),
-          staffInfoId = feature.get('staffInfoId');
+          unitName = feature.get('unitName');
 
       let featureInfo = {
         'geo': coordinate,
         'att': {
            staffId: staffId,
            staffName: staffName,
-           staffInfoId: staffInfoId
+           unitName: unitName
         }
       };
 
@@ -794,7 +863,7 @@ export default {
       containerDiv.className = 'popup-container';
 
       let att = featureInfo.att;
-      containerDiv.innerText = 'staffId: ' + att.staffId + " staffName: " + att.staffName + " staffInfoId: " + att.staffInfoId;
+      containerDiv.innerText = '员工编号: ' + att.staffId + " 员工姓名: " + att.staffName + " 部门名称: " + att.unitName;
 
       this.mapCache.popupInfo.content.innerHTML = '';
       this.mapCache.popupInfo.content.appendChild(containerDiv);
@@ -807,21 +876,25 @@ export default {
         }
     },
     // 添加图层toggleShow监听事件
-    addLayerChangeListener (element, layer) {
+    addLayerChangeListener (element, layer, layerNo) {
       let self = this;
 
-      element.onclick = function () {
-          if (element.checked) {
-            layer.setVisible(true);
-          } else {
-            self.mapCache.popupInfo.content.innerHTML = '';
-            self.mapCache.popup.setPosition(undefined);
-            layer.setVisible(false);
-          }
-      };
+      if (element) {
+        element.onclick = function () {
+            if (element.checked) {
+              layer.setVisible(true);
+              self.mapCache.showlayer[layerNo] = true;
+            } else {
+              self.mapCache.popupInfo.content.innerHTML = '';
+              self.mapCache.popup.setPosition(undefined);
+              layer.setVisible(false);
+              self.mapCache.showlayer[layerNo] = false;
+            }
+        };
+      }
     },
     // 生产Feature
-    createPointFeature (geometry, properties) {
+    createFeature (geometry, properties) {
       let feature = {
         "type": "Feature",
         "geometry": geometry,
@@ -841,10 +914,17 @@ export default {
      * description 地图图层功能模块
      */
     doMapRealInfo () {
-
+      // 以待后用
     },
+    /**
+     *  渲染人员位置图层
+     */
     loadMapStaffLayer () {
       let self = this;
+
+      if (!self.mapCache.showlayer[0]) {
+        return ;
+      }
 
       axios.get('/map/realtime/staff/')
             .then((response) => {
@@ -871,120 +951,132 @@ export default {
       let featureList = new Array();
       staffPointList.forEach(function(staff, index) {
         let geometry = JSON.parse(staff.point),
-            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id};
+            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name};
 
         // 装载员工pointFeature
         geometry.coordinates[0] += index * 100000 * Math.random();
         geometry.coordinates[0] += index * 1000 * Math.random();
-        featureList.push(self.createPointFeature(geometry, properties));
+        featureList.push(self.createFeature(geometry, properties));
       });
 
       // 构造FeatureCollection装配的数据源
       let featureCollection = self.createFeatureCollection(featureList);
-      let staffSource = new ol.source.Vector({
+      self.mapCache.staffSource = new ol.source.Vector({
         features: new ol.format.GeoJSON().readFeatures(featureCollection)
       });
+      self.mapCache.staffLayer.setSource(self.mapCache.staffSource);
 
-      let newLayer = new ol.layer.Vector({
-        source: staffSource,
-        style: new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: 'rgba(255, 255, 255, 0.2)'
-            }),
-            stroke: new ol.style.Stroke({
-                color: '#ffcc33',
-                width: 2
-            }),
-            image: new ol.style.Circle({
-                radius: 7,
-                fill: new ol.style.Fill({
-                    color: '#6699CC'
-                })
-            })
-        })
-      });
-
-      if (self.stafflayer) {
-        self.realMap.removeLayer(self.stafflayer);
-      }
-
-      self.stafflayer = newLayer;
-      self.realMap.addLayer(self.stafflayer);
-      self.addLayerChangeListener(document.getElementById('staffLayer'), self.stafflayer);
-
-      let newPoint = JSON.parse(staffPointList[0].point);
-      let coordinates = newPoint.coordinates;
-      self.realMap.getView().setCenter(coordinates);
+      // 设置地图视图中心
+      // let newPoint = JSON.parse(staffPointList[0].point);
+      // let coordinates = newPoint.coordinates;
+      // self.mapCache.realMap.getView().setCenter(coordinates);
     },
     loadMapStaffHighLight (unitId) {
-      let params = {};
-      params.unitId = unitId;
-      axios.get('/map/realtime/staff/', { params: params})
-            .then((response) => {
-              let meta = response.data.meta;
+      let self = this,
+          featureList = self.mapCache.staffSource.getFeatures();
 
-              if (meta.success) {
-                if (response.data.data) {
-                    let data = response.data.data;
-
-                    // 渲染人员实时位置图层
-
-                }
-              } else {
-                bootbox.alert({
-                  message: meta.message
-                });
-              }
-            });
+      for (let i = 0; i < featureList.length; i++) {
+        if (featureList[i].get('unitId') == unitId) {
+          featureList[i].setStyle(self.mapCache.hightLightStyle);
+        }
+      }
     },
+    /**
+     *  渲染分站图层
+     */
     loadMapReaderLayer() {
-      let self = this;
+      let self = this,
+          currentMap = self.mapCache.realMap;
 
-      axios.get('')
+      if (!self.mapCache.showlayer[1]) {
+        return ;
+      }
+
+      axios.get('/base/map/reader/')
             .then((response) => {
-              let meta = response.data.meta;
+              let { meta, data } = response.data;
 
               if (meta.success) {
-                if (response.data.data) {
-                    let data = response.data.data;
+                if (data && data.readerList) {
+                  let readerList = data.readerList,
+                      featureList = new Array(), featureCollection;
 
-                    // 渲染读卡器元素图层
-                }
-              } else {
-                bootbox.alert({
-                  message: meta.message
-                });
-              }
+                  readerList.forEach(function(reader, index) {
+                    let geometry = JSON.parse(reader.geoPoint),
+                        pointFeature = self.createFeature(geometry, { "type": "Point", "id": reader.readerId});
+
+                    featureList.push(pointFeature);
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.readerSource = new ol.source.Vector({
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    })
+                  });
+
+                  // 改变分站图层数据源
+                  self.mapCache.readerLayer.setSource(self.mapCache.readerSource);
+                  // currentMap.getView().setCenter(featureList[0].geometry.coordinates);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
             });
     },
+    /**
+     *  渲染区域图层
+     */
     loadMapRegionLayer () {
-      let self = this;
+      let self = this,
+          currentMap = self.mapCache.realMap;
 
-      axios.get('')
+      if (!self.mapCache.showlayer[2]) {
+        return ;
+      }
+
+      axios.get('/base/map/region/')
             .then((response) => {
-              let meta = response.data.meta;
+              let { meta, data } = response.data;
 
               if (meta.success) {
-                if (response.data.data) {
-                  let data = response.data.data;
+                if (data && data.regionList) {
+                  let regionList = data.regionList,
+                      featureList = new Array(), featureCollection;
 
-                  // 渲染区域元素图层
-                }
-              } else {
-                bootbox.alert({
-                  message: meta.message
-                });
-              }
+                  regionList.forEach(function(region, index) {
+                    let geometry = JSON.parse(region.geoPolygon);
+
+                    featureList.push(self.createFeature(geometry, { "type": "Polygon", "id": region.regionId, "name": region.regionName }));
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.regionSource = new ol.source.Vector({
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    })
+                  });
+
+                  self.mapCache.regionLayer.setSource(self.mapCache.regionSource);
+                  // console.log("----------", featureList[0].geometry.coordinates);
+                  // currentMap.getView().setCenter(featureList[0].geometry.coordinates);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
             });
     },
     /**
      * End map function module.
+     * ----------------------------------------------------------------------
      */
     /* 清除查询条件内容 */
     clearSearchInfo () {
       $("input.refresh").val("");
       $("select.refresh").children('option').eq(0).prop('selected', true);
     },
+    /**
+     * ----------------------------------------------------------------------
+     * Start realtime count module.
+     */
     /* 查询矿井基本信息 */
     loadCoalmineInfo () {
       this.$store.dispatch('findCoalmineBaseInfo');
@@ -1126,28 +1218,42 @@ export default {
             });
     },
     /* 实时查询报警信息 */
-    loadAlarmInfo (alarmTypeId) {
-      this.alarmTypeId = alarmTypeId;
+    filterAlarmHandler (alarmInHandle) {
+      return alarmInHandle ? '已处理' : '未处理';
+    },
+    checkLoadAlarmType (alarmTypeId) {
+      let self = this;
 
-      initPagination('alarmInfoPagingBox', 'alarmInfoPaging');
+      self.alarmTypeId = alarmTypeId;
+
+      let parent = self.alarmBox[alarmTypeId].parent,
+          child = self.alarmBox[alarmTypeId].child;
+
+      initPagination(parent, child);
+      self.loadAlarmInfo();
+    },
+    // 员工呼叫报警信息
+    loadAlarmInfo () {
       this.loadAlarmInfoPaging(null);
     },
     loadAlarmInfoPaging (page, isPaging) {
       let self = this;
+
       page = page || 1;
-      axios.get('/realtime/alarm/' + this.alarmTypeId + '/p/' + page)
+      axios.get('/realtime/alarm/' + self.alarmTypeId + '/p/' + page)
             .then((response) => {
               let meta = response.data.meta;
 
               if (meta.success) {
                 let data = response.data.data;
 
-                self.staffListCache.realStaffList = data.staffAlarmList;
-                self.staffListCache.countTotalPages = data.countTotalPages;
+                self.alarmListCache.alarmResultList = data.alarmResult;
+                self.alarmListCache.total = data.total;
 
                 if (!isPaging) {
-                  $("#alarmInfoPaging").page({
-                    total: self.staffListCache.countTotalPages,
+                  let pagingContainer = self.alarmBox[self.alarmTypeId].child;
+                  $("#" + pagingContainer).page({
+                    total: self.alarmListCache.total,
                     pageSize: 6,
                     pageBtnCount: 5,
                     prevBtnText: '上一页',
@@ -1158,13 +1264,13 @@ export default {
                     self.loadAlarmInfoPaging(pageNumber + 1, true);
                   });
                 }
-              } else {
-                bootbox.alert({
-                  message: meta.message
-                });
-              }
+              } else { bootbox.alert({ message: meta.message }); }
             });
     },
+    /**
+     * ----------------------------------------------------------------------
+     * End realtime count module.
+     */
     /* 撤离呼叫 */
     loadRegionCount () {
       initPagination('regionCountPagingBox', 'regionCountPaging');
@@ -1318,7 +1424,7 @@ main {
 }
 
 .main-left {
-  width: 75%;
+  width: 79%;
   min-height: 700px;
   margin-right: 1%;
 }
@@ -1386,7 +1492,7 @@ main {
 /* End popup style */
 
 .main-right {
-  width: 24%;
+  width: 20%;
   min-height: 700px;
 }
 

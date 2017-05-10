@@ -9,10 +9,10 @@
         </div>
         <div class="fr system-user-right">
           <label><i class="glyphicon glyphicon-user" style="margin: 0 5px;"></i></label>
-          <label class="user-name" id="userName">张亚超</label>
-          <div style="display:none;">
+          <label class="user-name" id="userName">{{ user.userName }}</label>
+          <!-- <div style="display:none;">
             <input type="text" id="userId" value="U100001" />
-          </div>
+          </div> -->
           <div class="system-user-manage">
             <a href="#"><i class="glyphicon glyphicon-pencil"></i>修改密码</a>
             &nbsp;&nbsp;<a href="javascript: void(0);" @click="exitSystem()"><i class="glyphicon glyphicon-off"></i>退出系统</a>
@@ -32,11 +32,12 @@ export default {
   name: "header",
   data() {
     return {
-
+      user: {}
     }
   },
   mounted () {
     this.showTime();
+    this.loadUserInfo();
   },
   methods: {
     showTime () {
@@ -51,7 +52,13 @@ export default {
         $("#clock").html(timeStr);
       }, 1000);
     },
+    loadUserInfo () {
+      let self = this;
+
+      self.user = JSON.parse(window.sessionStorage.getItem('user'));
+    },
     exitSystem () {
+      window.sessionStorage.removeItem('user');
       this.$router.push("/Login");
     }
   },
