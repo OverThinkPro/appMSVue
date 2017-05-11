@@ -6,7 +6,6 @@
 
 <script>
 import 'bootstrap/dist/js/bootstrap.min';
-import './assets/script/common';
 
 export default {
   name: 'app',

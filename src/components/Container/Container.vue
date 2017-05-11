@@ -9,6 +9,8 @@
 <script>
 import VHeader from '@/components/Header/Header.vue';
 import VFooter from '@/components/Footer/Footer.vue';
+import 'bootstrap-fileinput/js/fileinput.min';
+import '../../assets/script/pagination/pagination';
 
 export default {
   name: 'container-wrapper',

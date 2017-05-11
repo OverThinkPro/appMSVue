@@ -26,6 +26,7 @@
 <script>
 import bootbox from 'bootbox';
 import axios from 'axios';
+import initNavToggle from '../../assets/script/common';
 
 export default {
   name: "nav",
@@ -112,6 +113,7 @@ export default {
     }
   },
   mounted() {
+    initNavToggle();
     this.loadMenuList();
   },
   methods: {
