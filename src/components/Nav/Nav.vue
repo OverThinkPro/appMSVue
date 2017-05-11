@@ -24,6 +24,10 @@
   </div>
 </template>
 <script>
+import bootbox from 'bootbox';
+import axios from 'axios';
+import initNavToggle from '../../assets/script/common';
+
 export default {
   name: "nav",
   data() {
@@ -109,10 +113,27 @@ export default {
     }
   },
   mounted() {
-    // alert("userId: " + $("#userId").val());
+    initNavToggle();
+    this.loadMenuList();
   },
   methods: {
+    loadMenuList () {
+      let self = this,
+          user = window.sessionStorage.getItem('user');
 
+      if (user) {
+        axios.get('/base/menu/')
+              .then((response) => {
+                let { meta, success } = response.data;
+
+                if (meta.success) {
+                  if (data && data.menuList) {
+                    self.menuList = data.menuList;
+                  }
+                } else { bootbox.alert("服务器内部错误,系统菜单装载失败!"); }
+              });
+      }
+    }
   }
 }
 </script>

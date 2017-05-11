@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="table-box outside-box" id="regionTabs">
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-tabs" role="tablist" id="regionULTab">
           <li role="presentation" class="active"><a href="javascript: void(0);" data-target="#region_map_tab" aria-controls="region_map_tab" role="tab" data-toggle="tab">地图</a></li>
           <li role="presentation"><a href="javascript: void(0);" data-target="#region_list_tab" aria-controls="region_list_tab" role="tab" data-toggle="tab">列表</a></li>
         </ul>
@@ -49,15 +49,18 @@
           <div role="tabpanel" class="tab-pane active" id="region_map_tab">
             <div class="btn-box">
               <div class="fr">
-                <!-- <button type="button" class="btn btn-primary" @click="show()">show</button> -->
                 <button type="button" @click="fullScreen()" class="btn btn-primary fr" title="地图全屏查看">
                   <i class="glyphicon glyphicon-fullscreen"></i>&nbsp;全屏查看
                 </button>
+                <button id="save_update_region" type="button" @click="saveModifyCheck()" class="btn btn-primary fr" title="保存修改区域">
+                  <i class="glyphicon glyphicon-transfer"></i>&nbsp;保存修改区域
+                </button>
                 <div class="input-group fr">
-                  <select class="">
-                    <option value="">标注工具</option>
-                    <option value="标注">标注</option>
-                    <option value="移除">移除</option>
+                  <select class="operation" name="regionMapOperSel">
+                    <option value="NONE">- 操作 -</option>
+                    <option value="NEW">添加</option>
+                    <option value="REMOVE">移除</option>
+                    <option value="UPDATE_MORE">多个修改</option>
                   </select>
                 </div>
               </div>
@@ -69,7 +72,6 @@
           <div role="tabpanel" class="tab-pane" id="region_list_tab">
             <div class="btn-box">
               <div class="fl">
-                <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_region_modal">添加</button> -->
                 <button type="button" class="btn btn-primary" @click="checkType('UPDATE_REGION')">修改</button>
                 <button type="button" class="btn btn-primary" @click="checkType('DELETE_REGION')">删除区域</button>
               </div>
@@ -100,7 +102,7 @@
                     <td>{{ region.regionMaxPeople }}</td>
                     <td>{{ region.description }}</td>
                     <td>
-                      <a href="javascript: void(0);" title="修改区域" @click="openModal('MOVE_READER', region.regionId)"><i class="glyphicon glyphicon-transfer"></i></a>&nbsp;
+                      <a href="javascript: void(0);" title="修改区域" @click="openModal('MOVE_REGION', region)"><i class="glyphicon glyphicon-transfer"></i></a>&nbsp;
                     </td>
                   </tr>
                 </tbody>
@@ -129,17 +131,16 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
+              <!-- <div class="input-group-line">
                 <div class="group-left">区域编号</div>
                 <div class="group-right">
                   <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="region.regionId">
                 </div>
-              </div>
+              </div> -->
               <div class="input-group-line">
                 <div class="group-left">区域名称</div>
                 <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="region.regionName
-                  ">
+                  <input class="form-control refresh" type="text" name="" v-model="region.regionName">
                 </div>
               </div>
               <div class="input-group-line">
@@ -175,7 +176,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="addRegionOper()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -270,7 +271,17 @@ export default {
         highLightStyle: {},
         regionSource: {},
         regionLayer: {},
+        drawLayer: {},
       },
+      mapEvent: {
+        addHandler: {},
+        removeHandler: {},
+        updateMoreHandler: {},
+        polygonDraw: {},
+        select: {},
+        modify: {}
+      },
+      updateRegionMap: {},
       region:{},
       regionList: [],
       regionListCache: {
@@ -286,29 +297,33 @@ export default {
     this.loadRegionList();
   },
   methods: {
-    show () {
-      let self = this;
-
-      // let source = self.mapCache.regionLayer.getSource();
-      // let featureList = source.getFeatures();
-      // for (let i = 0; i < featureList.length; i++) {
-      //   if (featureList[i].get('id') == 'd') {
-      //     featureList[i].setStyle(self.mapCache.highLightStyle);
-      //     console.log("id: ", featureList[i].getGeometry().getCoordinates());
-      //   }
-      // }
-
-    },
     initEvent () {
       let self = this;
 
-      $("#add_region_modal").on('show.bs.modal', function() {
+      $("#save_update_region").prop('disabled', true);
+      $("select[name='regionMapOperSel']").on('change', function() {
+        let currentMap = self.mapCache.regionMap;
+        $("#save_update_region").prop('disabled', true);
+
+        // 移除全部事件
+        self.clearEvent();
         self.region = {};
-        self.region.regionType = '';
+        self.updateRegionMap = {};
+        if (this.value == 'NEW') {
+          self.addDrawPolygonEvent(currentMap);
+        } else if (this.value == 'UPDATE_MORE') {
+          $("#save_update_region").prop('disabled', false);
+          $("#save_update_region").attr('data-content', 'UPDATE_MORE');
+          self.addModifyPolygonEvent(currentMap);
+        }
       });
 
-      $("#update_region_modal").on('shown.bs.modal', function() {
+      $("#add_region_modal").on('show.bs.modal', function() {
+        let geoPolygon = self.region.geoPolygon;
 
+        self.region = {};
+        self.region.regionType = '';
+        self.region.geoPolygon = geoPolygon;
       });
     },
     fullScreen () {
@@ -319,6 +334,7 @@ export default {
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
     /**
+     * ------------------------------------------------------------
      * Start map function module.
      */
     loadMap () {
@@ -326,6 +342,10 @@ export default {
 
       let beijing = ol.proj.fromLonLat([12950000, 4860000]);
       $("#map .ol-viewport").remove();
+
+      /**
+       *  初始化地图元素
+       */
       // 视图
       self.mapCache.regionView = new ol.View({
         center: [0, 0],
@@ -363,16 +383,8 @@ export default {
         ],
         view: self.mapCache.regionView
       });
-      // 添加地图点击事件
-      self.mapCache.regionMap.on('click', function(event) {
-        let feature = event.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-          return feature;
-        });
-
-        if (feature) {
-          console.log(feature.getGeometry().getCoordinates());
-        }
-      });
+      // 添加移除事件
+      self.addRemovePolygonEvent(self.mapCache.regionMap);
       // 渲染区域图层
       self.loadRegionMapLayer(self.mapCache.regionMap);
     },
@@ -380,6 +392,10 @@ export default {
       let self = this;
 
       currentMap = currentMap || self.mapCache.regionMap;
+
+      if (self.mapCache.regionLayer) {
+        self.mapCache.regionMap.removeLayer(self.mapCache.regionLayer);
+      }
       axios.get('/base/map/region/')
             .then((response) => {
               let { meta, data } = response.data;
@@ -397,23 +413,232 @@ export default {
                   });
 
                   featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.regionSource = new ol.source.Vector({
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    })
+                  });
                   self.mapCache.regionLayer = new ol.layer.Vector({
-                    source: new ol.source.Vector({
-                      features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-                        dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-                        featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-                      })
-                    }),
+                    source: self.mapCache.regionSource,
                     style: self.mapCache.regionStyle
                   });
                   currentMap.addLayer(self.mapCache.regionLayer);
+
+                  // 添加地图绘图事件
+                  // self.addDrawPolygonEvent(currentMap);
                 } else { bootbox.alert("区域图层装载失败!"); }
               } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
             });
     },
-    openModal (type, regionId) {
+    /**
+     * Start map event module.
+     */
+    clearEvent () {
+      let self = this;
 
+      // 移除添加区域事件
+      self.mapCache.regionMap.removeInteraction(self.mapEvent.polygonDraw);
+      // 移除修改区域事件
+      self.mapCache.regionMap.removeInteraction(self.mapEvent.select);
+      self.mapCache.regionMap.removeInteraction(self.mapEvent.modify);
     },
+    addDrawPolygonEvent (currentMap) {
+      let self = this;
+
+      currentMap = currentMap || self.mapCache.regionMap;
+      // 绘图图层初始化
+      self.mapEvent.polygonDraw = new ol.interaction.Draw({
+        type: 'Polygon',
+        source: self.mapCache.regionSource
+      });
+      // 绘图结束事件监听
+      self.mapEvent.polygonDraw.on('drawend', function(event) {
+        let createPolygonJson = self.createPolygonJson(event.feature.getGeometry().getCoordinates());
+        self.region.geoPolygon = createPolygonJson;
+        $("#add_region_modal").modal('show');
+      });
+
+      currentMap.addInteraction(self.mapEvent.polygonDraw);
+    },
+    addModifyPolygonEvent (currentMap, selectedFeature) {
+      let self = this;
+
+      currentMap = currentMap || self.mapCache.regionMap;
+      // 地图选择元素事件
+      self.mapEvent.select = selectedFeature
+        ? new ol.interaction.Select({ features: selectedFeature })
+        : new ol.interaction.Select();
+      currentMap.addInteraction(self.mapEvent.select);
+      // 地图修改元素事件
+      self.mapEvent.modify = new ol.interaction.Modify({
+        features: self.mapEvent.select.getFeatures()
+      });
+      currentMap.addInteraction(self.mapEvent.modify);
+
+      let selectedFeatures = self.mapEvent.select.getFeatures();
+      self.mapEvent.select.on('change:active', function() {
+        selectedFeatures.forEach(selectedFeatures.remove, selectedFeatures);
+      });
+
+      currentMap.on('click', function(event) {
+        let feature = event.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+          return feature;
+        });
+
+        if (feature) {
+          let regionId = feature.get('id');
+          self.updateRegionMap[regionId] = feature;
+        }
+      });
+    },
+    addRemovePolygonEvent (currentMap) {
+      let self = this;
+
+      currentMap = currentMap || self.mapCache.regionMap;
+      currentMap.on('click', function(event) {
+        let feature = event.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
+          return feature;
+        });
+
+        let type = $("select[name='regionMapOperSel']").find("option:selected").val();
+        if (feature && type == 'REMOVE') {
+          let regionId = feature.get('id');
+          self.deleteRegionOper(regionId, feature);
+        }
+      });
+    },
+    openModal (type, region) {
+      let self = this;
+
+      if (type == 'MOVE_REGION') {
+        self.clearEvent();
+        $("select[name='regionMapOperSel']").find("option:eq(0)").prop('selected', true);
+
+        $("#regionULTab li.active, .tab-pane.active").removeClass('active');
+        $("#regionULTab li:eq(0), .tab-pane:eq(0)").addClass('active');
+        // 启用修改保存选择框
+        $("#save_update_region").prop('disabled', false);
+        $("#save_update_region").attr('data-content', 'UPDATE_ONE');
+
+        self.showRegionHighLight(region);
+
+        let featureList = self.mapCache.regionSource.getFeatures(),
+            selectedFeature;
+        for (let i = 0; i < featureList.length; i++) {
+          if (featureList[i].get('id') == region.regionId) {
+            selectedFeature = featureList[i];
+            break;
+          }
+        }
+        self.region = {};
+        self.region.regionId = region.regionId;
+        self.addModifyPolygonEvent(self.mapCache.regionMap, selectedFeature);
+      }
+    },
+    /**
+     * End map event module.
+     */
+    /**
+     * Start map function module.
+     */
+    showRegionHighLight (region) {
+      let self = this;
+
+      let featureList = self.mapCache.regionSource.getFeatures();
+      let geometry = JSON.parse(region.geoPolygon);
+      self.selectedFeature = self.createFeature(geometry, { "type": "Polygon", "id": region.regionId, "name": region.regionName });
+      for (let i = 0; i < featureList.length; i++) {
+          if (featureList[i].get('id') == region.regionId) {
+            featureList[i].setStyle(self.mapCache.highLightStyle);
+          } else {
+            featureList[i].setStyle(self.mapCache.regionStyle);
+          }
+      }
+    },
+    // 检测是单个修改/批量修改
+    saveModifyCheck () {
+      let self = this;
+      let type = $("#save_update_region").attr('data-content');
+
+      if (type == 'UPDATE_ONE') {
+        self.updateOnlyRegionPos();
+      } else if (type == 'UPDATE_MORE') {
+        self.updateMoreRegionPos();
+      }
+    },
+    // 修改单个区域位置
+    updateOnlyRegionPos () {
+      let self = this;
+
+      if (!self.region) {
+        bootbox.alert("当前操作无效!");
+        return ;
+      }
+
+      let regionId = self.region.regionId;
+      let featureList = self.mapCache.regionSource.getFeatures();
+      for (let i = 0; i < featureList.length; i++) {
+        if (featureList[i].get('id') == regionId) {
+          self.region.geoPolygon = self.createPolygonJson(featureList[i].getGeometry().getCoordinates());
+          break;
+        }
+      }
+      let regionList = new Array();
+      regionList.push(self.region);
+      axios.put('/base/map/region/', regionList)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("区域位置修改成功!");
+                  self.region = {};
+                  $("#save_update_region").prop('disabled', true);
+                  self.loadRegionList();
+                  self.loadRegionMapLayer();
+                } else { bootbox.alert("区域位置修改失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域位置修改失败!"); }
+            });
+    },
+    // 修改多个区域位置
+    updateMoreRegionPos () {
+      let self = this;
+
+      // 解析修改区域的字典数据
+      let regionList = self.map2ListUtil(self.updateRegionMap);
+
+      axios.put('/base/map/region/', regionList)
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.result == regionList.length) {
+                  bootbox.alert("区域位置批量修改成功!");
+                  self.updateRegionMap = {};
+                  self.loadReaderList();
+                  self.loadRegionMapLayer();
+                }
+              } else { bootbox.alert("区域位置批量修改失败!"); }
+            });
+    },
+    map2ListUtil (regionMap) {
+      let self = this;
+      let regionList = new Array(), region;
+
+      for (let i in regionMap) {
+        let feature = regionMap[i];
+        region = new Object();
+        region.regionId = feature.get('id');
+        region.geoPolygon = self.createPolygonJson(feature.getGeometry().getCoordinates());
+        regionList.push(region);
+      }
+
+      return regionList;
+    },
+    /**
+     * End map function module.
+     */
     // 构造元素
     createFeature(geometry, properties) {
       return {
@@ -428,8 +653,21 @@ export default {
         "features": features
       };
     },
+    createPolygonJson (coordinates) {
+      let pointList = coordinates[0];
+      let geoPolygon = "Polygon((";
+
+      pointList.forEach(function(coordinate, index) {
+        let pointCoordinate = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+        geoPolygon += (pointCoordinate[0] + " " + pointCoordinate[1]) + ",";
+      });
+      geoPolygon = geoPolygon.substring(0, geoPolygon.length - 1) + "))";
+
+      return geoPolygon;
+    },
     /**
      * End map function module.
+     * ------------------------------------------------------------
      */
     getSearchParams () {
       let params = {},
@@ -471,11 +709,11 @@ export default {
                     }).on("pageClicked", function (event, pageNumber) {
                       self.loadRegionListPaging(pageNumber + 1, true);
                     });
+                  }
                 } else {
                   bootbox.alert("区域信息查询失败!");
                 }
               } else { bootbox.alert("服务器内部错误,区域信息查询失败!"); }
-            }
           });
     },
     /**
@@ -519,6 +757,7 @@ export default {
                   $("#add_region_modal").modal('hide');
                   self.region = {};
                   self.loadRegionList();
+                  self.loadRegionMapLayer();
                 } else { bootbox.alert("区域信息添加失败!"); }
               } else { bootbox.alert("服务器内部错误,区域信息添加失败!"); }
             });
@@ -527,6 +766,7 @@ export default {
     updateRegionOper () {
       let self = this;
 
+      delete self.region.geoPolygon;
       axios.put('/base/region/', self.region)
             .then((response) => {
               let { meta, data } = response.data;
@@ -538,12 +778,13 @@ export default {
                   self.region = {};
                   $("input[name='region']:radio:checked").prop('checked', false);
                   self.loadRegionList();
+                  self.loadRegionMapLayer();
                 } else { bootbox.alert("区域信息修改失败!"); }
               } else { bootbox.alert("服务器内部错误,区域信息修改失败!"); }
             });
     },
     // 删除区域
-    deleteRegionOper (regionId) {
+    deleteRegionOper (regionId, feature) {
       let self = this;
 
       bootbox.confirm({
@@ -568,6 +809,7 @@ export default {
                         self.region = {};
                         $("input[name='region']:radio:checked").prop('checked', false);
                         self.loadRegionList();
+                        self.loadRegionMapLayer();
                       } else { bootbox.alert("区域信息删除失败!"); }
                     } else { bootbox.alert("服务器内部错误,区域信息删除失败!"); }
                   });
@@ -590,5 +832,9 @@ export default {
   width: 100%;
   height: 100%;
   min-height: 600px;
+}
+
+#add_region_modal {
+  z-index: 2000;
 }
 </style>

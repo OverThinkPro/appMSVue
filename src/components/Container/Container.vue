@@ -1,5 +1,5 @@
 <template lang="html">
-  <div name="container-wrapper">
+  <div id="container-wrapper">
     <v-header class="header-wrap"></v-header>
     <router-view class="content-wrap"></router-view>
     <v-footer class="footer-wrap"></v-footer>
@@ -9,6 +9,8 @@
 <script>
 import VHeader from '@/components/Header/Header.vue';
 import VFooter from '@/components/Footer/Footer.vue';
+import 'bootstrap-fileinput/js/fileinput.min';
+import '../../assets/script/pagination/pagination';
 
 export default {
   name: 'container-wrapper',

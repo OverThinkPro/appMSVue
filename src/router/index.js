@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Hello from '@/components/Container/Container';
+import Container from '@/components/Container/Container';
 import Login from '@/components/Login/Login';
 import Main from '@/components/Main/Main';
 
@@ -27,14 +27,16 @@ import Dictionary from '@/components/Dictionary/Dictionary';
 import Setting from '@/components/Setting/Setting';
 import Region from '@/components/Region/Region';
 import Log from '@/components/Log/Log';
+
+import NotFound from '@/components/Page404/Page404';
+
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {
       path: '/',
-      name: '/',
-      component: Main
+      component: Login
     },
     {
       path: '/Login',
@@ -42,99 +44,108 @@ export default new Router({
       component: Login
     },
     {
-      path: '/Main',
-      name: 'Main',
-      component: Main
+      path: '/',
+      component: Container,
+      children: [{
+          path: '/Main',
+          name: 'Main',
+          component: Main
+        },
+        {
+          path: '/Insearch',
+          name: 'Insearch',
+          component: Insearch
+        },
+        {
+          path: '/Alarm',
+          name: 'Alarm',
+          component: Alarm
+        },
+        {
+          path: '/Replay',
+          name: 'Replay',
+          component: Replay
+        },
+        {
+          path: '/Daily',
+          name: 'Daily',
+          component: Daily
+        },
+        {
+          path: '/Monthly',
+          name: 'Monthly',
+          component: Monthly
+        },
+        {
+          path: '/Unit',
+          name: 'Unit',
+          component: Unit
+        },
+        {
+          path: '/Staff',
+          name: 'Staff',
+          component: Staff
+        },
+        {
+          path: '/Job',
+          name: 'Job',
+          component: Job
+        },
+        {
+          path: '/Schedule',
+          name: 'Schedule',
+          component: Schedule
+        },
+        {
+          path: '/Card',
+          name: 'Card',
+          component: Card
+        },
+        {
+          path: '/Reader',
+          name: 'Reader',
+          component: Reader
+        },
+        {
+          path: '/User',
+          name: 'User',
+          component: User
+        },
+        {
+          path: '/Role',
+          name: 'Role',
+          component: Role
+        },
+        {
+          path: '/Menu',
+          name: 'Menu',
+          component: Menu
+        },
+        {
+          path: '/Dictionary',
+          name: 'Dictionary',
+          component: Dictionary
+        },
+        {
+          path: '/Setting',
+          name: 'Setting',
+          component: Setting
+        },
+        {
+          path: '/Region',
+          name: 'Region',
+          component: Region
+        },
+        {
+          path: '/Log',
+          name: 'Log',
+          component: Log
+        }
+      ]
     },
     {
-      path: '/Insearch',
-      name: 'Insearch',
-      component: Insearch
-    },
-    {
-      path: '/Alarm',
-      name: 'Alarm',
-      component: Alarm
-    },
-    {
-      path: '/Replay',
-      name: 'Replay',
-      component: Replay
-    },
-    {
-      path: '/Daily',
-      name: 'Daily',
-      component: Daily
-    },
-    {
-      path: '/Monthly',
-      name: 'Monthly',
-      component: Monthly
-    },
-    {
-      path: '/Unit',
-      name: 'Unit',
-      component: Unit
-    },
-    {
-      path: '/Staff',
-      name: 'Staff',
-      component: Staff
-    },
-    {
-      path: '/Job',
-      name: 'Job',
-      component: Job
-    },
-    {
-      path: '/Schedule',
-      name: 'Schedule',
-      component: Schedule
-    },
-    {
-      path: '/Card',
-      name: 'Card',
-      component: Card
-    },
-    {
-      path: '/Reader',
-      name: 'Reader',
-      component: Reader
-    },
-    {
-      path: '/User',
-      name: 'User',
-      component: User
-    },
-    {
-      path: '/Role',
-      name: 'Role',
-      component: Role
-    },
-    {
-      path: '/Menu',
-      name: 'Menu',
-      component: Menu
-    },
-    {
-      path: '/Dictionary',
-      name: 'Dictionary',
-      component: Dictionary
-    },
-    {
-      path: '/Setting',
-      name: 'Setting',
-      component: Setting
-    },
-    {
-      path: '/Region',
-      name: 'Region',
-      component: Region
-    },
-    {
-      path: '/Log',
-      name: 'Log',
-      component: Log
+      path: '*',
+      component: NotFound
     }
   ]
 });
