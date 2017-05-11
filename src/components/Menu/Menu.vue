@@ -63,6 +63,7 @@
                   <th>是否启用</th>
                   <th>菜单URL</th>
                   <th>菜单描述</th>
+                  <th>菜单等级</th>
                 </tr>
               </thead>
               <tbody>
@@ -75,6 +76,8 @@
                   <td v-else>禁用</td>
                   <td>{{ module.moduleUrl }}</td>
                   <td>{{ module.description }}</td>
+                  <td v-if="module.baseModule ==='1'">基本模块</td>
+                  <td v-else>非基本模块</td>
                 </tr>
               </tbody>
             </table>
@@ -140,6 +143,15 @@
                 </div>
               </div>
               <div class="input-group-line">
+                <div class="group-left">功能等级</div>
+                <div class="group-right">
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuNew.baseModule">
+                  <span>基本模块</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuNew.baseModule">
+                  <span>非基本模块</span>
+                </div>
+              </div>
+              <div class="input-group-line">
                 <div class="group-left">菜单描述</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="menuNew.description">
@@ -195,10 +207,16 @@
               </div>
               <div class="input-group-line">
                 <div class="group-left">是否启用</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse">
+                <div class="group-right" v-if="upMenuInUse">
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse" >
                   <span>启用</span>
                   <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse">
+                  <span>禁用</span>
+                </div>
+                <div class="group-right" v-else>
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse" disabled>
+                  <span>启用</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse" disabled>
                   <span>禁用</span>
                 </div>
               </div>
@@ -206,6 +224,15 @@
                 <div class="group-left">菜单URL</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="menuOld.moduleUrl">
+                </div>
+              </div>
+               <div class="input-group-line">
+                <div class="group-left">功能等级</div>
+                <div class="group-right">
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.baseModule">
+                  <span>基本模块</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.baseModule">
+                  <span>非基本模块</span>
                 </div>
               </div>
               <div class="input-group-line">
@@ -241,6 +268,8 @@ export default {
       moduleStatusName: ['启用', '禁用'],*/
       menuNew:{},
       menuOld:{},
+      upMenuInUse:true,
+      baseModuleIsSelected:false,
       moduleTreeCache:{
         moduleList: []
       },
@@ -380,6 +409,7 @@ export default {
     beforeRemove(treeId, treeNode) {
       let self = this;
       self.deleteModule(treeNode.moduleId);
+      return false;
     },
 
     /* 添加按钮显示*/
@@ -403,8 +433,9 @@ export default {
                 self.menuNew.upModuleId = treeNode.moduleId;
                 self.menuNew.upModuleName = treeNode.moduleName;
                 self.menuNew.moduleId = data.currentModuleId;
-                self.menuNew.inUse = '1';
+                self.menuNew.inUse = '1'; //默认是启用
                 self.menuNew.moduleUrl = '/';
+                self.menuNew.baseModule = '0'; //默认是非基础模块
               }
               $("#add_menu_modal").modal('show');
             } else {
@@ -515,9 +546,14 @@ export default {
     },
     /* 获得要批量删除的菜单编号 */
     getDeleteIds(){
+      let self = this;
       let moduleIds = '';
+      self.baseModuleIsSelected = false;
       $("input[name='menu']:checked").each(function() {
         moduleIds += $(this).val() + ',';
+        if($(this).closest("tr").find("td:last").text()=="基本模块"){
+          self.baseModuleIsSelected = true;
+        }
       });
       moduleIds = moduleIds.substring(0, moduleIds.length-1);
       this.deleteModule(moduleIds);
@@ -526,37 +562,53 @@ export default {
     /* 删除菜单信息 */
     deleteModule(moduleIds){
       let self = this;
-      bootbox.confirm({
-        title: '删除菜单',
-        message: '菜单信息一旦删除，不可恢复，是否确定删除？',
-        buttons: {
-          confirm: {
-            label: '确定'
+      //alert(moduleIds.indexOf(","));
+      if(moduleIds.indexOf(",")==-1){
+        self.moduleTreeCache.moduleList.forEach((module, index) => {
+          if (module.moduleId ==  moduleIds) {
+            if(module.baseModule == "1"){
+              self.baseModuleIsSelected = true;
+            }else{
+              self.baseModuleIsSelected = false;
+            }
+          }
+        });
+      }
+      if(self.baseModuleIsSelected){
+        bootbox.alert({ title:'删除菜单信息', message: '基本模块禁止删除，请重新选择非基本模块进行删除!' }); 
+      }else{
+        bootbox.confirm({
+          title: '删除菜单',
+          message: '菜单信息一旦删除，不可恢复，是否确定删除？',
+          buttons: {
+            confirm: {
+              label: '确定'
+            },
+            cancel: {
+              label: '取消'
+            }
           },
-          cancel: {
-            label: '取消'
-          }
-        },
-        callback: function(result) {
-          if (result) {
-            axios.delete('/base/module/', { params: { 'moduleIds': moduleIds }}).then((response) => {
-              let { meta, data } = response.data;
-              if (meta.success) {
-                if (data && data.result) { 
-                  bootbox.alert({ title:'删除菜单信息', message: '菜单信息删除成功!' }); 
-                }else { 
-                  bootbox.alert({ title:'删除菜单信息', message: '菜单信息删除失败!' }); 
+          callback: function(result) {
+            if (result) {
+              axios.delete('/base/module/', { params: { 'moduleIds': moduleIds }}).then((response) => {
+                let { meta, data } = response.data;
+                if (meta.success) {
+                  if (data && data.result ) { 
+                    bootbox.alert({ title:'删除菜单信息', message: '菜单信息删除成功!' }); 
+                  }else { 
+                    bootbox.alert({ title:'删除菜单信息', message: '菜单信息删除失败!' }); 
+                  }
+                  $("input[name='menu']:checked").each(function() { this.checked = false; });
+                  self.defaultLoadModuleTree();
+                  self.defaultLoadModuleTable();
+                } else { 
+                  bootbox.alert({ title:'删除菜单信息', message: meta.message }); 
                 }
-                $("input[name='menu']:checked").each(function() { this.checked = false; });
-                self.defaultLoadModuleTree();
-                self.defaultLoadModuleTable();
-              } else { 
-                bootbox.alert({ title:'删除菜单信息', message: meta.message }); 
-              }
-            });
+              });
+            }
           }
-        }
-      });
+        });
+      }
     },
     /* 点击修改按钮 */
     clickUpdateModule(moduleId){
@@ -568,6 +620,15 @@ export default {
           delete self.menuOld.uber;
         }
       });
+      self.moduleTreeCache.moduleList.forEach((module, index) => {
+        if (module.moduleId ==  self.menuOld.upModuleId) {
+          if(module.moduleId=='1' || module.inUse=='1'){
+            self.upMenuInUse = true;
+          }else{
+            self.upMenuInUse = false;
+          }
+        }
+      });
       $("#update_menu_modal").modal('show');
     },
 
@@ -577,7 +638,7 @@ export default {
       axios.put('/base/module/', self.menuOld).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
+            if (data && data.result >= 1) { 
               bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改成功!' }); 
             }else { 
               bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改失败!' }); 
