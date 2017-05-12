@@ -6,13 +6,13 @@
       <ul class="nav navbar-nav">
         <template v-for="menu in menuList">
           <li v-if="!menu.children || menu.children.length === 0">
-            <router-link :to="menu.url">{{ menu.module_name }}</span></router-link>
+            <router-link :to="menu.moduleUrl">{{ menu.moduleName }}</span></router-link>
           </li>
-          <li v-else-if="menu.children || menu.childrend.length > 0" class="dropdown">
+          <li v-else-if="menu.children || menu.children.length > 0" class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-              aria-haspopup="true" aria-expended="false">{{ menu.module_name }}&nbsp;<span class="caret"></span></a>
+              aria-haspopup="true" aria-expended="false">{{ menu.moduleName }}&nbsp;<span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li v-for="item in menu.children"><router-link :to="item.url">{{ item.module_name }}</router-link></li>
+              <li v-for="item in menu.children"><router-link :to="item.moduleUrl">{{ item.moduleName }}</router-link></li>
             </ul>
           </li>
         </template>
@@ -32,84 +32,85 @@ export default {
   name: "nav",
   data() {
     return {
-      menuList:[
-        {'module_id': '10', 'module_name': '首页',  'up_module_id': '1',"url": "/Main",
-         'children': [],
-        },
-        {'module_id': '11', 'module_name': '查询统计', 'up_module_id': '1', "url": "/",
-         'children': [
-            {'module_id': '1101', 'module_name': '实时查询',  'up_module_id': '11',"url": "/Insearch",
-             'children': [],
-            },
-            {'module_id': '1102', 'module_name': '历史报警查询',  'up_module_id': '11',"url": "/Alarm",
-             'children': [],
-            },
-            {'module_id': '1103', 'module_name': '历史轨迹回放',  'up_module_id': '11',"url": "/Replay",
-             'children': [],
-            },
-          ]
-        },
-        {'module_id': '12', 'module_name': '考勤管理', 'up_module_id': '1', "url": "/",
-         'children': [
-            {'module_id': '1201', 'module_name': '日考勤报表',  'up_module_id': '12',"url": "/Daily",
-             'children': [],
-            },
-            {'module_id': '1202', 'module_name': '月考勤详情报表',  'up_module_id': '12',"url": "/Monthly",
-             'children': [],
-            },
-            {'module_id': '1203', 'module_name': '月考勤统计报表',  'up_module_id': '12',"url": "/",
-             'children': [],
-            },
-          ],
-        },
-        {'module_id': '13', 'module_name': '人员管理', 'up_module_id': '1', "url": "/",
-         'children': [
-            {'module_id': '1301', 'module_name': '部门管理',  'up_module_id': '13',"url": "/Unit",
-             'children': [],
-            },
-            {'module_id': '1302', 'module_name': '员工管理',  'up_module_id': '13',"url": "/Staff",
-             'children': [],
-            },
-            {'module_id': '1303', 'module_name': '工种管理',  'up_module_id': '13',"url": "/Job",
-             'children': [],
-            },
-            {'module_id': '1304', 'module_name': '班次管理',  'up_module_id': '13',"url": "/Schedule",
-             'children': [],
-            },
-          ],
-        },
-        {'module_id': '14', 'module_name': '定位卡管理',  'up_module_id': '1',"url": "/Card",
-         'children': [],
-        },
-        {'module_id': '15', 'module_name': '分站管理',  'up_module_id': '1',"url": "/Reader",
-         'children': [],
-        },
-        {'module_id': '1605', 'module_name': '区域设置',  'up_module_id': '16',"url": "/Region",
-         'children': [],
-        },
-        {'module_id': '16', 'module_name': '系统管理', 'up_module_id': '1', "url": "/",
-         'children': [
-            {'module_id': '1601', 'module_name': '用户管理',  'up_module_id': '16',"url": "/User",
-             'children': [],
-            },
-            {'module_id': '1602', 'module_name': '角色管理',  'up_module_id': '16',"url": "/Role",
-             'children': [],
-            },
-            {'module_id': '1603', 'module_name': '菜单管理',  'up_module_id': '16',"url": "/Menu",
-             'children': [],
-            },
-            {'module_id': '1603', 'module_name': '字典管理',  'up_module_id': '16',"url": "/Dictionary",
-             'children': [],
-            },
-            {'module_id': '1604', 'module_name': '参数设置',  'up_module_id': '16',"url": "/Setting",
-             'children': [],
-            },
-            {'module_id': '1605', 'module_name': '日志管理',  'up_module_id': '16',"url": "/Log",
-             'children': [],
-            },
-          ],
-        },
-      ]
+      menuList: []
+      // menuList:[
+      //   {'module_id': '10', 'module_name': '首页',  'up_module_id': '1',"url": "/Main",
+      //    'children': [],
+      //   },
+      //   {'module_id': '11', 'module_name': '查询统计', 'up_module_id': '1', "url": "/",
+      //    'children': [
+      //       {'module_id': '1101', 'module_name': '实时查询',  'up_module_id': '11',"url": "/Insearch",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1102', 'module_name': '历史报警查询',  'up_module_id': '11',"url": "/Alarm",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1103', 'module_name': '历史轨迹回放',  'up_module_id': '11',"url": "/Replay",
+      //        'children': [],
+      //       },
+      //     ]
+      //   },
+      //   {'module_id': '12', 'module_name': '考勤管理', 'up_module_id': '1', "url": "/",
+      //    'children': [
+      //       {'module_id': '1201', 'module_name': '日考勤报表',  'up_module_id': '12',"url": "/Daily",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1202', 'module_name': '月考勤详情报表',  'up_module_id': '12',"url": "/Monthly",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1203', 'module_name': '月考勤统计报表',  'up_module_id': '12',"url": "/",
+      //        'children': [],
+      //       },
+      //     ],
+      //   },
+      //   {'module_id': '13', 'module_name': '人员管理', 'up_module_id': '1', "url": "/",
+      //    'children': [
+      //       {'module_id': '1301', 'module_name': '部门管理',  'up_module_id': '13',"url": "/Unit",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1302', 'module_name': '员工管理',  'up_module_id': '13',"url": "/Staff",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1303', 'module_name': '工种管理',  'up_module_id': '13',"url": "/Job",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1304', 'module_name': '班次管理',  'up_module_id': '13',"url": "/Schedule",
+      //        'children': [],
+      //       },
+      //     ],
+      //   },
+      //   {'module_id': '14', 'module_name': '定位卡管理',  'up_module_id': '1',"url": "/Card",
+      //    'children': [],
+      //   },
+      //   {'module_id': '15', 'module_name': '分站管理',  'up_module_id': '1',"url": "/Reader",
+      //    'children': [],
+      //   },
+      //   {'module_id': '1605', 'module_name': '区域设置',  'up_module_id': '16',"url": "/Region",
+      //    'children': [],
+      //   },
+      //   {'module_id': '16', 'module_name': '系统管理', 'up_module_id': '1', "url": "/",
+      //    'children': [
+      //       {'module_id': '1601', 'module_name': '用户管理',  'up_module_id': '16',"url": "/User",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1602', 'module_name': '角色管理',  'up_module_id': '16',"url": "/Role",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1603', 'module_name': '菜单管理',  'up_module_id': '16',"url": "/Menu",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1603', 'module_name': '字典管理',  'up_module_id': '16',"url": "/Dictionary",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1604', 'module_name': '参数设置',  'up_module_id': '16',"url": "/Setting",
+      //        'children': [],
+      //       },
+      //       {'module_id': '1605', 'module_name': '日志管理',  'up_module_id': '16',"url": "/Log",
+      //        'children': [],
+      //       },
+      //     ],
+      //   },
+      // ]
     }
   },
   mounted() {
@@ -122,14 +123,15 @@ export default {
           user = window.sessionStorage.getItem('user');
 
       if (user) {
-        axios.get('/base/menu/')
+        let userId = (JSON.parse(user)).userId;
+        axios.get('/user/url/' + userId)
               .then((response) => {
-                let { meta, success } = response.data;
+                let { meta, data } = response.data;
 
                 if (meta.success) {
                   if (data && data.menuList) {
                     self.menuList = data.menuList;
-                  }
+                  } else { bootbox.alert("系统菜单装载失败!"); }
                 } else { bootbox.alert("服务器内部错误,系统菜单装载失败!"); }
               });
       }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Container from '@/components/Container/Container';
+import Welcome from '@/components/Home/Home';
 import Login from '@/components/Login/Login';
 import Main from '@/components/Main/Main';
 
@@ -47,6 +48,11 @@ export default new Router({
       path: '/',
       component: Container,
       children: [{
+          path: '/Welcome',
+          name: 'Welcome',
+          component: Welcome
+        },
+        {
           path: '/Main',
           name: 'Main',
           component: Main
