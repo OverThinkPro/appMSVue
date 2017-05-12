@@ -131,6 +131,8 @@ export default {
                 if (meta.success) {
                   if (data && data.menuList) {
                     self.menuList = data.menuList;
+
+                    window.sessionStorage.setItem(JSON.stringify(self.menuList));
                   } else { bootbox.alert("系统菜单装载失败!"); }
                 } else { bootbox.alert("服务器内部错误,系统菜单装载失败!"); }
               });

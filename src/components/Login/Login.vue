@@ -81,7 +81,11 @@ export default {
                 let user = data.user;
 
                 window.sessionStorage.setItem('user', JSON.stringify(user));
-                self.$router.push("/Main");
+                if (data.isHome > 0) {
+                  self.$router.push("/Main");
+                } else {
+                  self.$router.push("/Welcome");
+                }
               } else {
                 bootbox.alert('errro');
               }

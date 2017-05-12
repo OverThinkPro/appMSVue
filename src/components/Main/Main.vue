@@ -780,11 +780,17 @@ export default {
         self.mapCache.staffSource = new ol.source.Vector();
         self.mapCache.staffStyle = new ol.style.Style({
             image: new ol.style.Circle({
-                radius: 4,
+                radius: 5,
                 fill: new ol.style.Fill({
                     color: '#6699CC'
                 })
             })
+        });
+        self.mapCache.staffStyle = new ol.style.Style({
+          image: new ol.style.Icon({
+            src: 'static/jobTypePics/1.png',
+            scale: 0.1
+          })
         });
         self.mapCache.staffLayer = new ol.layer.Vector({
           source: self.mapCache.staffSource,
@@ -970,7 +976,7 @@ export default {
       let featureList = new Array();
       staffPointList.forEach(function(staff, index) {
         let geometry = JSON.parse(staff.point),
-            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name};
+            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name, "jobId": staff.job_id, "jobIconUrl": staff.job_icon_url};
 
         // 装载员工pointFeature
         geometry.coordinates[0] += index * 100000 * Math.random();
@@ -985,10 +991,21 @@ export default {
       });
       self.mapCache.staffLayer.setSource(self.mapCache.staffSource);
 
+      // 设置不同样式
+      let staffFeatureList = self.mapCache.staffSource.getFeatures();
+      staffFeatureList.forEach(function(feature, index) {
+        feature.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+              src: 'static/' + feature.get('jobIconUrl'),
+              scale: 0.1
+            })
+        }));
+      });
+
       // 设置地图视图中心
-      // let newPoint = JSON.parse(staffPointList[0].point);
-      // let coordinates = newPoint.coordinates;
-      // self.mapCache.realMap.getView().setCenter(coordinates);
+      let newPoint = JSON.parse(staffPointList[0].point);
+      let coordinates = newPoint.coordinates;
+      self.mapCache.realMap.getView().setCenter(coordinates);
     },
     loadMapStaffHighLight (unitId) {
       let self = this,
@@ -1103,10 +1120,14 @@ export default {
     /* 实时统计 */
     loadCountRealtimeInfo () {
       this.$store.dispatch('countRealtimeInfo');
-      let realAlarmList = this.realAlarm;
+      let realAlarmList = this.realAlarm, alarmQueue = {};
 
       for (let i = 0; i < realAlarmList.length; i++) {
-        play(realAlarmList[i].alarm_type_id);
+        alarmQueue[realAlarmList[i].alarm_type_id] = realAlarmList[i].alarm_file;
+      }
+
+      for (let i in alarmQueue) {
+        play(i, alarmQueue[i]);
       }
     },
     /* 全屏查看地图 */

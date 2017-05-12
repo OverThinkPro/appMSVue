@@ -447,8 +447,8 @@ export default {
   name: 'setting',
   data () {
     return {
-      baseUrl:"http://localhost:9000/main/",
-      basePath:"../../../static",
+      // baseUrl:"http://localhost:9000/main/",
+      basePath:"/appMSJava/static",
       coalmine:{},
 
       periodNew:{},
@@ -483,7 +483,7 @@ export default {
   methods: {
     initEvent () {
       var self = this;
-      
+
       $("#add_alarmType_modal").on('show.bs.modal', function() {
         self.alarmTypeNew = {
           alarmTypeId:"",
@@ -598,26 +598,26 @@ export default {
       $("input[name='alarmType']:checked").each(function() { this.checked = false; });
     },
 
-    clickCoalmineTab(){  
+    clickCoalmineTab(){
       this.loadCoalmine();
     },
 
-    clickPeriodTab(){ 
-      this.loadPeriodList(); 
+    clickPeriodTab(){
+      this.loadPeriodList();
     },
 
-    clickAlarmTypeTab(){ 
-      this.loadAlarmTypeList(); 
+    clickAlarmTypeTab(){
+      this.loadAlarmTypeList();
     },
-    
-    clickMapTab(){ 
+
+    clickMapTab(){
       let self = this;
-      //self.mapPic = self.baseUrl+"/base/map/getMapPicByStream"; 
+      //self.mapPic = self.baseUrl+"/base/map/getMapPicByStream";
       self.mapPic = self.basePath +"/map/map.jpg?"+self.current();
     },
-    
-    clickJobTypeTab(){ 
-      this.defaultLoadJobType(); 
+
+    clickJobTypeTab(){
+      this.defaultLoadJobType();
     },
 
     /* 默认加载周期列表 */
@@ -642,12 +642,12 @@ export default {
         let meta = response.data.meta;
         if (meta.success) {
           let data = response.data.data;
-          if (data && data.result == 1) { 
+          if (data && data.result == 1) {
             $("#add_period_modal").modal('hide');
             self.loadPeriodList();
-            bootbox.alert({ title:'添加周期信息',  message: '周期信息添加成功!' }); 
-          }else { 
-            bootbox.alert({ title:'添加周期信息',  message: '周期信息添加失败!' }); 
+            bootbox.alert({ title:'添加周期信息',  message: '周期信息添加成功!' });
+          }else {
+            bootbox.alert({ title:'添加周期信息',  message: '周期信息添加失败!' });
           }
         } else {
           bootbox.alert({ title:'添加周期信息',  message: '服务器内部错误, 周期信息添加失败!'});
@@ -691,15 +691,15 @@ export default {
             axios.delete('/base/period/', { params: { 'periodIds': periodIds }}).then((response) => {
               let { meta, data } = response.data;
               if (meta.success) {
-                if (data && data.result) { 
-                  bootbox.alert({ title:'删除周期信息', message: '周期信息删除成功!' }); 
-                }else { 
-                  bootbox.alert({ title:'删除周期信息', message: '周期信息删除失败!' }); 
+                if (data && data.result) {
+                  bootbox.alert({ title:'删除周期信息', message: '周期信息删除成功!' });
+                }else {
+                  bootbox.alert({ title:'删除周期信息', message: '周期信息删除失败!' });
                 }
                 $("input[name='period']:checked").each(function() { this.checked = false; });
                 self.loadPeriodList();
-              } else { 
-                bootbox.alert({ title:'删除周期信息', message: meta.message }); 
+              } else {
+                bootbox.alert({ title:'删除周期信息', message: meta.message });
               }
             });
           }
@@ -725,24 +725,24 @@ export default {
       axios.put('/base/period/', self.periodOld).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
-              bootbox.alert({ title:'修改周期信息', message: '周期信息修改成功!' }); 
-            }else { 
-              bootbox.alert({ title:'修改周期信息', message: '周期信息修改失败!' }); 
+            if (data && data.result == 1) {
+              bootbox.alert({ title:'修改周期信息', message: '周期信息修改成功!' });
+            }else {
+              bootbox.alert({ title:'修改周期信息', message: '周期信息修改失败!' });
             }
             $("#update_period_modal").modal('hide');
             self.loadPeriodList();
-        } else { 
-          bootbox.alert({ title:'修改周期信息', message: meta.message }); 
+        } else {
+          bootbox.alert({ title:'修改周期信息', message: meta.message });
         }
       });
     },
     /* 周期复选框全选 */
     selectAllPeriodCheckbox(){
       //如果当前点击的多选框被选中
-      if(this.checkedOfPeriod){        
+      if(this.checkedOfPeriod){
         $('input[type=checkbox][name=period]').prop("checked", true );
-      }else{                
+      }else{
         $('input[type=checkbox][name=period]').prop("checked", false );
       }
     },
@@ -784,12 +784,12 @@ export default {
           if (data && data.result == 1 && data.alarmTypeId!="") {
             if($('#input-alarm-add')[0].files.length>0){
               const formData = new FormData();
-              formData.append('file', $('#input-alarm-add')[0].files[0]); 
+              formData.append('file', $('#input-alarm-add')[0].files[0]);
               //alert(data.alarmTypeId);
-              formData.append('alarmTypeId', data.alarmTypeId); 
+              formData.append('alarmTypeId', data.alarmTypeId);
               self.uploadAlarmTypePicInAdd(formData);
             }else{
-              bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' }); 
+              bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' });
               $("#add_alarmType_modal").modal('hide');
               self.loadAlarmTypeList();
             }
@@ -810,14 +810,14 @@ export default {
       }).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
-              bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' }); 
-            }else { 
-              bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' }); 
+            if (data && data.result == 1) {
+              bootbox.alert({ title:'添加报警类型信息', message: '报警类型信息添加成功!' });
+            }else {
+              bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' });
             }
             $("#add_alarmType_modal").modal('hide');
             self.loadAlarmTypeList();
-        } else { 
+        } else {
           bootbox.alert({ title:'添加报警类型信息',  message: '报警类型信息添加失败!' });
         }
       });
@@ -858,15 +858,15 @@ export default {
             axios.delete('/base/alarmType/', { params: { 'alarmTypeIds': alarmTypeIds }}).then((response) => {
               let { meta, data } = response.data;
               if (meta.success) {
-                if (data && data.result) { 
-                  bootbox.alert({ title:'删除报警类型信息', message: '报警类型信息删除成功!'}); 
-                }else { 
-                  bootbox.alert({ title:'删除报警类型信息', message: '报警类型信息删除失败!'}); 
+                if (data && data.result) {
+                  bootbox.alert({ title:'删除报警类型信息', message: '报警类型信息删除成功!'});
+                }else {
+                  bootbox.alert({ title:'删除报警类型信息', message: '报警类型信息删除失败!'});
                 }
                 $("input[name='alarmType']:checked").each(function() { this.checked = false; });
                 self.loadAlarmTypeList();
-              } else { 
-                bootbox.alert({title:'删除报警类型信息', message: meta.message }); 
+              } else {
+                bootbox.alert({title:'删除报警类型信息', message: meta.message });
               }
             });
           }
@@ -896,12 +896,12 @@ export default {
           if (data && data.result == 1) {
             if($('#input-alarm-update')[0].files.length>0){
               const formData = new FormData();
-              formData.append('file', $('#input-alarm-update')[0].files[0]); 
-              formData.append('alarmTypeId', self.alarmTypeOld.alarmTypeId); 
+              formData.append('file', $('#input-alarm-update')[0].files[0]);
+              formData.append('alarmTypeId', self.alarmTypeOld.alarmTypeId);
               self.uploadAlarmTypePicInUpdate(formData);
             }else{
               $("#update_alarmType_modal").modal('hide');
-              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' });  
+              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' });
               self.loadAlarmTypeList();
             }
           } else {
@@ -923,27 +923,27 @@ export default {
       }).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
+            if (data && data.result == 1) {
               //$("#update_alarmType_modal").modal('hide');
-              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' }); 
-            }else { 
+              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改成功!' });
+            }else {
              // $("#update_alarmType_modal").modal('hide');
-              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改失败!' }); 
+              bootbox.alert({ title:'修改报警类型信息', message: '报警类型信息修改失败!' });
             }
             $("#update_alarmType_modal").modal('hide');
             self.loadAlarmTypeList();
-        } else { 
+        } else {
           $("#update_alarmType_modal").modal('hide');
-          bootbox.alert({ title:'修改报警类型信息', message: meta.message }); 
+          bootbox.alert({ title:'修改报警类型信息', message: meta.message });
         }
       });
     },
     /* 报警类型复选框全选 */
     selectAllAlarmTypeCheckbox(){
       //如果当前点击的多选框被选中
-      if(this.checkedOfAlarmType){        
+      if(this.checkedOfAlarmType){
         $('input[type=checkbox][name=alarmType]').prop("checked", true );
-      }else{                
+      }else{
         $('input[type=checkbox][name=alarmType]').prop("checked", false );
       }
     },
@@ -970,14 +970,14 @@ export default {
       axios.put('/base/coalmine/', self.coalmine).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
-              bootbox.alert({ title:'修改煤矿信息', message: '煤矿信息修改成功!' }); 
-            }else { 
-              bootbox.alert({title:'修改煤矿信息',  message: '煤矿信息修改失败!' }); 
+            if (data && data.result == 1) {
+              bootbox.alert({ title:'修改煤矿信息', message: '煤矿信息修改成功!' });
+            }else {
+              bootbox.alert({title:'修改煤矿信息',  message: '煤矿信息修改失败!' });
             }
             $("#update_coalmine_modal").modal('hide');
-        } else { 
-          bootbox.alert({ title:'修改煤矿信息', message: meta.message }); 
+        } else {
+          bootbox.alert({ title:'修改煤矿信息', message: meta.message });
         }
       });
     },
@@ -1027,19 +1027,19 @@ export default {
     updateJobTypePic () {
       let self = this;
       const formData = new FormData();
-      formData.append('file', $('#input-job')[0].files[0]); 
-      formData.append('jobId', self.jobType.jobId); 
-      
+      formData.append('file', $('#input-job')[0].files[0]);
+      formData.append('jobId', self.jobType.jobId);
+
       axios.post('/base/jobtype/upload', formData,{
         method: 'post',
         headers: {'Content-Type': 'multipart/form-data'}
       }).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
-              bootbox.alert({ title:"工种图例", message: '工种图例修改成功!' }); 
-            }else { 
-              bootbox.alert({ title:"工种图例", message: '工种信息修改失败!' }); 
+            if (data && data.result == 1) {
+              bootbox.alert({ title:"工种图例", message: '工种图例修改成功!' });
+            }else {
+              bootbox.alert({ title:"工种图例", message: '工种信息修改失败!' });
             }
             $("#update_job_pic_modal").modal('hide');
             self.defaultLoadJobType();
@@ -1051,7 +1051,7 @@ export default {
     updateMap(){
       let self = this;
       const formData = new FormData();
-      formData.append('file',  $("#input-gly")[0].files[0]);  
+      formData.append('file',  $("#input-gly")[0].files[0]);
       axios.post('/base/map/upload', formData, {
           method: 'post',
           headers: {'Content-Type': 'multipart/form-data'}
@@ -1059,14 +1059,14 @@ export default {
         let { meta,data } = response.data;
         if (meta.success) {
           $("#update_map_modal").modal('hide');
-          bootbox.alert({ title:"上传底图", message: '成功!' }); 
+          bootbox.alert({ title:"上传底图", message: '成功!' });
           /*this.mapPic = require("D:/install/apache-tomcat-8.0.35-windows-x64/apache-tomcat-8.0.35/webapps/appMSJava/fileLibrary/map/map.jpg");*/
           /*self.mapPic = self.baseUrl + "/base/map/getMapPicByStream?rand="+ self.current();*/
           //访问静态资源
           self.mapPic = self.basePath +"/map/map.jpg?"+self.current();
-        }else{ 
+        }else{
           bootbox.alert({ title:"上传底图", message: '失败!' });
-          $("#update_map_modal").modal('hide'); 
+          $("#update_map_modal").modal('hide');
         }
       });
     },
@@ -1090,7 +1090,7 @@ export default {
   /*width:250px;*/
 }
 .job-type-wrap{
-  margin:25px 20px; 
+  margin:25px 20px;
 }
 /* #alarm_type_tab{
   margin-bottom: 30px;

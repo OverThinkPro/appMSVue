@@ -8,7 +8,8 @@ import axios from 'axios';
 
 // axios.defaults.baseURL = 'http://192.168.2.105:8080/appMSJava/api/v1/main/';
 // axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
-axios.defaults.baseURL = '/main/';
+// axios.defaults.baseURL = '/main/';
+axios.defaults.baseURL = '/appMSJava/api/v1/main/';
 
 Vue.config.productionTip = false;
 /* eslint-disable no-new */
@@ -20,7 +21,27 @@ router.beforeEach((to, from, next) => {
   if (!user && to.path != '/Login') {
     next({ path: '/Login' });
   } else {
-    next();
+    let success = true;
+    let menuList = JSON.parse(window.sessionStorage.getItem('menuList'));
+    for (let i = 0; i < menuList.length; i++) {
+      if (to.path == menuList[i]) {
+        success = true;
+        break;
+      } else {
+        success = false;
+        for (let j = 0; j < menuList[i].children.length; j++) {
+          if (to.path == menuList[i]) {
+            success = true;
+            break;
+          }
+        }
+      }
+    }
+    if (success) {
+      next();
+    } else {
+      next({ path: '/Login' });
+    }
   }
 });
 
