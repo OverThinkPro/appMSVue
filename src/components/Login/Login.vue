@@ -9,11 +9,11 @@
           <div class="login-wrapper">
             <div class="input-line">
               <label for="">账户</label>
-              <input id="account" class="form-control" type="text" name="">
+              <input id="account" class="form-control" type="text" name="account" v-model="user.userName">
             </div>
             <div class="input-line">
               <label for="">密码</label>
-              <input id="password" class="form-control" type="password" name="">
+              <input id="password" class="form-control" type="password" name="password" v-model="user.password">
             </div>
             <div class="input-line" style="margin-bottom: 25px;">
               <label for="">验证码</label>
@@ -35,7 +35,7 @@
 
 <script>
 import VFooter from '@/components/Footer/Footer.vue';
-import boobox from 'bootbox';
+import bootbox from 'bootbox';
 import axios from 'axios';
 import '../../assets/script/Gverify';
 
@@ -44,7 +44,8 @@ export default {
   data () {
     return {
       verifyCode: {},
-      result: [true, true, true]
+      result: [true, true, true],
+      user: {}
     };
   },
   components: {
@@ -59,6 +60,8 @@ export default {
       $("#verifyCodeContainer").click(function() {
         $("input[name='verifyCodeInp']").val("");
       });
+
+
     },
     loadVerify () {
       let self = this;
@@ -70,23 +73,22 @@ export default {
 
       let verifyResult = self.verifyCode.validate($("input[name='verifyCodeInp']").val());
       if (verifyResult) {
-        // axios.post('/login/', {
-        //   headers: ''
-        // }).then((response) => {
-        //   let { meta, data } = data.response;
-        //
-        //   if (meta.success) {
-        //
-        //   } else {
-        //
-        //   }
-        // });
-        let user = {}, userName = $("#account").val();
-        userName = userName || 'Zychaowill';
+        axios.post('/user/login/', self.user).then((response) => {
+          let { meta, data } = response.data;
 
-        user.userName = userName;
-        window.sessionStorage.setItem('user', JSON.stringify(user));
-        self.$router.push("/Main");
+          if (meta.success) {
+              if (data && data.user) {
+                let user = data.user;
+
+                window.sessionStorage.setItem('user', JSON.stringify(user));
+                self.$router.push("/Main");
+              } else {
+                bootbox.alert('errro');
+              }
+          } else {
+            bootbox.alert('errro');
+          }
+        });
       } else {
         $("input[name='verifyCodeInp']").val("");
       }
@@ -114,7 +116,9 @@ export default {
   height: 80px;
   text-align: left;
   padding-left: 30px;
-  background-color: #337AB7;
+  /*background-color: #337AB7;*/
+  background-color: #0079CE;
+  /*filter: brightness(88%);*/
 }
 
 #l-system-title > h3 {

@@ -31,7 +31,9 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
+@import "../../../node_modules/bootstrap-fileinput/css/fileinput.min.css";
+
 .header-wrap {}
 .content-wrap {
   position: relative;

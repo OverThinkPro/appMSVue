@@ -271,7 +271,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn" @click="sendCardOper()">发卡</button>
+            <button id="sendCardBtn" type="button" class="btn btn-primary modal-btn" @click="sendCardOper()">发卡</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -567,7 +567,9 @@ export default {
               self.sendCard.cardId = card.cardId;
               self.sendCard.cardStatus = card.cardStatus;
               self.sendCard.opTime = currentTime();
-              self.sendCard.opName = 'Zychaowill';
+
+              let user = JSON.parse(window.sessionStorage.getItem('user'));
+              self.sendCard.opName = user.userName;
 
               $("#send_card_modal").modal('show');
             } else if (type == 'CHANGE_CARD') {
@@ -578,7 +580,9 @@ export default {
               self.changeCard.staffName = card.staffName;
               self.changeCard.unitName = card.unitName;
               self.changeCard.opTime = currentTime();
-              self.changeCard.opName = 'Zychaowill';
+
+              let user = JSON.parse(window.sessionStorage.getItem('user'));
+              self.changeCard.opName = user.userName;
 
               $("#change_card_modal").modal('show');
             } else if (type == 'REVOKE_CARD') {
@@ -683,7 +687,14 @@ export default {
                 if (data) {
                   $("#sendCardIdResult").text(data.card.cardId);
                   $("#sendCardStatusResult").text(data.card.cardStatus);
-                  bootbox.alert("核卡成功,信息无误!");
+
+                  if (data.card.cardStatus != '未使用') {
+                    bootbox.alert("核卡成功,该卡状态不服,不能发卡!");
+                    $("#sendCardBtn").prop('disabled', true);
+                  } else {
+                    bootbox.alert("核卡成功,该卡状态符合发卡要求,可以发卡!");
+                    $("#sendCardBtn").prop('disabled', false);
+                  }
                 } else { bootbox.alert("核卡失败!"); }
               } else { bootbox.alert("服务器内部错误,核卡失败!"); }
             });

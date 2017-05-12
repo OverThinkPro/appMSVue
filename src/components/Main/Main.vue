@@ -574,6 +574,7 @@ import axios from 'axios';
 import fullscreen from '../../assets/script/fullscreen';
 import { initPagination } from '../../assets/script/initplugin';
 import { checkOnListener } from '../../assets/script/listener';
+import { play } from '../../assets/script/audio';
 
 export default {
   name: "main",
@@ -663,20 +664,29 @@ export default {
         alarmResultList: [],
         total: 0
       },
-      unitList: []
+      unitList: [],
+      startRealCount: {}
     };
   },
   mounted () {
+    let self = this;
+
     this.initEvent();
     this.loadMap();
     this.loadCoalmineInfo();
-    this.loadCountRealtimeInfo();
+
+    self.startRealCount = setInterval(function() {
+      self.loadCountRealtimeInfo();
+    }, 3000);
   },
   computed: {
     ...mapGetters(['coalmineInfo', 'realUnit', 'staffReal', 'realRegion', 'realAlarm', 'staffAlarm', 'pagination'])
   },
-  beforeDestroy () {
+  destroyed () {
+    let self = this;
+
     clearInterval(self.startRealStaffLayer);
+    clearInterval(self.startRealCount);
   },
   methods: {
     initEvent () {
@@ -828,9 +838,7 @@ export default {
         self.addLayerChangeListener(document.getElementById('regionLayer'), self.mapCache.regionLayer, 2);
 
         // 开启实时人员图层
-        self.startRealStaffLayer = setInterval(function() {
-          self.loadMapStaffLayer();
-        }, 3000);
+        self.startRealStaffRender();
 
         // self.loadMapStaffLayer();
         self.loadMapReaderLayer();
@@ -884,6 +892,9 @@ export default {
             if (element.checked) {
               layer.setVisible(true);
               self.mapCache.showlayer[layerNo] = true;
+              if (layerNo == 0) {
+                self.startRealStaffRender();
+              }
             } else {
               self.mapCache.popupInfo.content.innerHTML = '';
               self.mapCache.popup.setPosition(undefined);
@@ -919,10 +930,18 @@ export default {
     /**
      *  渲染人员位置图层
      */
+    startRealStaffRender () {
+      let self = this;
+
+      self.startRealStaffLayer = setInterval(function() {
+        self.loadMapStaffLayer();
+      }, 3000);
+    },
     loadMapStaffLayer () {
       let self = this;
 
       if (!self.mapCache.showlayer[0]) {
+        clearInterval(self.startRealStaffLayer);
         return ;
       }
 
@@ -1084,6 +1103,11 @@ export default {
     /* 实时统计 */
     loadCountRealtimeInfo () {
       this.$store.dispatch('countRealtimeInfo');
+      let realAlarmList = this.realAlarm;
+
+      for (let i = 0; i < realAlarmList.length; i++) {
+        play(realAlarmList[i].alarm_type_id);
+      }
     },
     /* 全屏查看地图 */
     fullScreen () {
