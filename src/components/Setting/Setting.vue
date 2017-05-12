@@ -107,10 +107,7 @@
                     <td v-else>禁用</td>
                     <!-- <td>{{ alarmType.alarmFile }}</td> -->
                     <td v-if="alarmType.alarmFile!=''">
-                      <audio v-if="alarmType.alarmFile!=''" controls   height="20" width="100">
-                        <source :src="alarmType.alarmFile" type="audio/mpeg">
-                        <!-- <source :src="horse.ogg" type="audio/ogg"> -->
-                       <!-- <embed height="50" width="100" src="horse.mp3"> -->
+                      <audio v-if="alarmType.alarmFile!=''" controls  :src="alarmType.alarmFile"  height="20" width="100">
                       </audio>
 
                     </td>
@@ -447,8 +444,8 @@ export default {
   name: 'setting',
   data () {
     return {
-      baseUrl:"http://localhost:9000/main/",
-      basePath:"../../../static",
+      //baseUrl:"http://localhost:9000/main/",
+      basePath:"appMSJava/static",
       coalmine:{},
 
       periodNew:{},
