@@ -63,6 +63,7 @@
                   <th>是否启用</th>
                   <th>数据类型</th>
                   <th>字典描述</th>
+                  <th>字典等级</th>
                 </tr>
               </thead>
               <tbody>
@@ -75,6 +76,8 @@
                   <td v-else>禁用</td>
                   <td>{{ elem.dataType }}</td>
                   <td>{{ elem.description }}</td>
+                  <td v-if="elem.baseDic ==='1'">基本数据字典</td>
+                  <td v-else>非基本数据字典</td>
                 </tr>
               </tbody>
             </table>
@@ -151,6 +154,15 @@
                 </div>
               </div>
               <div class="input-group-line">
+                <div class="group-left">字典等级</div>
+                <div class="group-right">
+                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryNew.baseDic">
+                  <span>基本数据字典</span>
+                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryNew.baseDic">
+                  <span>非基本数据字典</span>
+                </div>
+              </div>
+              <div class="input-group-line">
                 <div class="group-left">字典描述</div>
                 <div class="group-right">
                   <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.description">
@@ -217,11 +229,17 @@
             </div>
             <div class="input-group-line">
               <div class="group-left">是否启用</div>
-              <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse">
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse">
-                  <span>禁用</span>
+              <div class="group-right" v-if="upDictionaryInUse">
+                <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse" >
+                <span>启用</span>
+                <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse">
+                <span>禁用</span>
+              </div>
+              <div class="group-right" v-else>
+                <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse" disabled>
+                <span>启用</span>
+                <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse" disabled>
+                <span>禁用</span>
               </div>
             </div>
             <div class="input-group-line">
@@ -234,6 +252,15 @@
                   <option value="双精度浮点型">双精度浮点型</option>
                   <option value="布尔型">布尔型</option>
                 </select>
+              </div>
+            </div>
+            <div class="input-group-line">
+              <div class="group-left">字典等级</div>
+              <div class="group-right">
+                <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.baseDic">
+                <span>基本数据字典</span>
+                <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.baseDic">
+                <span>非基本数据字典</span>
               </div>
             </div>
             <div class="input-group-line">
@@ -274,6 +301,8 @@ export default {
       dictionaryStatusName: ['启用', '禁用'],*/
       dictionaryNew:{},
       dictionaryOld:{},
+      upDictionaryInUse:true,
+      baseDicIsSelected:false,
       dictionaryTreeCache:{
         dictionaryList: []
       },
@@ -416,6 +445,7 @@ export default {
     beforeRemove(treeId, treeNode) {
       let self = this;
       self.deleteDictionary(treeNode.dictionaryId);
+      return false;
     },
 
     /* 添加按钮显示*/
@@ -440,6 +470,7 @@ export default {
                 self.dictionaryNew.upDictionaryName = treeNode.dictionaryName;
                 self.dictionaryNew.dictionaryId = data.currentDictionaryId;
                 self.dictionaryNew.inUse = '1';
+                self.dictionaryNew.baseDic = '0'; //默认是非基础数据字典
               }
               $("#add_dictionary_modal").modal('show');
             } else {
@@ -551,9 +582,14 @@ export default {
     },
     /* 获得要批量删除的字典编号 */
     getDeleteIds(){
+      let self = this;
       let dictionaryIds = '';
+      self.baseDicIsSelected = false;
       $("input[name='dictionary']:checked").each(function() {
         dictionaryIds += $(this).val() + ',';
+        if($(this).closest("tr").find("td:last").text()=="基本数据字典"){
+          self.baseDicIsSelected = true;
+        }
       });
       dictionaryIds = dictionaryIds.substring(0, dictionaryIds.length-1);
       this.deleteDictionary(dictionaryIds);
@@ -562,37 +598,52 @@ export default {
     /* 删除字典信息 */
     deleteDictionary(dictionaryIds){
       let self = this;
-      bootbox.confirm({
-        title: '删除字典',
-        message: '字典信息一旦删除，不可恢复，是否确定删除？',
-        buttons: {
-          confirm: {
-            label: '确定'
+      if(dictionaryIds.indexOf(",")==-1){
+        self.dictionaryTreeCache.dictionaryList.forEach((dictionary, index) => {
+          if (dictionary.dictionaryId ==  dictionaryIds) {
+            if(dictionary.baseDic == "1"){
+              self.baseDicIsSelected = true;
+            }else{
+              self.baseDicIsSelected = false;
+            }
+          }
+        });
+      }
+      if(self.baseDicIsSelected){
+        bootbox.alert({ title:'删除字典信息', message: '基本数据字典禁止删除，请重新选择非基本数据字典进行删除!' }); 
+      }else{
+        bootbox.confirm({
+          title: '删除字典',
+          message: '字典信息一旦删除，不可恢复，是否确定删除？',
+          buttons: {
+            confirm: {
+              label: '确定'
+            },
+            cancel: {
+              label: '取消'
+            }
           },
-          cancel: {
-            label: '取消'
-          }
-        },
-        callback: function(result) {
-          if (result) {
-            axios.delete('/base/dictionary/', { params: { 'dictionaryIds': dictionaryIds }}).then((response) => {
-              let { meta, data } = response.data;
-              if (meta.success) {
-                if (data && data.result) { 
-                  bootbox.alert({ title:'删除字典信息', message: '字典信息删除成功!' }); 
-                }else { 
-                  bootbox.alert({ title:'删除字典信息', message: '字典信息删除失败!' }); 
+          callback: function(result) {
+            if (result) {
+              axios.delete('/base/dictionary/', { params: { 'dictionaryIds': dictionaryIds }}).then((response) => {
+                let { meta, data } = response.data;
+                if (meta.success) {
+                  if (data && data.result) { 
+                    bootbox.alert({ title:'删除字典信息', message: '字典信息删除成功!' }); 
+                  }else { 
+                    bootbox.alert({ title:'删除字典信息', message: '字典信息删除失败!' }); 
+                  }
+                  $("input[name='dictionary']:checked").each(function() { this.checked = false; });
+                  self.defaultLoadDictionaryTree();
+                  self.defaultLoadDictionaryTable();
+                } else { 
+                  bootbox.alert({ title:'删除字典信息', message: meta.message }); 
                 }
-                $("input[name='dictionary']:checked").each(function() { this.checked = false; });
-                self.defaultLoadDictionaryTree();
-                self.defaultLoadDictionaryTable();
-              } else { 
-                bootbox.alert({ title:'删除字典信息', message: meta.message }); 
-              }
-            });
+              });
+            }
           }
-        }
-      });
+        });
+      }
     },
     /* 点击修改按钮 */
     clickUpdateDictionary(dictionaryId){
@@ -604,6 +655,15 @@ export default {
           delete self.dictionaryOld.uber;
         }
       });
+       self.dictionaryTreeCache.dictionaryList.forEach((dictionary, index) => {
+        if (dictionary.dictionaryId ==  self.dictionaryOld.upDictionaryId) {
+          if(dictionary.dictionaryId=='1' || dictionary.inUse=='1'){
+            self.upDictionaryInUse = true;
+          }else{
+            self.upDictionaryInUse = false;
+          }
+        }
+      });
       $("#update_dictionary_modal").modal('show');
     },
 
@@ -613,7 +673,7 @@ export default {
       axios.put('/base/dictionary/', self.dictionaryOld).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
+            if (data && data.result >= 1) { 
               bootbox.alert({ title:'修改字典信息', message: '字典信息修改成功!' }); 
             }else { 
               bootbox.alert({ title:'修改字典信息', message: '字典信息修改失败!' }); 
