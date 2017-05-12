@@ -93,7 +93,7 @@
                     <th>序号</th>
                     <th>报警类型</th>
                     <th>启用声音</th>
-                    <th>声音路径</th>
+                    <!-- <th>声音路径</th> -->
                     <th>声音文件</th>
                     <th>操作</th>
                   </tr>
@@ -105,7 +105,7 @@
                     <td>{{ alarmType.alarmName }}</td>
                     <td v-if="alarmType.alarmInUse">启用</td>
                     <td v-else>禁用</td>
-                    <td>{{ alarmType.alarmFile }}</td>
+                    <!-- <td>{{ alarmType.alarmFile }}</td> -->
                     <td v-if="alarmType.alarmFile!=''">
                       <audio v-if="alarmType.alarmFile!=''" controls   height="20" width="100">
                         <source :src="alarmType.alarmFile" type="audio/mpeg">
