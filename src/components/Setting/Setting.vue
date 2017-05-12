@@ -48,14 +48,14 @@
           <!-- 人员位置数据采集周期 -->
           <div role="tabpanel" class="tab-pane" id="period_setting_tab">
             <div class="btn-box">
-              <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_period_modal">添加周期信息</button>
-              <button class="btn btn-primary fl" type="button" @click="checkPeriodSelect()">批量删除</button>
+              <!-- <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_period_modal">添加周期信息</button>
+              <button class="btn btn-primary fl" type="button" @click="checkPeriodSelect()">批量删除</button> -->
             </div>
             <div class="data-box content-box">
               <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" name="allPeriod" v-model="checkedOfPeriod" @click="selectAllPeriodCheckbox()"></th>
+                   <!--  <th><input type="checkbox" name="allPeriod" v-model="checkedOfPeriod" @click="selectAllPeriodCheckbox()"></th> -->
                     <th>序号</th>
                     <th>周期类型</th>
                     <th>周期值</th>
@@ -65,14 +65,14 @@
                 </thead>
                 <tbody>
                   <tr v-for="(period, index) in periodList" :key="period.key">
-                    <td><input type="checkbox" name="period" :value="period.periodId" /></td>
+                    <!-- <td><input type="checkbox" name="period" :value="period.periodId" /></td> -->
                     <td>{{ index + 1 }}</td>
                     <td>{{period.periodName}}</td>
                     <td>{{period.periodNum}}</td>
                     <td>{{period.description}}</td>
                     <td>
-                      <a href="" title="修改周期基本信息" data-toggle="modal" data-target="" @click="clickUpdatePeriod(period.periodId)"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                      <a href="javascript: void(0);" title="删除周期" @click="deletePeriod(period.periodId)"><i class="glyphicon glyphicon-trash"></i></a>
+                      <a href="" title="修改周期基本信息" data-toggle="modal" data-target="" @click="clickUpdatePeriod(period.periodId)"><i class="glyphicon glyphicon-edit"></i></a>
+                     <!--  &nbsp;| <a href="javascript: void(0);" title="删除周期" @click="deletePeriod(period.periodId)"><i class="glyphicon glyphicon-trash"></i></a> -->
                     </td>
                   </tr>
                 </tbody>
@@ -82,30 +82,31 @@
           <!-- 报警声音 -->
           <div role="tabpanel" class="tab-pane" id="alarm_type_tab">
             <div class="btn-box">
-              <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_alarmType_modal">添加报警类型</button>
-              <button class="btn btn-primary fl" type="button" @click="checkAlarmTypeSelect()">批量删除</button>
+             <!--  <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_alarmType_modal">添加报警类型</button>
+             <button class="btn btn-primary fl" type="button" @click="checkAlarmTypeSelect()">批量删除</button> -->
             </div>
             <div class="data-box content-box">
               <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th><input type="checkbox" name="allAlarm" v-model="checkedOfAlarmType" @click="selectAllAlarmTypeCheckbox()"></th>
+                   <!--  <th><input type="checkbox" name="allAlarm" v-model="checkedOfAlarmType" @click="selectAllAlarmTypeCheckbox()"></th> -->
                     <th>序号</th>
                     <th>报警类型</th>
                     <th>启用声音</th>
+                    <!-- <th>声音路径</th> -->
                     <th>声音文件</th>
                     <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(alarmType, index) in alarmTypeList" :key="alarmType.key">
-                    <td><input type="checkbox" name="alarmType" :value="alarmType.alarmTypeId" /></td>
+                   <!--  <td><input type="checkbox" name="alarmType" :value="alarmType.alarmTypeId" /></td> -->
                     <td>{{ index + 1 }}</td>
                     <td>{{ alarmType.alarmName }}</td>
                     <td v-if="alarmType.alarmInUse">启用</td>
                     <td v-else>禁用</td>
                     <!-- <td>{{ alarmType.alarmFile }}</td> -->
-                    <td>
+                    <td v-if="alarmType.alarmFile!=''">
                       <audio v-if="alarmType.alarmFile!=''" controls   height="20" width="100">
                         <source :src="alarmType.alarmFile" type="audio/mpeg">
                         <!-- <source :src="horse.ogg" type="audio/ogg"> -->
@@ -113,9 +114,10 @@
                       </audio>
 
                     </td>
+                    <td v-else></td>
                     <td>
-                      <a href="" title="修改报警类型" data-toggle="modal" data-target="" @click="clickUpdateAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-edit"></i></a>&nbsp;|
-                      <a href="javascript: void(0);"  title="删除报警类型" @click="deleteAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-trash"></i></a>
+                      <a href="" title="修改报警类型" data-toggle="modal" data-target="" @click="clickUpdateAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-edit"></i></a>
+                     <!-- &nbsp;|<a href="javascript: void(0);"  title="删除报警类型" @click="deleteAlarmType(alarmType.alarmTypeId)"><i class="glyphicon glyphicon-trash"></i></a> -->
                     </td>
                   </tr>
                 </tbody>
@@ -130,10 +132,8 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="thumbnail">
-                 <!--  <img :src="mapPic" alt="底图" :onerror="defaultMap"> -->
                  <!--  <img src="http://localhost:9000/main/base/map/getMapPicByStream" alt="底图" :onerror="defaultMap"> -->
                   <img :src="mapPic" alt="底图" :onerror="defaultMap">
-                  <!-- <img src="D:\install\apache-tomcat-8.0.35-windows-x64\apache-tomcat-8.0.35\webapps\appMSJava\fileLibrary\map\map.jpg" alt=""> -->
                 </div>
               </div>
             </div>
@@ -278,7 +278,7 @@
             <div class="input-group-line">
               <div class="group-left">报警类型</div>
               <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="alarmTypeOld.alarmName">
+                <input class="form-control refresh" readonly="readonly" type="text" name="" v-model="alarmTypeOld.alarmName">
               </div>
             </div>
             <div class="input-group-line">
@@ -357,7 +357,7 @@
             <div class="input-group-line">
               <div class="group-left">周期类型</div>
               <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="periodOld.periodName">
+                <input class="form-control refresh" readonly="readonly" type="text" name="" v-model="periodOld.periodName">
               </div>
             </div>
             <div class="input-group-line">
@@ -612,7 +612,8 @@ export default {
     
     clickMapTab(){ 
       let self = this;
-      self.mapPic = self.baseUrl+"/base/map/getMapPicByStream"; 
+      //self.mapPic = self.baseUrl+"/base/map/getMapPicByStream"; 
+      self.mapPic = self.basePath +"/map/map.jpg?"+self.current();
     },
     
     clickJobTypeTab(){ 
@@ -757,7 +758,10 @@ export default {
             for (var i = 0; i < self.alarmTypeList.length; i++) {
               let url = self.alarmTypeList[i].alarmFile;
               if(url && url!=null && url!=""){
-                self.alarmTypeList[i].alarmFile = self.baseUrl + "/base/alarmType/getAlarmSoundByStream?alarmSoundUrl="+ url+"&rand="+ self.current();
+                //使用流方式
+                /*self.alarmTypeList[i].alarmFile = self.baseUrl + "/base/alarmType/getAlarmSoundByStream?alarmSoundUrl="+ url+"&rand="+ self.current();*/
+                //访问静态资源
+                self.alarmTypeList[i].alarmFile = self.basePath + url + "?"+self.current();
               }else{
                 self.alarmTypeList[i].alarmFile="";
               }
@@ -986,11 +990,17 @@ export default {
         if (meta.success) {
           self.jobTypeList = data.jobTypeList;
           for (var i = 0; i < self.jobTypeList.length; i++) {
+            //let jobType = self.jobTypeList[i];
             let url = self.jobTypeList[i].jobIconUrl;
             if(url && url!=null && url!=""){
-              self.jobTypeList[i].jobIconUrl = self.baseUrl + "/base/jobType/getJobPicByStream?jobIconUrl="+ url+"&rand="+ self.current();
+              //使用流方式
+              /*self.jobTypeList[i].jobIconUrl = self.baseUrl + "/base/jobType/getJobPicByStream?jobIconUrl="+ url+"&rand="+ self.current();*/
+              //访问静态资源
+              /*jobType.jobIconUrl = self.basePath + url;
+              self.jobTypeList.splice(i,1,jobType)*/
+              self.jobTypeList[i].jobIconUrl = self.basePath + url+"?"+self.current();
             }else{
-              self.jobTypeList[i].jobIconUrl="";
+              self.jobTypeList[i].jobIconUrl = "";
             }
           };
         } else {
@@ -1051,7 +1061,9 @@ export default {
           $("#update_map_modal").modal('hide');
           bootbox.alert({ title:"上传底图", message: '成功!' }); 
           /*this.mapPic = require("D:/install/apache-tomcat-8.0.35-windows-x64/apache-tomcat-8.0.35/webapps/appMSJava/fileLibrary/map/map.jpg");*/
-          self.mapPic = self.baseUrl + "/base/map/getMapPicByStream?rand="+ self.current();
+          /*self.mapPic = self.baseUrl + "/base/map/getMapPicByStream?rand="+ self.current();*/
+          //访问静态资源
+          self.mapPic = self.basePath +"/map/map.jpg?"+self.current();
         }else{ 
           bootbox.alert({ title:"上传底图", message: '失败!' });
           $("#update_map_modal").modal('hide'); 
