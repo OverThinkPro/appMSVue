@@ -240,10 +240,10 @@ export default {
       var self = this;
       $("#add_role_modal").on('show.bs.modal', function() {
         self.roleNew = {
-          'roleId': '', 
-          'roleName': '',  
+          'roleId': '',
+          'roleName': '',
           'inUse': '1',
-          'description':'', 
+          'description':'',
         }
       });
     },
@@ -311,10 +311,10 @@ export default {
         let meta = response.data.meta;
         if (meta.success) {
           let data = response.data.data;
-          if (data && data.result == 1) { 
-            bootbox.alert({ title:'添加角色信息', message: '角色信息添加成功!' }); 
-          }else { 
-            bootbox.alert({ title:'添加角色信息', message: '角色信息添加失败!' }); 
+          if (data && data.result == 1) {
+            bootbox.alert({ title:'添加角色信息', message: '角色信息添加成功!' });
+          }else {
+            bootbox.alert({ title:'添加角色信息', message: '角色信息添加失败!' });
           }
           $("#add_role_modal").modal('hide');
           self.defaultLoadRoleList();
@@ -323,7 +323,7 @@ export default {
         }
       });
     },
-    
+
     /* 选择要批量删除的角色信息 */
     checkSelect (type) {
       let self = this;
@@ -340,7 +340,7 @@ export default {
         self.deleteRole(roleIds);
       }
     },
-   
+
     /* 删除角色信息 */
     deleteRole (roleIds) {
       let self = this;
@@ -360,22 +360,22 @@ export default {
             axios.delete('/base/role/', { params: { 'roleIds': roleIds }}).then((response) => {
               let { meta, data } = response.data;
               if (meta.success) {
-                if (data && data.result) { 
-                  bootbox.alert({ title:'删除角色信息', message: '角色信息删除成功!' }); 
-                }else { 
-                  bootbox.alert({ title:'删除角色信息', message: '角色信息删除失败!' }); 
+                if (data && data.result) {
+                  bootbox.alert({ title:'删除角色信息', message: '角色信息删除成功!' });
+                }else {
+                  bootbox.alert({ title:'删除角色信息', message: '角色信息删除失败!' });
                 }
                 $("input[name='role']:checked").each(function() { this.checked = false; });
                 self.defaultLoadRoleList();
-              } else { 
-                bootbox.alert({ title:'删除角色信息', message: meta.message }); 
+              } else {
+                bootbox.alert({ title:'删除角色信息', message: meta.message });
               }
             });
           }
         }
       });
     },
-    
+
     /* 点击修改按钮 */
     clickUpdateRole(roleId){
       let self = this;
@@ -394,15 +394,15 @@ export default {
       axios.put('/base/role/', self.roleOld).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-            if (data && data.result == 1) { 
-              bootbox.alert({ title:'修改角色信息', message: '角色信息修改成功!' }); 
-            }else { 
-              bootbox.alert({ title:'修改角色信息', message: '角色信息修改失败!' }); 
+            if (data && data.result == 1) {
+              bootbox.alert({ title:'修改角色信息', message: '角色信息修改成功!' });
+            }else {
+              bootbox.alert({ title:'修改角色信息', message: '角色信息修改失败!' });
             }
             $("#update_role_modal").modal('hide');
             self.defaultLoadRoleList();
-        } else { 
-          bootbox.alert({  title:'修改角色信息', message: meta.message }); 
+        } else {
+          bootbox.alert({  title:'修改角色信息', message: meta.message });
         }
       });
     },
@@ -417,12 +417,12 @@ export default {
           if (data) {
             let zNodes = data.moduleList;
             $.fn.zTree.init($("#moduleTree"), self.treeSetting, zNodes);
-            var treeObj = $.fn.zTree.getZTreeObj("moduleTree"); 
-            treeObj.expandAll(true); 
+            var treeObj = $.fn.zTree.getZTreeObj("moduleTree");
+            treeObj.expandAll(true);
             self.getModulesOfRole(roleId);
           }
         }else{
-          bootbox.alert({ title:'角色分配权限', message: '权限分配失败!' }); 
+          bootbox.alert({ title:'角色分配权限', message: '权限分配失败!' });
         }
       });
     },
@@ -435,7 +435,7 @@ export default {
         if (meta.success) {
           if (data) {
             self.moduleListOfRole = data.moduleListOfRole;
-            var treeObj = $.fn.zTree.getZTreeObj("moduleTree"); 
+            var treeObj = $.fn.zTree.getZTreeObj("moduleTree");
             var nodes = treeObj.transformToArray(treeObj.getNodes());
 
             for (var i = 0; i < nodes.length; i++) {
@@ -450,7 +450,7 @@ export default {
             }
           }
         }else{
-          bootbox.alert({ title:'角色分配权限',  message: '权限分配失败!' }); 
+          bootbox.alert({ title:'角色分配权限',  message: '权限分配失败!' });
         }
       });
     },
@@ -459,35 +459,35 @@ export default {
     giveModulesToRole(){
       let self = this;
       var moduleIds = "";
-      var treeObj = $.fn.zTree.getZTreeObj("moduleTree"); 
+      var treeObj = $.fn.zTree.getZTreeObj("moduleTree");
       var nodes = treeObj.getCheckedNodes(true);
       for (var i = 0; i < nodes.length; i++) {
         moduleIds += nodes[i].moduleId + ',';
-      } 
+      }
       moduleIds = moduleIds.substring(0, moduleIds.length-1);
       axios.post('/base/role/module/', { 'roleId':self.roleId,'moduleIds': moduleIds}).then((response) => {
         let { meta, data } = response.data;
         if (meta.success) {
-          if (data && data.result) { 
+          if (data && data.result) {
             $("#set_priviledge_modal").modal('hide');
-            bootbox.alert({ title:'权限分配信息', message: '角色权限分配成功!' }); 
-          }else { 
+            bootbox.alert({ title:'权限分配信息', message: '角色权限分配成功!' });
+          }else {
             $("#set_priviledge_modal").modal('hide');
-            bootbox.alert({ title:'权限分配信息', message: '角色权限分配失败!' }); 
+            bootbox.alert({ title:'权限分配信息', message: '角色权限分配失败!' });
           }
           this.defaultLoadRoleList();
-        } else { 
+        } else {
           $("#set_priviledge_modal").modal('hide');
-          bootbox.alert({ title:'权限分配信息', message: meta.message }); 
+          bootbox.alert({ title:'权限分配信息', message: meta.message });
         }
       });
     },
     /* 复选框全选 */
     selectAllRoleCheckbox(){
         //如果当前点击的多选框被选中
-        if(this.checked){        
+        if(this.checked){
           $('input[type=checkbox][name=role]').prop("checked", true );
-        }else{                
+        }else{
           $('input[type=checkbox][name=role]').prop("checked", false );
         }
     },
@@ -517,8 +517,8 @@ export default {
   height: 14px;
 }
 #tree-container{
-  width:250px; 
+  width:250px;
   background-color: white;
-  margin:0px auto; 
+  margin:0px auto;
 }
 </style>
