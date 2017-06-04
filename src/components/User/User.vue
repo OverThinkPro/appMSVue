@@ -535,7 +535,7 @@ export default {
   display: inline-block;
   text-align: left;
   vertical-align: middle;
-  font-size: 20px;
+ /*  font-size: 20px; */
   width: 500px;
   height: 40px;
 }
