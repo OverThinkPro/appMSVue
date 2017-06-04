@@ -621,7 +621,7 @@ export default {
               let { meta, data } = response.data;
 
               if (meta.success) {
-                if (data && data.result == regionList.length) {
+                if (data && data.result > 0) {
                   bootbox.alert("区域位置批量修改成功!");
                   self.updateRegionMap = {};
                   self.loadReaderList();
