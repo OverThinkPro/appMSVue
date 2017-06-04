@@ -12,7 +12,7 @@ export function play(type, fileSrc)  {
 
   let filePath = fileSrc ? ('static' + fileSrc) : (alarmFileSrc[type]);
   // let filePath = alarmFileSrc[type];
-  console.log("filepath: ", filePath);
+  // console.log("filepath: ", filePath);
   var audio = document.createElement("AUDIO");
   audio.setAttribute("src", filePath);
   audio.setAttribute("autoplay", 'false');

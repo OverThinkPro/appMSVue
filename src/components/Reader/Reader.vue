@@ -655,7 +655,9 @@ export default {
                       let type = ($("input[name='move']:radio:checked").val() == 'select');
                       let coordinate = event.coordinate,
                           feature = event.map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-                            return feature;
+                            if (layer == self.mapCache.readerLayer) {
+                              return feature;
+                            }
                           });
 
                       if (feature && type) {
@@ -698,17 +700,25 @@ export default {
       $("#mark_reader_modal").on('shown.bs.modal', function() {
         self.mapCache.readerPoint.flag = false;
         self.mapCache.markView = new ol.View({
-          center: [0, 0],
-          zoom: 6,
-          minZoom: 6,
-          maxZoom: 20
+          center: [-7352981.95804323, 4148924.9077592203],
+          zoom: 13,
+          minZoom: 3,
+          maxZoom: 20,
+          rotation: Math.PI/35
         });
         $("#markMap .ol-viewport").remove();
         self.mapCache.markMap = new ol.Map({
           target: 'markMap',
           layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
+            new ol.layer.Image({
+              source: new ol.source.ImageWMS({
+                url: 'http://localhost:8080/geoserver/wms',
+                params: {
+                  'LAYERS': 'myditu',
+                  'VERSION': '1.1.0'
+                },
+                serverType: 'geoserver'
+              })
             })
           ],
           view: self.mapCache.markView
@@ -723,17 +733,25 @@ export default {
         $("#updateMoveReaderToggle").prop('disabled', true);
         self.mapCache.readerPoint.flag = false;
         self.mapCache.moveView = new ol.View({
-          center: [0, 0],
-          zoom: 6,
-          minZoom: 6,
-          maxZoom: 20
+          center: [-7352981.95804323, 4148924.9077592203],
+          zoom: 13,
+          minZoom: 3,
+          maxZoom: 20,
+          rotation: Math.PI/35
         });
         $("#moveMap .ol-viewport").remove();
         self.mapCache.moveMap = new ol.Map({
           target: 'moveMap',
           layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
+            new ol.layer.Image({
+              source: new ol.source.ImageWMS({
+                url: 'http://localhost:8080/geoserver/wms',
+                params: {
+                  'LAYERS': 'myditu',
+                  'VERSION': '1.1.0'
+                },
+                serverType: 'geoserver'
+              })
             })
           ],
           view: self.mapCache.moveView
@@ -745,17 +763,25 @@ export default {
       $("#show_reader_modal").on('shown.bs.modal', function() {
         self.mapCache.readerPoint.flag = false;
         self.mapCache.showView = new ol.View({
-          center: [0, 0],
-          zoom: 6,
-          minZoom: 6,
-          maxZoom: 20
+          center: [-7352981.95804323, 4148924.9077592203],
+          zoom: 13,
+          minZoom: 3,
+          maxZoom: 20,
+          rotation: Math.PI/35
         });
         $("#showMap .ol-viewport").remove();
         self.mapCache.showMap = new ol.Map({
           target: 'showMap',
           layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
+            new ol.layer.Image({
+              source: new ol.source.ImageWMS({
+                url: 'http://localhost:8080/geoserver/wms',
+                params: {
+                  'LAYERS': 'myditu',
+                  'VERSION': '1.1.0'
+                },
+                serverType: 'geoserver'
+              })
             })
           ],
           view: self.mapCache.showView
@@ -834,12 +860,16 @@ export default {
                   self.mapCache.readerLayer = new ol.layer.Vector({
                     source: self.mapCache.readerSource,
                     style: new ol.style.Style({
-                      image: new ol.style.Circle({
-                          radius: 7,
-                          fill: new ol.style.Fill({
-                              color: '#6699CC'
-                          })
-                      })
+                      // image: new ol.style.Circle({
+                      //     radius: 7,
+                      //     fill: new ol.style.Fill({
+                      //         color: '#6699CC'
+                      //     })
+                      // })
+                      image: new ol.style.Icon(({
+                        src: 'static/icon/reader.png',
+                        scale: 0.4,  //图标缩放比例
+                      })),
                     })
                   });
                   currentMap.addLayer(self.mapCache.readerLayer);
@@ -871,12 +901,16 @@ export default {
                       }
                     } else {
                       newFeature.setStyle(new ol.style.Style({
-                        image: new ol.style.Circle({
-                          radius: 7,
-                          fill: new ol.style.Fill({
-                              color: '#6699CC'
-                          })
-                        })
+                        // image: new ol.style.Circle({
+                        //   radius: 7,
+                        //   fill: new ol.style.Fill({
+                        //       color: '#6699CC'
+                        //   })
+                        // })
+                        image: new ol.style.Icon(({
+                          src: 'static/icon/reader.png',
+                          scale: 0.4,  //图标缩放比例
+                        })),
                       }));
                     }
                     featureList.push(newFeature);
@@ -917,18 +951,20 @@ export default {
         let map = event.map;
         let type = ($("input[name='move']:radio:checked").val() == 'move');
         let feature = map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-          return feature;
+          if (layer == self.mapCache.readerLayer) {
+            return feature;
+          }
         });
 
         if (feature && feature.get('readerId') == readerId && type) {
-          feature.setStyle(new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 15,
-                fill: new ol.style.Fill({
-                    color: '#ffcc33'
-                })
-            })
-          }));
+          // feature.setStyle(new ol.style.Style({
+          //   image: new ol.style.Circle({
+          //       radius: 15,
+          //       fill: new ol.style.Fill({
+          //           color: '#ffcc33'
+          //       })
+          //   })
+          // }));
           this._coordinate = event.coordinate;
           this._feature = feature;
         }
@@ -940,7 +976,9 @@ export default {
           let type = ($("input[name='move']:radio:checked").val() == 'move');
             let map = event.map;
             let feature = map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
-                    return feature;
+              if (layer == self.mapCache.readerLayer) {
+                return feature;
+              }
             });
             let element = event.map.getTargetElement();
             if (feature && feature.get('readerId') == readerId && type) {
@@ -959,7 +997,9 @@ export default {
         let type = ($("input[name='move']:radio:checked").val() == 'move');
         let map = event.map;
         let feature = map.forEachFeatureAtPixel(event.pixel, function(feature, layer) {
-          return feature;
+          if (layer == self.mapCache.readerLayer) {
+            return feature;
+          }
         });
 
         if (feature && feature.get('readerId') == readerId && type) {
@@ -1094,12 +1134,10 @@ export default {
     // 构造元素样式
     createElementStyle () {
       return new ol.style.Style({
-        image: new ol.style.Circle({
-            radius: 15,
-            fill: new ol.style.Fill({
-                color: 'red'
-            })
-        })
+        image: new ol.style.Icon(({
+          src: 'static/icon/selectReader.png',
+          scale: 0.4,  //图标缩放比例
+        }))
       });
     },
     // 构造元素

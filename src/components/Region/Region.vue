@@ -348,10 +348,11 @@ export default {
        */
       // 视图
       self.mapCache.regionView = new ol.View({
-        center: [0, 0],
-        zoom: 6,
+        center: [-7352981.95804323, 4148924.9077592203],
+        zoom: 13,
         minZoom: 3,
-        maxZoom: 12
+        maxZoom: 20,
+        rotation: Math.PI/35
       });
       // 普通区域样式
       self.mapCache.regionStyle = new ol.style.Style({
@@ -377,8 +378,15 @@ export default {
       self.mapCache.regionMap = new ol.Map({
         target: 'map',
         layers: [
-          new ol.layer.Tile({
-            source: new ol.source.OSM()
+          new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+              url: 'http://localhost:8080/geoserver/wms',
+              params: {
+                'LAYERS': 'myditu',
+                'VERSION': '1.1.0'
+              },
+              serverType: 'geoserver'
+            })
           })
         ],
         view: self.mapCache.regionView

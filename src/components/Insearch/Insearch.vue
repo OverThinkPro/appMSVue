@@ -170,26 +170,31 @@ export default {
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
     loadMap () {
-        var wuhan = ol.proj.fromLonLat([114.21, 30.37]),
-        taiyuan = ol.proj.fromLonLat([112.53, 37.87]),
-        beijing = ol.proj.fromLonLat([12950000, 4860000]);
         var view = new ol.View({
-          center: taiyuan,
+          center: [-7352981.95804323, 4148924.9077592203],
           minZoom: 8,
           zoom: 3
         });
         this.insearchMap = new ol.Map({
           target: 'map',
           layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
+            new ol.layer.Image({
+              source: new ol.source.ImageWMS({
+                url: 'http://localhost:8080/geoserver/wms',
+                params: {
+                  'LAYERS': 'myditu',
+                  'VERSION': '1.1.0'
+                },
+                serverType: 'geoserver'
+              })
             })
           ],
           view: new ol.View({
-            center: taiyuan,
-            zoom: 8,
-            minZoom: 6,
-            maxZoom: 12
+            center: [-7352981.95804323, 4148924.9077592203],
+            zoom: 13,
+            minZoom: 3,
+            maxZoom: 20,
+            rotation: Math.PI/35
           })
         });
         this.insearchMap.on('click', function (evt) {

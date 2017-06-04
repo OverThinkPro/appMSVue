@@ -88,7 +88,8 @@
           <div class="document-line" v-if="realAlarm != null" v-for="(alarm, index) in realAlarm" :key="alarm.key">
             <label class="label-line-left">{{ alarm.alarm_name }}</label>
             <label class="label-line-right">
-              <a href="javascript:void(0)" @click="checkLoadAlarmType(alarm.alarm_type_id)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
+              <a href="javascript:void(0)" style="margin-right: 10px;" @click="checkLoadAlarmType(alarm.alarm_type_id)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
+              <input type="checkbox" checked="checked" :data-cbinput="alarm.alarm_type_id" title="是否周期内重复报警" /><span style="color: #333;">重复</span>
             </label>
           </div>
         </div>
@@ -648,6 +649,12 @@ export default {
           'child': 'alarmInfoPaging'
         }
       },
+      repeatList: {
+        '1': true,
+        '2': true,
+        '3': true,
+        '4': true
+      },
       status: ['未呼叫', '已呼叫'],
       unitId: '',
       regionId: '',
@@ -762,17 +769,32 @@ export default {
   			self.mapCache.realMap = new ol.Map({
   				target: 'map',
   				layers: [
-  					new ol.layer.Tile({
-  						source: new ol.source.OSM()
-  					})
+  					// new ol.layer.Tile({
+  					// 	source: new ol.source.OSM()
+  					// }),
+            new ol.layer.Image({
+              source: new ol.source.ImageWMS({
+                url: 'http://localhost:8080/geoserver/wms',
+                params: {
+                  'LAYERS': 'myditu',
+                  'VERSION': '1.1.0'
+                },
+                serverType: 'geoserver'
+              })
+            })
   				],
   				view: new ol.View({
-  					center: taiyuan,
-  					zoom: 5,
+  					center: [-7352981.95804323, 4148924.9077592203],
+  					zoom: 14,
   					minZoom: 2,
-  					maxZoom: 12,
+  					maxZoom: 20,
+            rotation: Math.PI/35
   				})
   			});
+        self.mapCache.realMap.on('click', function (evt) {
+          var point = evt.coordinate; //鼠标单击点坐标
+          alert(point);
+        });
         // 装载人员位置图层
         // self.loadMapStaffLayer();
 
@@ -811,8 +833,15 @@ export default {
 
         self.mapCache.regionSource = new ol.source.Vector();
         self.mapCache.regionStyle = new ol.style.Style({
+          // stroke: new ol.style.Stroke({
+          //   color: '#D6ABD0',
+          //   width: 2
+          // })
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 255, 0)'
+          }),
           stroke: new ol.style.Stroke({
-            color: '#D6ABD0',
+            color: '#319FD3',
             width: 2
           })
         });
@@ -939,9 +968,9 @@ export default {
     startRealStaffRender () {
       let self = this;
 
-      self.startRealStaffLayer = setInterval(function() {
+      // self.startRealStaffLayer = setInterval(function() {
         self.loadMapStaffLayer();
-      }, 3000);
+      // }, 3000);
     },
     loadMapStaffLayer () {
       let self = this;
@@ -1005,7 +1034,7 @@ export default {
       // 设置地图视图中心
       let newPoint = JSON.parse(staffPointList[0].point);
       let coordinates = newPoint.coordinates;
-      self.mapCache.realMap.getView().setCenter(coordinates);
+      // self.mapCache.realMap.getView().setCenter(coordinates);
     },
     loadMapStaffHighLight (unitId) {
       let self = this,
@@ -1119,15 +1148,31 @@ export default {
     },
     /* 实时统计 */
     loadCountRealtimeInfo () {
+      let self = this;
+
       this.$store.dispatch('countRealtimeInfo');
       let realAlarmList = this.realAlarm, alarmQueue = {};
+
+      // 复原
+      // for (let i in self.repeatList) {
+        // self.repeatList[i] = true;
+      // }
+      // $("input[data-cbinput]:checkbox").prop('checked', 'checked');
 
       for (let i = 0; i < realAlarmList.length; i++) {
         alarmQueue[realAlarmList[i].alarm_type_id] = realAlarmList[i].alarm_file;
       }
 
+      let cbinput = $("input[data-cbinput]:checkbox");
+      for (let cb = 0; cb < cbinput.length; cb++) {
+        let temp = cbinput[cb];
+        self.repeatList[$(temp).attr('data-cbinput')] = $(temp).prop('checked');
+      }
+
       for (let i in alarmQueue) {
-        play(i, alarmQueue[i]);
+        if (self.repeatList[i]) {
+          play(i, alarmQueue[i]);
+        }
       }
     },
     /* 全屏查看地图 */
