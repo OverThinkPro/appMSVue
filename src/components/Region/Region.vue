@@ -349,7 +349,7 @@ export default {
       // 视图
       self.mapCache.regionView = new ol.View({
         center: [-7352981.95804323, 4148924.9077592203],
-        zoom: 13,
+        zoom: 15,
         minZoom: 3,
         maxZoom: 20,
         rotation: Math.PI/35
@@ -380,7 +380,7 @@ export default {
         layers: [
           new ol.layer.Image({
             source: new ol.source.ImageWMS({
-              url: 'http://localhost:8080/geoserver/wms',
+              url: 'http://192.168.2.105:8080/geoserver/wms',
               params: {
                 'LAYERS': 'myditu',
                 'VERSION': '1.1.0'
@@ -681,7 +681,7 @@ export default {
       let params = {},
           regionType, regionName;
 
-      regionType = $("input[name='regionTypeSel']").find("option:selected").val();
+      regionType = $("select[name='regionTypeSel']").find("option:selected").val();
       if (regionType) { params.regionType = regionType; }
 
       regionName = $("input[name='regionNameInp']").val();
