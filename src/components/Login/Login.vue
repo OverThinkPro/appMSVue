@@ -9,16 +9,16 @@
           <div class="login-wrapper">
             <div class="input-line">
               <label for="">账户</label>
-              <input id="account" class="form-control" type="text" name="account" v-model="user.userName">
+              <input id="account" class="form-control" :class="{'is-danger':errors.has('account')}" v-validate="'required'" type="text" name="account" v-model="user.userName">
             </div>
             <div class="input-line">
               <label for="">密码</label>
-              <input id="password" class="form-control" type="password" name="password" v-model="user.password">
+              <input id="password" class="form-control" :class="{'is-danger':errors.has('password')}" v-validate="'required|min:6'" type="password" name="password" v-model="user.password">
             </div>
             <div class="input-line" style="margin-bottom: 25px;">
               <label for="">验证码</label>
               <div id="input-row">
-                <input type="text" class="form-control" name="verifyCodeInp">
+                <input type="text" class="form-control" :class="{'is-danger':errors.has('verifyCodeInp')}" v-validate="'required'" name="verifyCodeInp">
                 <div id="verifyCodeContainer"></div>
               </div>
             </div>
@@ -38,6 +38,7 @@ import VFooter from '@/components/Footer/Footer.vue';
 import bootbox from 'bootbox';
 import axios from 'axios';
 import '../../assets/script/Gverify';
+import { Validator } from 'vee-validate';
 
 export default {
   name: 'login',
@@ -71,31 +72,36 @@ export default {
     doLogin () {
       let self = this;
 
-      let verifyResult = self.verifyCode.validate($("input[name='verifyCodeInp']").val());
-      if (verifyResult) {
-        axios.post('/user/login/', self.user).then((response) => {
-          let { meta, data } = response.data;
+      this.$validator.validateAll().then(() => {
 
-          if (meta.success) {
-              if (data && data.user) {
-                let user = data.user;
+        let verifyResult = self.verifyCode.validate($("input[name='verifyCodeInp']").val());
+        if (verifyResult) {
+          axios.post('/user/login/', self.user).then((response) => {
+            let { meta, data } = response.data;
 
-                window.sessionStorage.setItem('user', JSON.stringify(user));
-                if (data.isHome > 0) {
-                  self.$router.push("/Main");
+            if (meta.success) {
+                if (data && data.user) {
+                  let user = data.user;
+
+                  window.sessionStorage.setItem('user', JSON.stringify(user));
+                  if (data.isHome > 0) {
+                    self.$router.push("/Main");
+                  } else {
+                    self.$router.push("/Welcome");
+                  }
                 } else {
-                  self.$router.push("/Welcome");
+                  bootbox.alert('errro');
                 }
-              } else {
-                bootbox.alert('errro');
-              }
-          } else {
-            bootbox.alert('errro');
-          }
-        });
-      } else {
-        $("input[name='verifyCodeInp']").val("");
-      }
+            } else {
+              bootbox.alert('errro');
+            }
+          });
+        } else {
+          $("input[name='verifyCodeInp']").val("");
+        }
+      }).catch(() => {
+
+      });
     }
   }
 };
