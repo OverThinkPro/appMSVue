@@ -621,3 +621,12 @@ table tbody {
 [v-cloak] {
   display: none;
 }
+
+.is-danger {
+  border: 1px solid red;
+  border-radius: 4px;
+}
+
+.word-danger {
+  color: red;
+}

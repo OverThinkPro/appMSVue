@@ -6,7 +6,6 @@
 
 <script>
 import 'bootstrap/dist/js/bootstrap.min';
-import 'bootstrap-validator/dist/validator.min';
 
 export default {
   name: 'app',

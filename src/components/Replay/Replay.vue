@@ -24,24 +24,27 @@
           <div class="ss-bar-line">
             <div class="input-group ss-bar-input">
               <span class="input-group-addon">员工姓名</span>
-              <input id="staffName" class="form-control refresh" type="text">
+              <input id="staffName" name="staffNameInp" class="form-control refresh" type="text">
             </div>
           </div>
           <div class="ss-bar-line">
-            <div class="input-group ss-bar-input">
+            <div class="input-group ss-bar-input" :class="{'is-danger':errors.has('cardIdInp')}">
               <span class="input-group-addon">定位卡号</span>
-              <input id="cardId" class="form-control refresh" type="text">
+              <input id="cardId" name="cardIdInp" class="form-control refresh" type="text" v-validate="'required'">
             </div>
+            <span v-show="errors.has('cardIdInp')" class="word-danger">{{ errors.first('cardIdInp') ? "定位卡号不能为空" : "" }}</span>
           </div>
           <div class="ss-bar-line">
-            <div class="ss-bar-input">
-              <input id="startTime" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择开始时间">
+            <div class="ss-bar-input" :class="{'is-danger':errors.has('startTimeInp')}">
+              <input id="startTime"  v-validate="'required'" name="startTimeInp" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择开始时间">
             </div>
+            <span v-show="errors.has('startTimeInp')" class="word-danger">{{ errors.first('startTimeInp') ? "开始时间不能为空" : "" }}</span>
           </div>
           <div class="ss-bar-line">
-            <div class="ss-bar-input">
-              <input id="endTime" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择结束时间">
+            <div class="ss-bar-input" :class="{'is-danger':errors.has('endTimeInp')}">
+              <input id="endTime" v-validate="'required'" name="endTimeInp" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择结束时间">
             </div>
+            <span v-show="errors.has('endTimeInp')" class="word-danger">{{ errors.first('endTimeInp') ? "结束时间不能为空" : "" }}</span>
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-button">
@@ -117,6 +120,38 @@ import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
 import bootbox from 'bootbox/bootbox.min';
 import jeDate from '../../assets/script/jedate/jquery.jedate.min';
+import { Validator } from 'vee-validate';
+
+// const isCardIdValid = {
+//   messages: {
+//     en: (field, args) => '定位卡号不能同时为空',
+//     zh_CN: (field, args) => '定位卡号不能同时为空'
+//   },
+//   validate: (value, args) => {
+//     return value != null;
+//   }
+// };
+// Validator.extend('cardId', isCardIdValid);
+//
+// Validator.extend('startTime', {
+//   messages: {
+//     en: (field, args) => '开始时间不能同时为空',
+//     zh_CN: (field, args) => '开始时间不能同时为空'
+//   },
+//   validate: (value, args) => {
+//     return value == null;
+//   }
+// });
+//
+// Validator.extend('endTime', {
+//   messages: {
+//     en: (field, args) => '结束时间不能同时为空',
+//     zh_CN: (field, args) => '结束时间不能同时为空'
+//   },
+//   validate: (value, args) => {
+//     return value == null;
+//   }
+// });
 
 export default {
   name: 'replay',
@@ -196,7 +231,7 @@ export default {
           ],
           view: new ol.View({
             center: [-7352981.95804323, 4148924.9077592203],
-            zoom: 13,
+            zoom: 15,
             minZoom: 3,
             maxZoom: 20,
             rotation: Math.PI/35
@@ -244,8 +279,15 @@ export default {
     },
     /* 执行历史轨迹查询 */
     doReplaySearch () {
-      this.loadStaffList();
-      this.loadStaffMap();
+      let self = this;
+
+      this.$validator.validateAll().then(() => {
+        self.loadStaffList();
+        self.loadStaffMap();
+        alert('From Submitted!');
+      }).catch(() => {
+        alert('Correct them errors!');
+      });
     },
     /* 轨迹回放列表 */
     loadStaffList () {
@@ -255,14 +297,14 @@ export default {
     loadStaffListPaging (page, isPaging) {
       let self = this;
 
-      let staffName = $("#staffName").val();
-      let cardId = $("#cardId").val();
-      if (!staffName && !cardId) {
-        bootbox.alert({
-          message: '查询条件: 员工姓名和定位卡号不能同时为空!'
-        });
-        return ;
-      }
+      // let staffName = $("#staffName").val();
+      // let cardId = $("#cardId").val();
+      // if (!staffName && !cardId) {
+      //   bootbox.alert({
+      //     message: '查询条件: 员工姓名和定位卡号不能同时为空!'
+      //   });
+      //   return ;
+      // }
       let params = this.getSearchParam();
 
       page = page || 1;

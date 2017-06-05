@@ -2,9 +2,29 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import App from './App';
+import VeeValidate, {Validator} from 'vee-validate';
 import router from './router';
 import store from './vuex/store';
 import axios from 'axios';
+
+const config = {
+    errorBagName: 'errors', // change if property conflicts.
+    delay: 0,
+    locale: 'zh_CN',
+    messages: null,
+    strict: true
+};
+
+const dictionary = {
+    zh_CN: {
+        messages: {
+            required: (field) => field + '不能为空'
+        }
+    }
+};
+Validator.updateDictionary(dictionary);
+
+Vue.use(VeeValidate, config);
 
 // axios.defaults.baseURL = 'http://192.168.2.105:8080/appMSJava/api/v1/main/';
 // axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
