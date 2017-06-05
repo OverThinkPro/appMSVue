@@ -55,14 +55,15 @@ export default {
   mounted () {
     this.initEvent();
     this.loadVerify();
+    this.errors.clear();
+    window.addEventListener('keyup', self.doLogin());
   },
   methods: {
     initEvent () {
+      let self = this;
       $("#verifyCodeContainer").click(function() {
         $("input[name='verifyCodeInp']").val("");
       });
-
-
     },
     loadVerify () {
       let self = this;
