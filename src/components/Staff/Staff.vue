@@ -49,7 +49,7 @@
             <div class="search-hr"></div>
             <div class="btn-box" style="margin-bottom: 0;">
               <div class="fl">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_staff_modal" @click="errors.clear();">添加</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_staff_modal" @click="errors.clear('add_staff_form');">添加</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" @click="checkSelect('UPDATE_STAFF')">修改</button>
                 <button type="button" class="btn btn-primary" @click="checkSelect('DELETE_STAFF')">删除</button>
               </div>
@@ -106,97 +106,99 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">姓名</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffName')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffName" v-model="staff.staffName">
+              <form data-vv-scope="add_staff_form">
+                <div class="input-group-line">
+                  <div class="group-left">姓名</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffName" v-model="staff.staffName">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffName')" class="word-danger">{{ errors.first('add_staff_form.add_staffName') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffName')" class="word-danger">{{ errors.first('add_staffName') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">姓名简称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="staff.staffAbbr">
+                <div class="input-group-line">
+                  <div class="group-left">姓名简称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="staff.staffAbbr">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">工号</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffId')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffId" v-model="staff.staffId">
+                <div class="input-group-line">
+                  <div class="group-left">工号</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffId')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffId" v-model="staff.staffId">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffId')" class="word-danger">{{ errors.first('add_staff_form.add_staffId') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffId')" class="word-danger">{{ errors.first('add_staffId') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">性别</div>
-                <div class="group-right">
-                  <input style="margin-left: 20%;" checked="checked" type="radio" name="gender" value="男">
-                  <span>男</span>
-                  <input style="margin-left: 20%;" type="radio" name="gender" value="女">
-                  <span>女</span>
+                <div class="input-group-line">
+                  <div class="group-left">性别</div>
+                  <div class="group-right">
+                    <input style="margin-left: 20%;" checked="checked" type="radio" name="gender" value="男">
+                    <span>男</span>
+                    <input style="margin-left: 20%;" type="radio" name="gender" value="女">
+                    <span>女</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">身份证号</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffIdCard')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffIdCard" v-model="staff.staffIdCard">
+                <div class="input-group-line">
+                  <div class="group-left">身份证号</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffIdCard')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffIdCard" v-model="staff.staffIdCard">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffIdCard')" class="word-danger">{{ errors.first('add_staff_form.add_staffIdCard') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffIdCard')" class="word-danger">{{ errors.first('add_staffIdCard') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">出生日期</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffBirthday')}">
-                  <input id="birthday" class="form-control refresh" v-validate="'required'" type="text" name="add_staffBirthday" readonly="readonly" placeholder="请选择出生日期" v-model="staff.staffBirthday">
+                <div class="input-group-line">
+                  <div class="group-left">出生日期</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffBirthday')}">
+                    <input id="birthday" class="form-control refresh" v-validate="'required'" type="text" name="add_staffBirthday" readonly="readonly" placeholder="请选择出生日期">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffBirthday')" class="word-danger">{{ errors.first('add_staff_form.add_staffBirthday') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffBirthday')" class="word-danger">{{ errors.first('add_staffBirthday') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">籍贯</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffNativePlace')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffNativePlace" v-model="staff.staffNativePlace">
+                <div class="input-group-line">
+                  <div class="group-left">籍贯</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffNativePlace')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_staffNativePlace" v-model="staff.staffNativePlace">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffNativePlace')" class="word-danger">{{ errors.first('add_staff_form.add_staffNativePlace') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffNativePlace')" class="word-danger">{{ errors.first('add_staffNativePlace') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">职务/工种</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_jobId')}">
-                  <select class="form-control refresh" v-model="staff.jobId" name="add_jobId" v-validate="'required'">
-                    <option value="">- 请选择工种 -</option>
-                    <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">职务/工种</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_jobId')}">
+                    <select class="form-control refresh" v-model="staff.jobId" name="add_jobId" v-validate="'required'">
+                      <option value="">- 请选择工种 -</option>
+                      <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_jobId')" class="word-danger">{{ errors.first('add_staff_form.add_jobId') ? "必选项" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_jobId')" class="word-danger">{{ errors.first('add_jobId') ? "必选项" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">职称</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_title')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_title" v-model="staff.title">
+                <div class="input-group-line">
+                  <div class="group-left">职称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_title')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_title" v-model="staff.title">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_title')" class="word-danger">{{ errors.first('add_staff_form.add_title') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_title')" class="word-danger">{{ errors.first('add_title') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">部门</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_unitId')}">
-                  <select class="form-control refresh" v-model="staff.unitId" name="add_unitId" v-validate="'required'">
-                    <option value="">- 请选择部门 -</option>
-                    <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">部门</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_unitId')}">
+                    <select class="form-control refresh" v-model="staff.unitId" name="add_unitId" v-validate="'required'">
+                      <option value="">- 请选择部门 -</option>
+                      <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_unitId')" class="word-danger">{{ errors.first('add_staff_form.add_unitId') ? "必选项" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_unitId')" class="word-danger">{{ errors.first('add_unitId') ? "必选项" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">联系电话</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffTelephone')}">
-                  <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="add_staffTelephone" v-model="staff.staffTelephone">
+                <div class="input-group-line">
+                  <div class="group-left">联系电话</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffTelephone')}">
+                    <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="add_staffTelephone" v-model="staff.staffTelephone">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffTelephone')" class="word-danger">{{ errors.first('add_staff_form.add_staffTelephone') ? "仅支持数字" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffTelephone')" class="word-danger">{{ errors.first('add_staffTelephone') ? "仅支持数字" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">参加工作时间</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_staffWorkDate')}">
-                  <input id="workDate" class="form-control refresh" v-validate="'required'" type="text" name="add_staffWorkDate" readonly="readonly" placeholder="请选择参加工作时间" v-model="staff.staffWorkDate">
+                <div class="input-group-line">
+                  <div class="group-left">参加工作时间</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_staff_form.add_staffWorkDate')}">
+                    <input id="workDate" class="form-control refresh" v-validate="'required'" type="text" name="add_staffWorkDate" readonly="readonly" placeholder="请选择参加工作时间">
+                  </div>
+                  <span v-show="errors.has('add_staff_form.add_staffWorkDate')" class="word-danger">{{ errors.first('add_staff_form.add_staffWorkDate') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_staffWorkDate')" class="word-danger">{{ errors.first('add_staffWorkDate') ? "不能为空" : "" }}</span>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -220,97 +222,99 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">姓名</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffName')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="update_staffName" v-model="staff.staffName">
+              <form data-vv-scope="update_staff_form">
+                <div class="input-group-line">
+                  <div class="group-left">姓名</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_staffName" v-model="staff.staffName">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffName')" class="word-danger">{{ errors.first('update_staff_form.update_staffName') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffName')" class="word-danger">{{ errors.first('update_staffName') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">姓名简称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="staff.staffAbbr">
+                <div class="input-group-line">
+                  <div class="group-left">姓名简称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="staff.staffAbbr">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">工号</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffId')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="update_staffId" readonly="readonly" v-model="staff.staffId">
+                <div class="input-group-line">
+                  <div class="group-left">工号</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffId')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_staffId" readonly="readonly" v-model="staff.staffId">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffId')" class="word-danger">{{ errors.first('update_staff_form.update_staffId') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffId')" class="word-danger">{{ errors.first('update_staffId') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">性别</div>
-                <div class="group-right">
-                  <input style="margin-left: 20%;" checked="checked" type="radio" name="gender2" value="男">
-                  <span>男</span>
-                  <input style="margin-left: 20%;" type="radio" name="gender2" value="女">
-                  <span>女</span>
+                <div class="input-group-line">
+                  <div class="group-left">性别</div>
+                  <div class="group-right">
+                    <input style="margin-left: 20%;" checked="checked" type="radio" name="gender2" value="男">
+                    <span>男</span>
+                    <input style="margin-left: 20%;" type="radio" name="gender2" value="女">
+                    <span>女</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">身份证号</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffIdCard')}">
-                  <input class="form-control refresh" type="text" v-validate="'required'" name="update_staffIdCard" v-model="staff.staffIdCard">
+                <div class="input-group-line">
+                  <div class="group-left">身份证号</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffIdCard')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_staffIdCard" v-model="staff.staffIdCard">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffIdCard')" class="word-danger">{{ errors.first('update_staff_form.update_staffIdCard') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffIdCard')" class="word-danger">{{ errors.first('update_staffIdCard') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">出生日期</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffBirthday')}">
-                  <input id="birthday2" class="form-control refresh" v-validate="'required'"  type="text" name="update_staffBirthday" readonly="readonly" placeholder="请选择出生日期" v-model="staff.staffBirthday">
+                <div class="input-group-line">
+                  <div class="group-left">出生日期</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffBirthday')}">
+                    <input id="birthday2" class="form-control refresh" v-validate="'required'"  type="text" name="update_staffBirthday" readonly="readonly" placeholder="请选择出生日期" v-model="staff.staffBirthday">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffBirthday')" class="word-danger">{{ errors.first('update_staff_form.update_staffBirthday') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffBirthday')" class="word-danger">{{ errors.first('update_staffBirthday') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">籍贯</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffNativePlace')}">
-                  <input class="form-control refresh" type="text" v-validate="'required'" name="update_staffNativePlace" v-model="staff.staffNativePlace">
+                <div class="input-group-line">
+                  <div class="group-left">籍贯</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffNativePlace')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_staffNativePlace" v-model="staff.staffNativePlace">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffNativePlace')" class="word-danger">{{ errors.first('update_staff_form.update_staffNativePlace') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffNativePlace')" class="word-danger">{{ errors.first('update_staffNativePlace') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">职务/工种</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_jobId')}">
-                  <select class="form-control refresh" v-model="staff.jobId" name="update_jobId" v-validate="'required'">
-                    <option value="">- 请选择工种 -</option>
-                    <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">职务/工种</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_jobId')}">
+                    <select class="form-control refresh" v-model="staff.jobId" name="update_jobId" v-validate="'required'">
+                      <option value="">- 请选择工种 -</option>
+                      <option v-if="jobTypeList != null" v-for="jobType in jobTypeList" :key="jobType.key" :value="jobType.jobId">{{ jobType.jobName }}</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_jobId')" class="word-danger">{{ errors.first('update_staff_form.update_jobId') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_jobId')" class="word-danger">{{ errors.first('update_jobId') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">职称</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_title')}">
-                  <input class="form-control refresh" type="text" v-validate="'required'" name="update_title" v-model="staff.title">
+                <div class="input-group-line">
+                  <div class="group-left">职称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_title')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_title" v-model="staff.title">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_title')" class="word-danger">{{ errors.first('update_staff_form.update_title') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_title')" class="word-danger">{{ errors.first('update_title') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">部门</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_unitId')}">
-                  <select class="form-control refresh" v-model="staff.unitId" name="update_unitId" v-validate="'required'">
-                    <option value="">- 请选择部门 -</option>
-                    <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">部门</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_unitId')}">
+                    <select class="form-control refresh" v-model="staff.unitId" name="update_unitId" v-validate="'required'">
+                      <option value="">- 请选择部门 -</option>
+                      <option v-if="unitList != null" v-for="unit in unitList" :key="unit.key" :value="unit.unitId">{{ unit.unitName }}</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_unitId')" class="word-danger">{{ errors.first('update_staff_form.update_unitId') ? "必选项" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_unitId')" class="word-danger">{{ errors.first('update_unitId') ? "必选项" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">联系电话</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffTelephone')}">
-                  <input class="form-control refresh" type="text" v-validate="'required|numeric'" name="update_staffTelephone" v-model="staff.staffTelephone">
+                <div class="input-group-line">
+                  <div class="group-left">联系电话</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffTelephone')}">
+                    <input class="form-control refresh" type="text" v-validate="'required|numeric'" name="update_staffTelephone" v-model="staff.staffTelephone">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffTelephone')" class="word-danger">{{ errors.first('update_staff_form.update_staffTelephone') ? "仅支持数字" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffTelephone')" class="word-danger">{{ errors.first('update_staffTelephone') ? "仅支持数字" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">参加工作时间</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_staffWorkDate')}">
-                  <input id="workDate2" class="form-control refresh" v-validate="'required'" type="text" name="update_staffWorkDate" readonly="readonly" placeholder="请选择参加工作时间" v-model="staff.staffWorkDate">
+                <div class="input-group-line">
+                  <div class="group-left">参加工作时间</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_staff_form.update_staffWorkDate')}">
+                    <input id="workDate2" class="form-control refresh" v-validate="'required'" type="text" name="update_staffWorkDate" readonly="readonly" placeholder="请选择参加工作时间" v-model="staff.staffWorkDate">
+                  </div>
+                  <span v-show="errors.has('update_staff_form.update_staffWorkDate')" class="word-danger">{{ errors.first('update_staff_form.update_staffWorkDate') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_staffWorkDate')" class="word-danger">{{ errors.first('update_staffWorkDate') ? "不能为空" : "" }}</span>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -599,7 +603,7 @@ export default {
               $("input[name='gender2']").each(function() { if (this.value == self.staff.staffGender) { this.checked = true; } });
             }
           });
-          self.errors.clear();
+          self.errors.clear('update_staff_form');
           $("#update_staff_modal").modal('show');
         } else if (type == 'DELETE_STAFF') {
           self.deleteStaff(staffId);
@@ -610,7 +614,7 @@ export default {
     addStaff () {
       let self = this;
 
-      this.$validator.validateAll().then(() => {
+      this.$validator.validateAll('add_staff_form').then(() => {
 
           // 获取非绑定数据
           self.staff.staffGender = $("input:radio[name='gender']:checked").val();
@@ -684,7 +688,7 @@ export default {
     updateStaff () {
       let self = this;
 
-      this.$validator.validateAll().then(() => {
+      this.$validator.validateAll('update_staff_form').then(() => {
 
           // 获取非绑定数据
           self.staff.staffGender = $("input:radio[name='gender2']:checked").val();
