@@ -66,7 +66,7 @@
       <div class="table-box outside-box">
         <div class="btn-box">
           <div class="fl">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mark_reader_modal">
+            <button type="button" class="btn btn-primary" @click="errors.clear();" data-toggle="modal" data-target="#mark_reader_modal">
               <i class="glyphicon glyphicon-screenshot"></i>新增
             </button>
             <button type="button" class="btn btn-primary" @click="checkType('UPDATE_READER')">修改</button>
@@ -135,56 +135,64 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">分站名称</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="reader.readerName">
+              <form data-vv-scope="add_reader_form">
+                <div class="input-group-line">
+                  <div class="group-left">分站名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_reader_form.add_readerName')}">
+                    <input class="form-control" type="text" v-validate="'required'" name="add_readerName" v-model="reader.readerName">
+                  </div>
+                  <span v-show="errors.has('add_reader_form.add_readerName')" class="word-danger">{{ errors.first('add_reader_form.add_readerName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">位置坐标</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="addReaderGeoPointInp" readonly="readonly" v-model="reader.geoPoint">
+                <div class="input-group-line">
+                  <div class="group-left">位置坐标</div>
+                  <div class="group-right">
+                    <input class="form-control" type="text" name="addReaderGeoPointInp" readonly="readonly" v-model="reader.geoPoint">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">分站状态</div>
-                <div class="group-right">
-                  <select class="form-control" name="" v-model="reader.readerStatus">
-                    <option value="">- 请选择分站状态 -</option>
-                    <option value="正常">正常</option>
-                    <option value="异常">异常</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">分站状态</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_reader_form.add_readerStatus')}">
+                    <select class="form-control" name="add_readerStatus" v-model="reader.readerStatus" v-validate="'required'">
+                      <option value="">- 请选择分站状态 -</option>
+                      <option value="正常">正常</option>
+                      <option value="异常">异常</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('add_reader_form.add_readerStatus')" class="word-danger">{{ errors.first('add_reader_form.add_readerStatus') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">供电方式</div>
-                <div class="group-right">
-                  <select class="form-control" name="" v-model="reader.powerSupplyMode">
-                    <option value="">- 请选择供电方式 -</option>
-                    <option value="0">电源</option>
-                    <option value="1">电池</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">供电方式</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_reader_form.add_powerSupplyMode')}">
+                    <select class="form-control" name="add_powerSupplyMode" v-model="reader.powerSupplyMode" v-validate="'required'">
+                      <option value="">- 请选择供电方式 -</option>
+                      <option value="0">电源</option>
+                      <option value="1">电池</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('add_reader_form.add_powerSupplyMode')" class="word-danger">{{ errors.first('add_reader_form.add_powerSupplyMode') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">电池电量</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="reader.batteryCapacity">
+                <div class="input-group-line">
+                  <div class="group-left">电池电量</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_reader_form.add_batteryCapacity')}">
+                    <input class="form-control" type="text" name="add_batteryCapacity" v-model="reader.batteryCapacity" v-validate="'required|numeric'">
+                  </div>
+                  <span v-show="errors.has('add_reader_form.add_batteryCapacity')" class="word-danger">{{ errors.first('add_reader_form.add_batteryCapacity') ? "仅支持数字" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">分站IP</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="reader.readerIp">
+                <div class="input-group-line">
+                  <div class="group-left">分站IP</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_reader_form.add_readerIp')}">
+                    <input class="form-control" type="text" name="add_readerIp" v-model="reader.readerIp" v-validate="'required'">
+                  </div>
+                  <span v-show="errors.has('add_reader_form.add_readerIp')" class="word-danger">{{ errors.first('add_reader_form.add_readerIp') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">安装时间</div>
-                <div class="group-right">
-                  <input id="installDate" class="form-control" type="text" readonly="readonly" placeholder="请选择安装时间" v-model="reader.installDate">
+                <div class="input-group-line">
+                  <div class="group-left">安装时间</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_reader_form.add_installDate')}">
+                    <input id="installDate" name="add_installDate" v-validate="'required'" class="form-control" type="text" readonly="readonly" placeholder="请选择安装时间">
+                  </div>
+                  <span v-show="errors.has('add_reader_form.add_installDate')" class="word-danger">{{ errors.first('add_reader_form.add_installDate') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -208,56 +216,64 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">分站名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerName">
+              <form data-vv-scope="update_reader_form">
+                <div class="input-group-line">
+                  <div class="group-left">分站名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_reader_form.update_readerName')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_readerName" v-model="reader.readerName">
+                  </div>
+                  <span v-show="errors.has('update_reader_form.update_readerName')" class="word-danger">{{ errors.first('update_reader_form.update_readerName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">位置坐标</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="reader.geoPoint">
+                <div class="input-group-line">
+                  <div class="group-left">位置坐标</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" readonly="readonly" v-model="reader.geoPoint">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">分站状态</div>
-                <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.readerStatus">
-                    <option value="">- 请选择分站状态 -</option>
-                    <option value="正常">正常</option>
-                    <option value="异常">异常</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">分站状态</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_reader_form.update_readerStatus')}">
+                    <select class="form-control refresh" name="update_readerStatus" v-model="reader.readerStatus" v-validate="'required'">
+                      <option value="">- 请选择分站状态 -</option>
+                      <option value="正常">正常</option>
+                      <option value="异常">异常</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('update_reader_form.update_readerStatus')" class="word-danger">{{ errors.first('update_reader_form.update_readerStatus') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">供电方式</div>
-                <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="reader.powerSupplyMode">
-                    <option value="">- 请选择供电方式 -</option>
-                    <option value="0">电源</option>
-                    <option value="1">电池</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">供电方式</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_reader_form.update_powerSupplyMode')}">
+                    <select class="form-control refresh" name="update_powerSupplyMode" v-model="reader.powerSupplyMode" v-validate="'required'">
+                      <option value="">- 请选择供电方式 -</option>
+                      <option value="0">电源</option>
+                      <option value="1">电池</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('update_reader_form.update_powerSupplyMode')" class="word-danger">{{ errors.first('update_reader_form.update_powerSupplyMode') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">电池电量</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.batteryCapacity">
+                <div class="input-group-line">
+                  <div class="group-left">电池电量</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_reader_form.update_batteryCapacity')}">
+                    <input class="form-control refresh" type="text" name="update_batteryCapacity" v-model="reader.batteryCapacity" v-validate="'required|numeric'">
+                  </div>
+                  <span v-show="errors.has('update_reader_form.update_batteryCapacity')" class="word-danger">{{ errors.first('update_reader_form.update_batteryCapacity') ? "仅支持数字" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">分站IP</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="reader.readerIp">
+                <div class="input-group-line">
+                  <div class="group-left">分站IP</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_reader_form.update_readerIp')}">
+                    <input class="form-control refresh" type="text" name="update_readerIp" v-model="reader.readerIp" v-validate="'required'">
+                  </div>
+                  <span v-show="errors.has('update_reader_form.update_readerIp')" class="word-danger">{{ errors.first('update_reader_form.update_readerIp') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">安装时间</div>
-                <div class="group-right">
-                  <input id="installDate2" class="form-control" type="text" readonly="readonly" placeholder="请选择安装时间" v-model="reader.installDate">
+                <div class="input-group-line">
+                  <div class="group-left">安装时间</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_reader_form.update_installDate')}">
+                    <input id="installDate2" class="form-control" name="update_installDate" v-validate="'required'" type="text" readonly="readonly" placeholder="请选择安装时间" v-model="reader.installDate">
+                  </div>
+                  <span v-show="errors.has('update_reader_form.update_installDate')" class="word-danger">{{ errors.first('update_reader_form.update_installDate') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -579,6 +595,7 @@ import jeDate from '../../assets/script/jedate/jquery.jedate.min';
 import fullscreen from '../../assets/script/fullscreen';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
+import { Validator } from 'vee-validate';
 
 export default {
   name: 'reader',
@@ -1100,6 +1117,8 @@ export default {
         return false;
       } else {
         self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+
+        self.errors.clear('add_reader_form');
         $("#add_reader_modal").modal('show');
       }
     },
@@ -1288,6 +1307,7 @@ export default {
             }
           });
 
+          self.errors.clear('update_reader_form');
           $("#update_reader_modal").modal('show');
         } else if (type == 'DELETE_READER') {
           self.deleteReaderOper(readerId);
@@ -1298,53 +1318,64 @@ export default {
     addReaderOper () {
       let self = this;
 
-      self.reader.installDate = $("#installDate").val();
+      this.$validator.validateAll('add_reader_form').then(() => {
 
-      var shortid = require('js-shortid');
-      self.reader.readerId = shortid.gen();
-      axios.post('/base/reader/', self.reader)
-            .then((response) => {
-              let { meta, data } = response.data;
+        self.reader.installDate = $("#installDate").val();
 
-              if (meta.success) {
-                if (data && data.result == 1) {
-                  self.reader = {};
-                  $("#add_reader_modal").modal('hide');
-                  $("#mark_reader_modal").modal('hide');
-                  bootbox.alert("分站信息添加成功!");
-                  self.loadReaderList();
-                } else { bootbox.alert("分站信息添加失败!"); }
-              } else { bootbox.alert("服务器内部错误,分站信息添加失败!"); }
-            });
+        var shortid = require('js-shortid');
+        self.reader.readerId = shortid.gen();
+        axios.post('/base/reader/', self.reader)
+              .then((response) => {
+                let { meta, data } = response.data;
+
+                if (meta.success) {
+                  if (data && data.result == 1) {
+                    self.reader = {};
+                    $("#add_reader_modal").modal('hide');
+                    $("#mark_reader_modal").modal('hide');
+                    bootbox.alert("分站信息添加成功!");
+                    self.loadReaderList();
+                  } else { bootbox.alert("分站信息添加失败!"); }
+                } else { bootbox.alert("服务器内部错误,分站信息添加失败!"); }
+              });
+      }).catch(() => {
+
+      });
     },
     // update reader
     updateReaderOper () {
       let self = this;
 
-      self.reader.installDate = $("#installDate2").val();
-      // 转换区域名称为编号
-      for (let i = 0; i < self.regionList.length; i++) {
-        if (self.regionName = self.regionList[i].regionName) {
-          delete self.reader.regionName;
-          self.reader.regionId = self.regionList[i].regionId;
-          break;
+      this.$validator.validateAll('update_reader_form').then(() => {
+
+        self.reader.installDate = $("#installDate2").val();
+        // 转换区域名称为编号
+        for (let i = 0; i < self.regionList.length; i++) {
+          if (self.regionName = self.regionList[i].regionName) {
+            delete self.reader.regionName;
+            self.reader.regionId = self.regionList[i].regionId;
+            break;
+          }
         }
-      }
 
-      axios.put('/base/reader/', self.reader)
-            .then((response) => {
-              let { meta, data } = response.data;
+        axios.put('/base/reader/', self.reader)
+              .then((response) => {
+                let { meta, data } = response.data;
 
-              if (meta.success) {
-                if (data && data.result == 1) {
-                  self.reader = {};
-                  bootbox.alert("分站信息修改成功!");
-                  $("#update_reader_modal").modal('hide');
-                  self.loadReaderList();
-                  $("input[name='reader']:radio:checked").prop('checked', false);
-                } else { bootbox.alert("分站信息修改失败!"); }
-              } else { bootbox.alert("服务器内部错误,分站信息修改失败!"); }
-            });
+                if (meta.success) {
+                  if (data && data.result == 1) {
+                    self.reader = {};
+                    bootbox.alert("分站信息修改成功!");
+                    $("#update_reader_modal").modal('hide');
+                    self.loadReaderList();
+                    $("input[name='reader']:radio:checked").prop('checked', false);
+                  } else { bootbox.alert("分站信息修改失败!"); }
+                } else { bootbox.alert("服务器内部错误,分站信息修改失败!"); }
+              });
+
+      }).catch(() => {
+
+      });
     },
     updateMoveReaderOper () {
       let self = this;
