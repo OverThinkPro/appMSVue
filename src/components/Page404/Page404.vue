@@ -29,13 +29,6 @@ export default {
 }
 </script>
 <style lang="css" scoped>
-/*.page-container {
-    font-size: 20px;
-    text-align: center;
-    color: rgb(192, 204, 218);
-    height: 800px;
-}*/
-
 body, div {
     margin: 0;
     padding: 0;
@@ -67,9 +60,9 @@ body, div {
 }
 #cloud {
     background: url("./error_cloud.png") repeat-x scroll 0 0 transparent;
-    bottom: 0;
+    /*bottom: 0;*/
     height: 170px;
-    position: absolute;
+    /*position: absolute;*/
     width: 100%;
 }
 </style>

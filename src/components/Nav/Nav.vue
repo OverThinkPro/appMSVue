@@ -33,84 +33,6 @@ export default {
   data() {
     return {
       menuList: []
-      // menuList:[
-      //   {'module_id': '10', 'module_name': '首页',  'up_module_id': '1',"url": "/Main",
-      //    'children': [],
-      //   },
-      //   {'module_id': '11', 'module_name': '查询统计', 'up_module_id': '1', "url": "/",
-      //    'children': [
-      //       {'module_id': '1101', 'module_name': '实时查询',  'up_module_id': '11',"url": "/Insearch",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1102', 'module_name': '历史报警查询',  'up_module_id': '11',"url": "/Alarm",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1103', 'module_name': '历史轨迹回放',  'up_module_id': '11',"url": "/Replay",
-      //        'children': [],
-      //       },
-      //     ]
-      //   },
-      //   {'module_id': '12', 'module_name': '考勤管理', 'up_module_id': '1', "url": "/",
-      //    'children': [
-      //       {'module_id': '1201', 'module_name': '日考勤报表',  'up_module_id': '12',"url": "/Daily",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1202', 'module_name': '月考勤详情报表',  'up_module_id': '12',"url": "/Monthly",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1203', 'module_name': '月考勤统计报表',  'up_module_id': '12',"url": "/",
-      //        'children': [],
-      //       },
-      //     ],
-      //   },
-      //   {'module_id': '13', 'module_name': '人员管理', 'up_module_id': '1', "url": "/",
-      //    'children': [
-      //       {'module_id': '1301', 'module_name': '部门管理',  'up_module_id': '13',"url": "/Unit",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1302', 'module_name': '员工管理',  'up_module_id': '13',"url": "/Staff",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1303', 'module_name': '工种管理',  'up_module_id': '13',"url": "/Job",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1304', 'module_name': '班次管理',  'up_module_id': '13',"url": "/Schedule",
-      //        'children': [],
-      //       },
-      //     ],
-      //   },
-      //   {'module_id': '14', 'module_name': '定位卡管理',  'up_module_id': '1',"url": "/Card",
-      //    'children': [],
-      //   },
-      //   {'module_id': '15', 'module_name': '分站管理',  'up_module_id': '1',"url": "/Reader",
-      //    'children': [],
-      //   },
-      //   {'module_id': '1605', 'module_name': '区域设置',  'up_module_id': '16',"url": "/Region",
-      //    'children': [],
-      //   },
-      //   {'module_id': '16', 'module_name': '系统管理', 'up_module_id': '1', "url": "/",
-      //    'children': [
-      //       {'module_id': '1601', 'module_name': '用户管理',  'up_module_id': '16',"url": "/User",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1602', 'module_name': '角色管理',  'up_module_id': '16',"url": "/Role",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1603', 'module_name': '菜单管理',  'up_module_id': '16',"url": "/Menu",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1603', 'module_name': '字典管理',  'up_module_id': '16',"url": "/Dictionary",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1604', 'module_name': '参数设置',  'up_module_id': '16',"url": "/Setting",
-      //        'children': [],
-      //       },
-      //       {'module_id': '1605', 'module_name': '日志管理',  'up_module_id': '16',"url": "/Log",
-      //        'children': [],
-      //       },
-      //     ],
-      //   },
-      // ]
     }
   },
   mounted() {
@@ -132,7 +54,8 @@ export default {
                   if (data && data.menuList) {
                     self.menuList = data.menuList;
 
-                    window.sessionStorage.setItem(JSON.stringify(self.menuList));
+                    // let menuOnlyList = data.urlOnly;
+                    // window.sessionStorage.setItem('menuList', JSON.stringify(menuOnlyList));
                   } else { bootbox.alert("系统菜单装载失败!"); }
                 } else { bootbox.alert("服务器内部错误,系统菜单装载失败!"); }
               });

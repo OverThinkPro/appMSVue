@@ -55,8 +55,8 @@ export default {
   mounted () {
     this.initEvent();
     this.loadVerify();
-    this.errors.clear();
-    window.addEventListener('keyup', self.doLogin());
+    // this.errors.clear();
+    window.addEventListener('keyup', this.doLogin());
   },
   methods: {
     initEvent () {
@@ -91,10 +91,10 @@ export default {
                     self.$router.push("/Welcome");
                   }
                 } else {
-                  bootbox.alert('errro');
+                  bootbox.alert('用户不存在!');
                 }
             } else {
-              bootbox.alert('errro');
+              bootbox.alert('登录失败!');
             }
           });
         } else {
