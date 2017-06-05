@@ -33,7 +33,7 @@
       <div class="table-box outside-box">
         <div class="btn-box">
           <div class="fl">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_job_modal">添加</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_job_modal" @click="errors.clear('add_job_form')">添加</button>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="" @click="checkSelect('UPDATE_JOBTYPE')">修改</button>
             <button type="button" class="btn btn-primary" @click="checkSelect('DELETE_JOBTYPE')">删除</button>
           </div>
@@ -83,24 +83,28 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">工种编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="jobType.jobCode">
+              <form data-vv-scope="add_job_form">
+                <div class="input-group-line">
+                  <div class="group-left">工种编号</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_job_form.add_jobCode')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="add_jobCode" v-model="jobType.jobCode">
+                  </div>
+                  <span v-show="errors.has('add_job_form.add_jobCode')" class="word-danger">{{ errors.first('add_job_form.add_jobCode') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">工种名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="jobType.jobName">
+                <div class="input-group-line">
+                  <div class="group-left">工种名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_job_form.add_jobName')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="add_jobName" v-model="jobType.jobName">
+                  </div>
+                  <span v-show="errors.has('add_job_form.add_jobName')" class="word-danger">{{ errors.first('add_job_form.add_jobName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="jobType.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="jobType.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -124,24 +128,28 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">工种编号</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="jobType.jobCode">
+              <form data-vv-scope="update_job_form">
+                <div class="input-group-line">
+                  <div class="group-left">工种编号</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_job_form.update_jobCode')}">
+                    <input class="form-control" type="text" name="update_jobCode" v-validate="'required'" v-model="jobType.jobCode">
+                  </div>
+                  <span v-show="errors.has('update_job_form.update_jobCode')" class="word-danger">{{ errors.first('update_job_form.update_jobCode') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">工种名称</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="jobType.jobName">
+                <div class="input-group-line">
+                  <div class="group-left">工种名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_job_form.update_jobName')}">
+                    <input class="form-control" type="text" name="update_jobName" v-validate="'required'" v-model="jobType.jobName">
+                  </div>
+                  <span v-show="errors.has('update_job_form.update_jobName')" class="word-danger">{{ errors.first('update_job_form.update_jobName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="jobType.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control" type="text" name="" v-model="jobType.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -286,6 +294,8 @@ export default {
              delete self.jobType.uber;
            }
          });
+
+         self.errors.clear('update_job_form');
          $("#update_job_modal").modal('show');
        } else if (type == 'DELETE_JOBTYPE') {
          self.deleteJobType(jobId);
@@ -296,24 +306,29 @@ export default {
    addJobType () {
     let self = this;
 
-    axios.post('/base/jobtype/', self.jobType)
-          .then((response) => {
-            let meta = response.data.meta;
+    this.$validator.validateAll('add_job_form').then(() => {
 
-            if (meta.success) {
-              let data = response.data.data;
+      axios.post('/base/jobtype/', self.jobType)
+            .then((response) => {
+              let meta = response.data.meta;
 
-              if (data && data.result == 1) { bootbox.alert({ message: '工种信息添加成功!' }); }
-                                       else { bootbox.alert({ message: '工种信息添加失败!' }); }
-              $("#add_job_modal").modal('hide');
-              $("input[name='jobType']:checked").each(function() { this.checked = false; });
-              self.defaultLoadJobTypeList();
-            } else {
-              bootbox.alert({
-                message: '服务器内部错误, 工种信息添加失败!'
-              });
-            }
-          });
+              if (meta.success) {
+                let data = response.data.data;
+
+                if (data && data.result == 1) { bootbox.alert({ message: '工种信息添加成功!' }); }
+                                         else { bootbox.alert({ message: '工种信息添加失败!' }); }
+                $("#add_job_modal").modal('hide');
+                $("input[name='jobType']:checked").each(function() { this.checked = false; });
+                self.defaultLoadJobTypeList();
+              } else {
+                bootbox.alert({
+                  message: '服务器内部错误, 工种信息添加失败!'
+                });
+              }
+            });
+        }).catch(() => {
+
+        });
     },
     // 删除工种信息
     deleteJobType (jobId) {
@@ -350,6 +365,8 @@ export default {
     updateJobType () {
       let self = this;
 
+      this.$validator.validateAll('update_job_form').then(() => {
+
       axios.put('/base/jobtype/', self.jobType)
             .then((response) => {
               let { meta, data } = response.data;
@@ -362,6 +379,9 @@ export default {
                   self.defaultLoadJobTypeList();
               } else { bootbox.alert({ message: meta.message }); }
             });
+          }).catch(() => {
+
+          });
     }
     /**
      * End job type operation.

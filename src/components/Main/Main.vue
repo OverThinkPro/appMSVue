@@ -2,7 +2,7 @@
   <div id="main" class="main-container">
     <div class="bread-box">
       <ol class="breadcrumb">
-        <li class="active">首页</li>
+        <li class="active">实时监测</li>
       </ol>
     </div>
     <main>
