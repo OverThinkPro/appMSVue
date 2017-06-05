@@ -101,79 +101,83 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">上级字典编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryNew.upDictionaryId">
+              <form data-vv-scope="add_dictionary_form">
+                <div class="input-group-line">
+                  <div class="group-left">上级字典编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryNew.upDictionaryId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">上级字典名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryNew.upDictionaryName
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">上级字典名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryNew.upDictionaryName
+                    ">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">字典编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryNew.dictionaryId">
+                <div class="input-group-line">
+                  <div class="group-left">字典编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryNew.dictionaryId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">字典名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.dictionaryName">
+                <div class="input-group-line">
+                  <div class="group-left">字典名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_dictionary_form.add_dictionaryName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_dictionaryName" v-model="dictionaryNew.dictionaryName">
+                  </div>
+                  <span v-show="errors.has('add_dictionary_form.add_dictionaryName')" class="word-danger">{{ errors.first('add_dictionary_form.add_dictionaryName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">英语名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.englishName">
+                <div class="input-group-line">
+                  <div class="group-left">英语名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.englishName">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right">
-                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryNew.inUse">
-                    <span>启用</span>
-                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryNew.inUse">
-                    <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right">
+                      <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryNew.inUse">
+                      <span>启用</span>
+                      <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryNew.inUse">
+                      <span>禁用</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">数据类型</div>
-                <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="dictionaryNew.dataType">
-                    <option value="字符型">字符型</option>
-                    <option value="整型">整型</option>
-                    <option value="单精度浮点型">单精度浮点型</option>
-                    <option value="双精度浮点型">双精度浮点型</option>
-                    <option value="布尔型">布尔型</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">数据类型</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_dictionary_form.add_dataType')}">
+                    <select class="form-control refresh" v-validate="'required'" name="add_dataType"  v-model="dictionaryNew.dataType">
+                      <option value="字符型">字符型</option>
+                      <option value="整型">整型</option>
+                      <option value="单精度浮点型">单精度浮点型</option>
+                      <option value="双精度浮点型">双精度浮点型</option>
+                      <option value="布尔型">布尔型</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('add_dictionary_form.add_dataType')" class="word-danger">{{ errors.first('add_dictionary_form.add_dataType') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">字典等级</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryNew.baseDic">
-                  <span>基本数据字典</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryNew.baseDic">
-                  <span>非基本数据字典</span>
+                <div class="input-group-line">
+                  <div class="group-left">字典等级</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryNew.baseDic">
+                    <span>基本数据字典</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryNew.baseDic">
+                    <span>非基本数据字典</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">字典描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.description">
+                <div class="input-group-line">
+                  <div class="group-left">字典描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.description">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="dictionaryNew.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -196,84 +200,90 @@
             <h4 class="modal-title">修改字典信息</h4>
           </div>
           <div class="modal-body">
-            <div class="input-group-line">
-              <div class="group-left">上级字典编号</div>
-              <div class="group-right">
-                <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryOld.upDictionaryId">
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">上级字典名称</div>
-              <div class="group-right">
-                <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryOld.upDictionaryName
-                ">
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">字典编号</div>
-              <div class="group-right">
-                <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryOld.dictionaryId">
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">字典名称</div>
-              <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.dictionaryName">
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">英语名称</div>
-              <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.englishName">
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">是否启用</div>
-              <div class="group-right" v-if="upDictionaryInUse">
-                <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse" >
-                <span>启用</span>
-                <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse">
-                <span>禁用</span>
-              </div>
-              <div class="group-right" v-else>
-                <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse" disabled>
-                <span>启用</span>
-                <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse" disabled>
-                <span>禁用</span>
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">数据类型</div>
-              <div class="group-right">
-                <select class="form-control refresh" name="" v-model="dictionaryOld.dataType">
-                  <option value="字符型">字符型</option>
-                  <option value="整型">整型</option>
-                  <option value="单精度浮点型">单精度浮点型</option>
-                  <option value="双精度浮点型">双精度浮点型</option>
-                  <option value="布尔型">布尔型</option>
-                </select>
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">字典等级</div>
-              <div class="group-right">
-                <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.baseDic">
-                <span>基本数据字典</span>
-                <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.baseDic">
-                <span>非基本数据字典</span>
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">字典描述</div>
-              <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.description">
-              </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">备注</div>
-              <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.remark">
-              </div>
+            <div class="modal-table-box">
+              <form data-vv-scope="update_dictionary_form">
+                <div class="input-group-line">
+                  <div class="group-left">上级字典编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryOld.upDictionaryId">
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">上级字典名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryOld.upDictionaryName
+                    ">
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">字典编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="dictionaryOld.dictionaryId">
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">字典名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_dictionary_form.update_dictionaryName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_dictionaryName" v-model="dictionaryOld.dictionaryName">
+                  </div>
+                  <span v-show="errors.has('update_dictionary_form.update_dictionaryName')" class="word-danger">{{ errors.first('update_dictionary_form.update_dictionaryName') ? "不能为空" : "" }}</span>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">英语名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.englishName">
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right" v-if="upDictionaryInUse">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse" >
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse">
+                    <span>禁用</span>
+                  </div>
+                  <div class="group-right" v-else>
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.inUse" disabled>
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.inUse" disabled>
+                    <span>禁用</span>
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">数据类型</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_dictionary_form.update_dataType')}">
+                    <select class="form-control refresh"  v-validate="'required'" name="update_dataType"  v-model="dictionaryOld.dataType">
+                      <option value="字符型">字符型</option>
+                      <option value="整型">整型</option>
+                      <option value="单精度浮点型">单精度浮点型</option>
+                      <option value="双精度浮点型">双精度浮点型</option>
+                      <option value="布尔型">布尔型</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('update_dictionary_form.update_dataType')" class="word-danger">{{ errors.first('update_dictionary_form.update_dataType') ? "必选项" : "" }}</span>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">字典等级</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="dictionaryOld.baseDic">
+                    <span>基本数据字典</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="dictionaryOld.baseDic">
+                    <span>非基本数据字典</span>
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">字典描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.description">
+                  </div>
+                </div>
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="dictionaryOld.remark">
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -292,7 +302,8 @@ import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
 import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
-import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min'
+import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min';
+import { Validator } from 'vee-validate';
 export default {
   name: 'dictionary',
   data () {
@@ -472,6 +483,7 @@ export default {
                 self.dictionaryNew.inUse = '1';
                 self.dictionaryNew.baseDic = '0'; //默认是非基础数据字典
               }
+              self.errors.clear('add_dictionary_form');
               $("#add_dictionary_modal").modal('show');
             } else {
               bootbox.alert({title:'新增字典', message: '新增字典编号生成失败!'})
@@ -535,21 +547,25 @@ export default {
     /* 添加一个新的字典 */
     addDictionary() {
       let self = this;
-      axios.post('/base/dictionary', self.dictionaryNew).then((response) => {
-        let meta = response.data.meta;
-        if (meta.success) {
-          let data = response.data.data;
-          if (data && data.result == 1) { 
-            bootbox.alert({ title:'添加字典信息', message: '字典信息添加成功!' }); 
-          }else { 
-            bootbox.alert({ title:'添加字典信息', message: '字典信息添加失败!' }); 
+      this.$validator.validateAll("add_dictionary_form").then(() => {
+        axios.post('/base/dictionary', self.dictionaryNew).then((response) => {
+          let meta = response.data.meta;
+          if (meta.success) {
+            let data = response.data.data;
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'添加字典信息', message: '字典信息添加成功!' }); 
+            }else { 
+              bootbox.alert({ title:'添加字典信息', message: '字典信息添加失败!' }); 
+            }
+            $("#add_dictionary_modal").modal('hide');
+            self.defaultLoadDictionaryTree();
+            self.defaultLoadDictionaryTable();
+          } else {
+            bootbox.alert({ title:'添加字典信息', message: '服务器内部错误, 字典信息添加失败!'});
           }
-          $("#add_dictionary_modal").modal('hide');
-          self.defaultLoadDictionaryTree();
-          self.defaultLoadDictionaryTable();
-        } else {
-          bootbox.alert({ title:'添加字典信息', message: '服务器内部错误, 字典信息添加失败!'});
-        }
+        });
+      }).catch(() => {
+
       });
     },
     
@@ -664,27 +680,32 @@ export default {
           }
         }
       });
+      self.errors.clear('update_dictionary_form');
       $("#update_dictionary_modal").modal('show');
     },
 
     /* 修改并更新字典信息 */
     updateDictionary () {
       let self = this;
-      axios.put('/base/dictionary/', self.dictionaryOld).then((response) => {
-        let { meta, data } = response.data;
-        if (meta.success) {
-            if (data && data.result >= 1) { 
-              bootbox.alert({ title:'修改字典信息', message: '字典信息修改成功!' }); 
-            }else { 
-              bootbox.alert({ title:'修改字典信息', message: '字典信息修改失败!' }); 
-            }
-            $("#update_dictionary_modal").modal('hide');
-            $("input[name='dictionary']:checked").each(function() { this.checked = false; });
-            self.defaultLoadDictionaryTree();
-            self.defaultLoadDictionaryTable();
-        } else { 
-          bootbox.alert({ title:'修改字典信息', message: meta.message }); 
-        }
+      this.$validator.validateAll("update_dictionary_form").then(() => {
+        axios.put('/base/dictionary/', self.dictionaryOld).then((response) => {
+          let { meta, data } = response.data;
+          if (meta.success) {
+              if (data && data.result >= 1) { 
+                bootbox.alert({ title:'修改字典信息', message: '字典信息修改成功!' }); 
+              }else { 
+                bootbox.alert({ title:'修改字典信息', message: '字典信息修改失败!' }); 
+              }
+              $("#update_dictionary_modal").modal('hide');
+              $("input[name='dictionary']:checked").each(function() { this.checked = false; });
+              self.defaultLoadDictionaryTree();
+              self.defaultLoadDictionaryTable();
+          } else { 
+            bootbox.alert({ title:'修改字典信息', message: meta.message }); 
+          }
+        });
+      }).catch(() => {
+
       });
     },
 

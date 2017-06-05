@@ -465,7 +465,6 @@ export default {
                     //父节点不能选择
                     var nodes = treeObj.transformToArray(treeObj.getNodes());
                     for (var i=0, l=nodes.length; i < l; i++) {
-                      console.log(nodes[i]);
                       if (nodes[i].isParent){
                           treeObj.setChkDisabled(nodes[i], true);
                       }

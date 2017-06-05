@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/main': {
-        //  target: 'http://192.168.2.105:8080/appMSJava/api/v1/',
+         /*target: 'http://192.168.2.105:8080/appMSJava/api/v1/',*/
          target: 'http://localhost:8080/appMSJava/api/v1/',
          changeOrigin: true,
          pathRewrite: {

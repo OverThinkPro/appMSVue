@@ -102,61 +102,65 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">上级菜单编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuNew.upModuleId">
+              <form data-vv-scope="add_menu_form">
+                <div class="input-group-line">
+                  <div class="group-left">上级菜单编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuNew.upModuleId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">上级菜单名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuNew.upModuleName
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">上级菜单名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuNew.upModuleName
+                    ">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuNew.moduleId">
+                <div class="input-group-line">
+                  <div class="group-left">菜单编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuNew.moduleId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="menuNew.moduleName">
+                <div class="input-group-line">
+                  <div class="group-left">菜单名称</div>
+                  <div class="group-right"  :class="{'is-danger':errors.has('add_menu_form.add_menuName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_menuName"  v-model="menuNew.moduleName">
+                  </div>
+                  <span v-show="errors.has('add_menu_form.add_menuName')" class="word-danger">{{ errors.first('add_menu_form.add_menuName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuNew.inUse">
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuNew.inUse">
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuNew.inUse">
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuNew.inUse">
+                    <span>禁用</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单URL</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="menuNew.moduleUrl">
+                <div class="input-group-line">
+                  <div class="group-left">菜单URL</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_menu_form.add_menuUrl')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_menuUrl"  v-model="menuNew.moduleUrl">
+                  </div>
+                  <span v-show="errors.has('add_menu_form.add_menuUrl')" class="word-danger">{{ errors.first('add_menu_form.add_menuUrl') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">功能等级</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuNew.baseModule">
-                  <span>基本模块</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuNew.baseModule">
-                  <span>非基本模块</span>
+                <div class="input-group-line">
+                  <div class="group-left">功能等级</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuNew.baseModule">
+                    <span>基本模块</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuNew.baseModule">
+                    <span>非基本模块</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="menuNew.description">
+                <div class="input-group-line">
+                  <div class="group-left">菜单描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="menuNew.description">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -180,67 +184,71 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">上级菜单编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuOld.upModuleId">
+              <form data-vv-scope="update_menu_form">
+                <div class="input-group-line">
+                  <div class="group-left">上级菜单编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuOld.upModuleId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">上级菜单名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuOld.upModuleName
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">上级菜单名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuOld.upModuleName
+                    ">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuOld.moduleId">
+                <div class="input-group-line">
+                  <div class="group-left">菜单编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="menuOld.moduleId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="menuOld.moduleName">
+                <div class="input-group-line">
+                  <div class="group-left">菜单名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_menu_form.update_menuName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_menuName" v-model="menuOld.moduleName">
+                  </div>
+                  <span v-show="errors.has('update_menu_form.update_menuName')" class="word-danger">{{ errors.first('update_menu_form.update_menuName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right" v-if="upMenuInUse">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse" >
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse">
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right" v-if="upMenuInUse">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse" >
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse">
+                    <span>禁用</span>
+                  </div>
+                  <div class="group-right" v-else>
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse" disabled>
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse" disabled>
+                    <span>禁用</span>
+                  </div>
                 </div>
-                <div class="group-right" v-else>
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.inUse" disabled>
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.inUse" disabled>
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">菜单URL</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_menu_form.update_menuUrl')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_menuUrl" v-model="menuOld.moduleUrl">
+                  </div>
+                  <span v-show="errors.has('update_menu_form.update_menuUrl')" class="word-danger">{{ errors.first('update_menu_form.update_menuUrl') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单URL</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="menuOld.moduleUrl">
+                 <div class="input-group-line">
+                  <div class="group-left">功能等级</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.baseModule">
+                    <span>基本模块</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.baseModule">
+                    <span>非基本模块</span>
+                  </div>
                 </div>
-              </div>
-               <div class="input-group-line">
-                <div class="group-left">功能等级</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="menuOld.baseModule">
-                  <span>基本模块</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="menuOld.baseModule">
-                  <span>非基本模块</span>
+                <div class="input-group-line">
+                  <div class="group-left">菜单描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="menuOld.description">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">菜单描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="menuOld.description">
-                </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -259,7 +267,8 @@ import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
 import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
-import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min'
+import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min';
+import { Validator } from 'vee-validate';
 export default {
   name: 'module',
   data () {
@@ -437,6 +446,7 @@ export default {
                 self.menuNew.moduleUrl = '/';
                 self.menuNew.baseModule = '0'; //默认是非基础模块
               }
+              self.errors.clear('add_menu_form');
               $("#add_menu_modal").modal('show');
             } else {
               bootbox.alert({title:'新增菜单', message: '新增菜单编号生成失败!'})
@@ -500,21 +510,25 @@ export default {
     /* 添加一个新的菜单 */
     addModule() {
       let self = this;
-      axios.post('/base/module', self.menuNew).then((response) => {
-        let meta = response.data.meta;
-        if (meta.success) {
-          let data = response.data.data;
-          if (data && data.result == 1) { 
-            bootbox.alert({ title:'添加菜单信息', message: '菜单信息添加成功!' }); 
-          }else { 
-            bootbox.alert({ title:'添加菜单信息', message: '菜单信息添加失败!' }); 
+      this.$validator.validateAll("add_menu_form").then(() => {
+        axios.post('/base/module', self.menuNew).then((response) => {
+          let meta = response.data.meta;
+          if (meta.success) {
+            let data = response.data.data;
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'添加菜单信息', message: '菜单信息添加成功!' }); 
+            }else { 
+              bootbox.alert({ title:'添加菜单信息', message: '菜单信息添加失败!' }); 
+            }
+            $("#add_menu_modal").modal('hide');
+            self.defaultLoadModuleTree();
+            self.defaultLoadModuleTable();
+          } else {
+            bootbox.alert({ title:'添加菜单信息', message: '服务器内部错误, 菜单信息添加失败!'});
           }
-          $("#add_menu_modal").modal('hide');
-          self.defaultLoadModuleTree();
-          self.defaultLoadModuleTable();
-        } else {
-          bootbox.alert({ title:'添加菜单信息', message: '服务器内部错误, 菜单信息添加失败!'});
-        }
+        });
+      }).catch(() => {
+
       });
     },
     
@@ -629,27 +643,32 @@ export default {
           }
         }
       });
+      self.errors.clear('update_menu_form');
       $("#update_menu_modal").modal('show');
     },
 
     /* 修改并更新菜单信息 */
     updateModule () {
       let self = this;
-      axios.put('/base/module/', self.menuOld).then((response) => {
-        let { meta, data } = response.data;
-        if (meta.success) {
-            if (data && data.result >= 1) { 
-              bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改成功!' }); 
-            }else { 
-              bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改失败!' }); 
-            }
-            $("#update_menu_modal").modal('hide');
-            $("input[name='menu']:checked").each(function() { this.checked = false; });
-            self.defaultLoadModuleTree();
-            self.defaultLoadModuleTable();
-        } else { 
-          bootbox.alert({  title:'修改菜单信息',message: meta.message }); 
-        }
+      this.$validator.validateAll("update_menu_form").then(() => {
+        axios.put('/base/module/', self.menuOld).then((response) => {
+          let { meta, data } = response.data;
+          if (meta.success) {
+              if (data && data.result >= 1) { 
+                bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改成功!' }); 
+              }else { 
+                bootbox.alert({ title:'修改菜单信息', message: '菜单信息修改失败!' }); 
+              }
+              $("#update_menu_modal").modal('hide');
+              $("input[name='menu']:checked").each(function() { this.checked = false; });
+              self.defaultLoadModuleTree();
+              self.defaultLoadModuleTable();
+          } else { 
+            bootbox.alert({  title:'修改菜单信息',message: meta.message }); 
+          }
+        });
+      }).catch(() => {
+
       });
     },
 
