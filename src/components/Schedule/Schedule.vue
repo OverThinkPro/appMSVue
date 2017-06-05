@@ -47,7 +47,8 @@
               <button type="button" class="btn btn-primary" @click="checkAddSchedule()">添加班次</button>
               <button type="button" class="btn btn-primary" @click="checkType('UPDATE_SCHEDULE')">修改班次</button>
               <button type="button" class="btn btn-primary" @click="checkType('DELETE_SCHEDULE')">删除班次</button>
-              <button type="button" class="btn btn-primary" @click="checkType('ARRANGE_UNIT')">排班</button>
+             <!--  <button type="button" class="btn btn-primary" @click="checkType('ARRANGE_UNIT')">排班</button> -->
+              <button type="button" class="btn btn-primary" @click="clickSetSchedule()">排班</button>
             </div>
           </div>
           <div class="table-box data-box">
@@ -307,11 +308,39 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <ul id="unitTree" class="ztree"></ul>
+              <div id="tree-container">
+                <ul id="unitTree" class="ztree"></ul>
+              </div>
+              <div id="schedule-table" style="overflow-y: scroll"> 
+                <div  v-for="(schedule, index) in scheduleListCache.scheduleList" :key="schedule.key">
+                  <button style="width:90%" type="button" class="btn btn-primary modal-btn" @click="setSchedule(schedule.dutyId)">{{ schedule.dutyName }}</button>
+                  <div class="table-box data-box">
+                    <table class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>部门编号</th>
+                          <th>部门名称</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <template v-for="(result, index) in scheduleResult">
+                          <template v-if="result.dutyId === schedule.dutyId">
+                            <tr v-for="(unit, index) in result.units" :key="unit.key">
+                              <td>{{ unit.unitId }}</td>
+                              <td>{{ unit.unitName }}</td>
+                            </tr>
+                          </template>
+                        </template>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary modal-btn" @click="">保存</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="resetSchedule()">重置</button>
+            <button type="button" class="btn btn-primary modal-btn" @click="saveAssignedSchedule()">保存</button>
             <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearch()">退出</button>
           </div>
         </div>
@@ -360,9 +389,11 @@ export default {
         }
       },
       unitTreeSetting: {
-        // callback: {
-        //   onClick: this.zTreeOnClick
-        // },
+        check : {
+          enable : true,
+          chkStyle: "checkbox",
+          chkboxType: { "Y" : "ps", "N" : "ps" }
+        },
         data: {
           simpleData: {
             enable: true,
@@ -373,16 +404,24 @@ export default {
           key: {
             name: 'unitName'
           }
-        }
+        },
       },
       scheduleList: [],
       scheduleListCache: {
         scheduleList: [],
         total: 0
       },
+
       schedule: {},
       scheduleId: '',
-      selectedSchedule: {}
+      selectedSchedule: {},
+
+      //排班
+      unitList:[],
+      scheduleResult:[], //用于页面的显示
+      scheduleResultToBack:[],//用于给后端传值
+      assignedUnit:[],
+
     };
   },
   mounted () {
@@ -415,11 +454,24 @@ export default {
                   if (data && data.unitList) {
                     // 部门树数据配置
                     let unitList = data.unitList;
+                    self.unitList = data.unitList;
                     let zNodes = unitList;
                     zNodes[0].open = true;
 
                     // 初始化部门树
                     $.fn.zTree.init($("#unitTree"), self.unitTreeSetting, zNodes);
+                    var treeObj = $.fn.zTree.getZTreeObj("unitTree");
+                    treeObj.expandAll(true);
+                    //父节点不能选择
+                    var nodes = treeObj.transformToArray(treeObj.getNodes());
+                    for (var i=0, l=nodes.length; i < l; i++) {
+                      console.log(nodes[i]);
+                      if (nodes[i].isParent){
+                          treeObj.setChkDisabled(nodes[i], true);
+                      }
+                    }
+
+                    self.assignedUnit=[];
                   }
                 }
               });
@@ -464,7 +516,6 @@ export default {
         axios.get('/base/schedule/' + treeNode.dutyId)
               .then((response) => {
                 let { meta, data } = response.data;
-
                 if (meta.success) {
                   if (data && data.schedule) {
                     self.selectedSchedule = data.schedule;
@@ -742,6 +793,104 @@ export default {
     /**
      * End schedule manage module.
      */
+    
+    /*
+      排班
+     */
+    setSchedule(dutyId){
+      let self = this;
+      let preAssignedUnit=[];
+      let dutyIdExisted = false;
+      let unitIdNotExisted = true;
+      var moduleIds = "";
+      var treeObj = $.fn.zTree.getZTreeObj("unitTree");
+      var nodes = treeObj.getCheckedNodes(true);
+      for (var i = 0; i < nodes.length; i++) {
+        if(self.assignedUnit.length!=0){
+          for(var j = 0; j < self.assignedUnit.length; j++){
+            if(nodes[i].unitId == self.assignedUnit[j].unitId){
+              unitIdNotExisted = false;     
+            }
+          }
+          if(unitIdNotExisted){
+            preAssignedUnit.push({
+              'unitId':nodes[i].unitId,
+              'unitName':nodes[i].unitName,
+            });
+          }
+          unitIdNotExisted = true;
+        }else{
+          preAssignedUnit.push({
+            'unitId':nodes[i].unitId,
+            'unitName':nodes[i].unitName,
+          });
+        }
+      }
+      for (var i = 0; i < self.scheduleResult.length; i++) {
+        if(self.scheduleResult[i].dutyId == dutyId){
+          dutyIdExisted = true;
+          self.scheduleResult.units = preAssignedUnit;
+        }
+      }
+      if(!dutyIdExisted){
+        self.scheduleResult.push({
+          'dutyId':dutyId,
+          'units' :preAssignedUnit,
+        });
+      }
+      
+      self.assignedUnit = nodes;
+    },
+
+    //重新排班
+    resetSchedule(){
+      let self = this;
+      self.scheduleResult = [];
+      self.assignedUnit = [];
+    },
+
+    //保存排班信息
+    saveAssignedSchedule(){
+      let self = this;
+      let unitIds = '';
+      self.scheduleResultToBack = [];
+      for (var i = 0; i < self.scheduleResult.length; i++) {
+        unitIds = '';
+        let units = self.scheduleResult[i].units;
+        for (var j = 0; j < units.length; j++) {
+          console.log(units[j]);
+          console.log(units[j].unitId);
+          unitIds += units[j].unitId + ';';
+        }
+        unitIds = unitIds.substring(0, unitIds.length-1);
+        console.log(units[j]);
+        self.scheduleResultToBack.push({
+          'dutyId':self.scheduleResult[i].dutyId,
+          'units' :unitIds,
+        });
+      }
+      axios.post('/base/duty/30', self.scheduleResultToBack)
+            .then((response) => {
+              let { meta, data } = response.data;
+              if (meta.success) {
+                if (data && data.result == 1) {
+                  bootbox.alert("排班成功!");
+                  $("#arrange_work_unit_modal").modal('hide');
+                  self.refreshOper();
+                } else { bootbox.alert("排班失败!"); $("#arrange_work_unit_modal").modal('hide');}
+              } else { bootbox.alert("服务器内部错误,排班失败!"); $("#arrange_work_unit_modal").modal('hide');}
+            });
+    },
+
+    //点击树才能排班
+    clickSetSchedule(){
+      if(this.selectedSchedule.dutyId && this.selectedSchedule.dutyId !=''){
+        $("#arrange_work_unit_modal").modal('show');
+      }else{
+        bootbox.alert("请先在树节点上选择一个班制,再进行操作!")
+        return false;
+      }
+    },
   }
 };
 </script>
@@ -769,4 +918,31 @@ export default {
 .table-box-left {
   min-height: 600px;
 }
+
+/* #tree-container
+{  
+    margin: 10px 0;  
+    border-style:ridge;  
+    height :50%;  
+    width:45%;  
+    float:left;  
+}   */
+#tree-container
+{  
+    margin: 10px 0;  
+    /* border-style:ridge; */  
+    height :50%;
+    /* height :500px */;   
+    width:45%;  
+    float:left;  
+}  
+#schedule-table 
+{  
+    margin: 10px 0;  
+    /* border-style:ridge; */  
+    height :500px;
+    /* height :50% */;  
+    width:float%;  
+    50:right;  
+}  
 </style>
