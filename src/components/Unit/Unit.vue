@@ -92,71 +92,73 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">上级部门编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+              <form data-vv-scope="add_unit_form">
+                <div class="input-group-line">
+                  <div class="group-left">上级部门编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">上级部门名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                <div class="input-group-line">
+                  <div class="group-left">上级部门名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">部门编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                <div class="input-group-line">
+                  <div class="group-left">部门编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">部门名称</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_unitName')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_unitName" v-model="unit.unitName">
+                <div class="input-group-line">
+                  <div class="group-left">部门名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_unit_form.add_unitName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_unitName" v-model="unit.unitName">
+                  </div>
+                  <span v-show="errors.has('add_unit_form.add_unitName')" class="word-danger">{{ errors.first('add_unit_form.add_unitName') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_unitName')" class="word-danger">{{ errors.first('add_unitName') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">联系电话</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_telephone')}">
-                  <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="add_telephone" v-model="unit.telephone">
+                <div class="input-group-line">
+                  <div class="group-left">联系电话</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_unit_form.add_telephone')}">
+                    <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="add_telephone" v-model="unit.telephone">
+                  </div>
+                  <span v-show="errors.has('add_unit_form.add_telephone')" class="word-danger">{{ errors.first('add_unit_form.add_telephone') ? "只允许数字" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_telephone')" class="word-danger">{{ errors.first('add_telephone') ? "只允许数字" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">联系人</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_contactPerson')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_contactPerson" v-model="unit.contactPerson">
+                <div class="input-group-line">
+                  <div class="group-left">联系人</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_unit_form.add_contactPerson')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_contactPerson" v-model="unit.contactPerson">
+                  </div>
+                  <span v-show="errors.has('add_unit_form.add_contactPerson')" class="word-danger">{{ errors.first('add_unit_form.add_contactPerson') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_contactPerson')" class="word-danger">{{ errors.first('add_contactPerson') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">负责人</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_chargePerson')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="add_chargePerson" v-model="unit.header">
+                <div class="input-group-line">
+                  <div class="group-left">负责人</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_unit_form.add_chargePerson')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_chargePerson" v-model="unit.header">
+                  </div>
+                  <span v-show="errors.has('add_unit_form.add_chargePerson')" class="word-danger">{{ errors.first('add_unit_form.add_chargePerson') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('add_chargePerson')" class="word-danger">{{ errors.first('add_chargePerson') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">创建时间</div>
-                <div class="group-right" :class="{'is-danger':errors.has('add_createTime')}">
-                  <input id="createDate" class="form-control refresh" v-validate="'required'" type="text" name="add_createTime" placeholder="请选择创建时间" readonly="readonly" v-model="unit.createDate">
+                <div class="input-group-line">
+                  <div class="group-left">创建时间</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_unit_form.add_createTime')}">
+                    <input id="createDate" class="form-control refresh" v-validate="'required'" type="text" name="add_createTime" placeholder="请选择创建时间" readonly="readonly">
+                  </div>
+                  <span v-show="errors.has('add_unit_form.add_createTime')" class="word-danger">{{ errors.first('add_unit_form.add_createTime') ? "不能为空": "" }}</span>
                 </div>
-                <span v-show="errors.has('add_createTime')" class="word-danger">{{ errors.first('add_createTime') ? "不能为空": "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.description">
+                <div class="input-group-line">
+                  <div class="group-left">描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.description">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -180,71 +182,73 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">上级部门编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+              <form data-vv-scope="update_unit_form">
+                <div class="input-group-line">
+                  <div class="group-left">上级部门编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">上级部门名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                <div class="input-group-line">
+                  <div class="group-left">上级部门名称</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.upUnitName">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">部门编号</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                <div class="input-group-line">
+                  <div class="group-left">部门编号</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="unit.unitId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">部门名称</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_unitName')}">
-                  <input class="form-control refresh" type="text" v-validate="'required'" name="update_unitName" v-model="unit.unitName">
+                <div class="input-group-line">
+                  <div class="group-left">部门名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_unit_form.update_unitName')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_unitName" v-model="unit.unitName">
+                  </div>
+                  <span v-show="errors.has('update_unit_form.update_unitName')" class="word-danger">{{ errors.first('update_unit_form.update_unitName') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_unitName')" class="word-danger">{{ errors.first('update_unitName') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">联系电话</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_telephone')}">
-                  <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="update_telephone" v-model="unit.telephone">
+                <div class="input-group-line">
+                  <div class="group-left">联系电话</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_unit_form.update_telephone')}">
+                    <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="update_telephone" v-model="unit.telephone">
+                  </div>
+                    <span v-show="errors.has('update_unit_form.update_telephone')" class="word-danger">{{ errors.first('update_unit_form.update_telephone') ? "只允许数字" : "" }}</span>
                 </div>
-                  <span v-show="errors.has('update_telephone')" class="word-danger">{{ errors.first('update_telephone') ? "只允许数字" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">联系人</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_contactPerson')}">
-                  <input class="form-control refresh" v-validate="'required'" type="text" name="update_contactPerson" v-model="unit.contactPerson">
+                <div class="input-group-line">
+                  <div class="group-left">联系人</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_unit_form.update_contactPerson')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_contactPerson" v-model="unit.contactPerson">
+                  </div>
+                  <span v-show="errors.has('update_unit_form.update_contactPerson')" class="word-danger">{{ errors.first('update_unit_form.update_contactPerson') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_contactPerson')" class="word-danger">{{ errors.first('update_contactPerson') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">负责人</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_chargePerson')}">
-                  <input class="form-control refresh" type="text" v-validate="'required'" name="" v-model="unit.header">
+                <div class="input-group-line">
+                  <div class="group-left">负责人</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_unit_form.update_chargePerson')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_chargePerson" v-model="unit.header">
+                  </div>
+                  <span v-show="errors.has('update_unit_form.update_chargePerson')" class="word-danger">{{ errors.first('update_unit_form.update_chargePerson') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_chargePerson')" class="word-danger">{{ errors.first('update_chargePerson') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">创建时间</div>
-                <div class="group-right" :class="{'is-danger':errors.has('update_createTime')}">
-                  <input id="createDate2" class="form-control refresh" v-validate="'required'" type="text" name="update_createTime" placeholder="请选择创建时间" readonly="readonly" v-model="unit.createDate">
+                <div class="input-group-line">
+                  <div class="group-left">创建时间</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_unit_form.update_createTime')}">
+                    <input id="createDate2" class="form-control refresh" v-validate="'required'" type="text" name="update_createTime" placeholder="请选择创建时间" readonly="readonly" v-model="unit.createDate">
+                  </div>
+                  <span v-show="errors.has('update_unit_form.update_createTime')" class="word-danger">{{ errors.first('update_unit_form.update_createTime') ? "不能为空" : "" }}</span>
                 </div>
-                <span v-show="errors.has('update_createTime')" class="word-danger">{{ errors.first('update_createTime') ? "不能为空" : "" }}</span>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.description">
+                <div class="input-group-line">
+                  <div class="group-left">描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" placeholder="选填..." v-model="unit.description">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="unit.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="unit.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -266,15 +270,6 @@ import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
 import { Validator } from 'vee-validate';
-
-// Validator.extend('timeCheck', {
-//   messages: {
-//     zh_CN: (field, args) => '时间不能为空'
-//   },
-//   validate: (value, args) => {
-//     return value.length > 0 && /^(\d{4})\-(\d{2})\-(\d{2})$/.test(value);
-//   }
-// });
 
 export default {
   name: 'unit',
@@ -440,7 +435,7 @@ export default {
                           upUnitName: treeNode.unitName,
                           unitId: currentUnitId
                         };
-                        self.errors.clear();
+                        self.errors.clear('add_unit_form');
                         $("#add_unit_modal").modal('show');
                       }
                     } else {
@@ -515,7 +510,7 @@ export default {
               delete self.unit.uber;
             }
           });
-          self.errors.clear();
+          self.errors.clear('update_unit_form');
           $("#update_unit_modal").modal('show');
         } else if (type == 'DELETE_UNIT') {
           self.deleteUnit(unitId);
@@ -526,7 +521,7 @@ export default {
     addUnit () {
       let self = this;
 
-      this.$validator.validateAll().then(() => {
+      this.$validator.validateAll('add_unit_form').then(() => {
 
         // 获取非绑定数据
         self.unit.createDate = $("#createDate").val();
@@ -561,7 +556,7 @@ export default {
     updateUnit () {
       let self = this;
 
-      self.$validator.validateAll().then(() => {
+      self.$validator.validateAll('update_unit_form').then(() => {
 
         self.unit.createDate = $("#createDate2").val();
 
