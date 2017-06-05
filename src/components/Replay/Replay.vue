@@ -122,37 +122,6 @@ import bootbox from 'bootbox/bootbox.min';
 import jeDate from '../../assets/script/jedate/jquery.jedate.min';
 import { Validator } from 'vee-validate';
 
-// const isCardIdValid = {
-//   messages: {
-//     en: (field, args) => '定位卡号不能同时为空',
-//     zh_CN: (field, args) => '定位卡号不能同时为空'
-//   },
-//   validate: (value, args) => {
-//     return value != null;
-//   }
-// };
-// Validator.extend('cardId', isCardIdValid);
-//
-// Validator.extend('startTime', {
-//   messages: {
-//     en: (field, args) => '开始时间不能同时为空',
-//     zh_CN: (field, args) => '开始时间不能同时为空'
-//   },
-//   validate: (value, args) => {
-//     return value == null;
-//   }
-// });
-//
-// Validator.extend('endTime', {
-//   messages: {
-//     en: (field, args) => '结束时间不能同时为空',
-//     zh_CN: (field, args) => '结束时间不能同时为空'
-//   },
-//   validate: (value, args) => {
-//     return value == null;
-//   }
-// });
-
 export default {
   name: 'replay',
   data () {
@@ -284,9 +253,8 @@ export default {
       this.$validator.validateAll().then(() => {
         self.loadStaffList();
         self.loadStaffMap();
-        alert('From Submitted!');
       }).catch(() => {
-        alert('Correct them errors!');
+
       });
     },
     /* 轨迹回放列表 */
