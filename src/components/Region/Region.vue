@@ -131,48 +131,53 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
+              <form data-vv-scope="add_region_form">
               <!-- <div class="input-group-line">
                 <div class="group-left">区域编号</div>
                 <div class="group-right">
                   <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="region.regionId">
                 </div>
               </div> -->
-              <div class="input-group-line">
-                <div class="group-left">区域名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="region.regionName">
+                <div class="input-group-line">
+                  <div class="group-left">区域名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_region_form.add_regionName')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="add_regionName" v-model="region.regionName">
+                  </div>
+                  <span v-show="errors.has('add_region_form.add_regionName')" class="word-danger">{{ errors.first('add_region_form.add_regionName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">区域类型</div>
-                <div class="group-right">
-                  <select class="form-control refresh" name="" v-model="region.regionType">
-                    <option value="">- 请选择区域类型 -</option>
-                    <option value="普通区域">普通区域</option>
-                    <option value="井口区域">井口区域</option>
-                    <option value="危险区域">危险区域</option>
-                    <option value="重点区域">重点区域</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">区域类型</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_region_form.add_regionType')}">
+                    <select class="form-control refresh" v-validate="'required'" name="add_regionType"  v-model="region.regionType">
+                      <option value="">- 请选择区域类型 -</option>
+                      <option value="普通区域">普通区域</option>
+                      <option value="井口区域">井口区域</option>
+                      <option value="危险区域">危险区域</option>
+                      <option value="重点区域">重点区域</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('add_region_form.add_regionType')" class="word-danger">{{ errors.first('add_region_form.add_regionType') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">超员设置</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" placeholder="请输入最大人数限制..." v-model="region.regionMaxPeople">
+                <div class="input-group-line">
+                  <div class="group-left">超员设置</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_region_form.add_regionMaxPeople')}">
+                    <input class="form-control refresh" type="text" v-validate="'required|numeric'" name="add_regionMaxPeople"   placeholder="请输入最大人数限制..." v-model="region.regionMaxPeople">
+                  </div>
+                  <span v-show="errors.has('add_region_form.add_regionMaxPeople')" class="word-danger">{{ errors.first('add_region_form.add_regionMaxPeople') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">区域描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="region.description">
+                <div class="input-group-line">
+                  <div class="group-left">区域描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="region.description">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="region.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="region.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -195,49 +200,54 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">区域编号</div>
-                <div class="group-right">
-                  <input class="form-control" disabled="disabled" type="text" name="" v-model="region.regionId">
+              <form data-vv-scope="update_region_form">
+                <div class="input-group-line">
+                  <div class="group-left">区域编号</div>
+                  <div class="group-right">
+                    <input class="form-control" disabled="disabled" type="text" name="" v-model="region.regionId">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">区域名称</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="region.regionName
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">区域名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_region_form.update_regionName')}">
+                    <input class="form-control" type="text" v-validate="'required'" name="update_regionName"  v-model="region.regionName
+                    ">
+                  </div>
+                  <span v-show="errors.has('update_region_form.update_regionName')" class="word-danger">{{ errors.first('update_region_form.update_regionName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">区域类型</div>
-                <div class="group-right">
-                  <select class="form-control" name="" v-model="region.regionType">
-                    <option value="">- 请选择区域类型 -</option>
-                    <option value="井口区域">井口区域</option>
-                    <option value="普通区域">普通区域</option>
-                    <option value="危险区域">危险区域</option>
-                    <option value="重点区域">重点区域</option>
-                  </select>
+                <div class="input-group-line">
+                  <div class="group-left">区域类型</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_region_form.update_regionType')}">
+                    <select class="form-control"  v-validate="'required'" name="update_regionType" v-model="region.regionType">
+                      <option value="">- 请选择区域类型 -</option>
+                      <option value="井口区域">井口区域</option>
+                      <option value="普通区域">普通区域</option>
+                      <option value="危险区域">危险区域</option>
+                      <option value="重点区域">重点区域</option>
+                    </select>
+                  </div>
+                  <span v-show="errors.has('update_region_form.update_regionType')" class="word-danger">{{ errors.first('update_region_form.update_regionType') ? "必选项" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">超员设置</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="region.regionMaxPeople">
+                <div class="input-group-line">
+                  <div class="group-left">超员设置</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_region_form.update_regionMaxPeople')}">
+                    <input class="form-control" type="text"  v-validate="'required|numeric'" name="update_regionMaxPeople" v-model="region.regionMaxPeople">
+                  </div>
+                  <span v-show="errors.has('update_region_form.update_regionMaxPeople')" class="word-danger">{{ errors.first('update_region_form.update_regionMaxPeople') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">区域描述</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="region.description">
+                <div class="input-group-line">
+                  <div class="group-left">区域描述</div>
+                  <div class="group-right">
+                    <input class="form-control" type="text" name="" v-model="region.description">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control" type="text" name="" v-model="region.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control" type="text" name="" v-model="region.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -247,7 +257,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -259,6 +268,7 @@ import initLoad from '../../assets/script/sidemenu';
 import fullscreen from '../../assets/script/fullscreen';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
+import { Validator } from 'vee-validate';
 
 export default {
   name: 'region',
@@ -464,6 +474,7 @@ export default {
       self.mapEvent.polygonDraw.on('drawend', function(event) {
         let createPolygonJson = self.createPolygonJson(event.feature.getGeometry().getCoordinates());
         self.region.geoPolygon = createPolygonJson;
+        self.errors.clear('add_region_form');
         $("#add_region_modal").modal('show');
       });
 
@@ -744,6 +755,7 @@ export default {
               self.region = deepCopy(regionList[i]);
               delete self.region.uber;
             }
+            self.errors.clear('update_region_form');
             $("#update_region_modal").modal('show');
           }
         } else if (type == 'DELETE_REGION') {
@@ -754,42 +766,48 @@ export default {
     // 添加区域
     addRegionOper () {
       let self = this;
+      this.$validator.validateAll("add_region_form").then(() => {
+        axios.post('/base/region/', self.region)
+              .then((response) => {
+                let { meta, data } = response.data;
 
-      axios.post('/base/region/', self.region)
-            .then((response) => {
-              let { meta, data } = response.data;
+                if (meta.success) {
+                  if (data && data.result == 1) {
+                    bootbox.alert("区域信息添加成功!");
+                    $("#add_region_modal").modal('hide');
+                    self.region = {};
+                    self.loadRegionList();
+                    self.loadRegionMapLayer();
+                  } else { bootbox.alert("区域信息添加失败!"); }
+                } else { bootbox.alert("服务器内部错误,区域信息添加失败!"); }
+              });
+      }).catch(() => {
 
-              if (meta.success) {
-                if (data && data.result == 1) {
-                  bootbox.alert("区域信息添加成功!");
-                  $("#add_region_modal").modal('hide');
-                  self.region = {};
-                  self.loadRegionList();
-                  self.loadRegionMapLayer();
-                } else { bootbox.alert("区域信息添加失败!"); }
-              } else { bootbox.alert("服务器内部错误,区域信息添加失败!"); }
-            });
+      });
     },
     // 修改区域
     updateRegionOper () {
       let self = this;
+      this.$validator.validateAll("update_region_form").then(() => {
+        delete self.region.geoPolygon;
+        axios.put('/base/region/', self.region)
+              .then((response) => {
+                let { meta, data } = response.data;
 
-      delete self.region.geoPolygon;
-      axios.put('/base/region/', self.region)
-            .then((response) => {
-              let { meta, data } = response.data;
+                if (meta.success) {
+                  if (data && data.result == 1) {
+                    bootbox.alert("区域信息修改成功!");
+                    $("#update_region_modal").modal('hide');
+                    self.region = {};
+                    $("input[name='region']:radio:checked").prop('checked', false);
+                    self.loadRegionList();
+                    self.loadRegionMapLayer();
+                  } else { bootbox.alert("区域信息修改失败!"); }
+                } else { bootbox.alert("服务器内部错误,区域信息修改失败!"); }
+              });
+      }).catch(() => {
 
-              if (meta.success) {
-                if (data && data.result == 1) {
-                  bootbox.alert("区域信息修改成功!");
-                  $("#update_region_modal").modal('hide');
-                  self.region = {};
-                  $("input[name='region']:radio:checked").prop('checked', false);
-                  self.loadRegionList();
-                  self.loadRegionMapLayer();
-                } else { bootbox.alert("区域信息修改失败!"); }
-              } else { bootbox.alert("服务器内部错误,区域信息修改失败!"); }
-            });
+      });
     },
     // 删除区域
     deleteRegionOper (regionId, feature) {

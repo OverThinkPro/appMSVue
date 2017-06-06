@@ -42,7 +42,7 @@
               </div>
             </div>
             <div class="btn-box fr">
-              <button type="button" class="btn btn-primary modal-btn" data-toggle="modal" data-target="#update_coalmine_modal">修改</button>
+              <button type="button" class="btn btn-primary modal-btn" data-toggle="modal" data-target="" @click="clickUpdateCoalmine()">修改</button>
             </div>
           </div>
           <!-- 人员位置数据采集周期 -->
@@ -168,48 +168,54 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">煤矿名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineName">
+              <form data-vv-scope="update_coalmine_form">
+                <div class="input-group-line">
+                  <div class="group-left">煤矿名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_coalmine_form.update_coalmineName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_coalmineName" v-model="coalmineOld.coalmineName">
+                  </div>
+                  <span v-show="errors.has('update_coalmine_form.update_coalmineName')" class="word-danger">{{ errors.first('update_coalmine_form.update_coalmineName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">煤矿简称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineAbbr">
+                <div class="input-group-line">
+                  <div class="group-left">煤矿简称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_coalmine_form.update_coalmineAbbr')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_coalmineAbbr" v-model="coalmineOld.coalmineAbbr">
+                  </div>
+                  <span v-show="errors.has('update_coalmine_form.update_coalmineAbbr')" class="word-danger">{{ errors.first('update_coalmine_form.update_coalmineAbbr') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">核定产能(万吨/年)</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineOutput">
+                <div class="input-group-line">
+                  <div class="group-left">核定产能(万吨/年)</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_coalmine_form.update_coalmineOutput')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_coalmineOutput" v-model="coalmineOld.coalmineOutput">
+                  </div>
+                  <span v-show="errors.has('update_coalmine_form.update_coalmineOutput')" class="word-danger">{{ errors.first('update_coalmine_form.update_coalmineOutput') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">核定人数</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="coalmine.coalmineNum">
+                <div class="input-group-line">
+                  <div class="group-left">核定人数</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_coalmine_form.update_coalmineNum')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_coalmineNum"  v-model="coalmineOld.coalmineNum">
+                  </div>
+                  <span v-show="errors.has('update_coalmine_form.update_coalmineNum')" class="word-danger">{{ errors.first('update_coalmine_form.update_coalmineNum') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">矿井类型</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="生产矿井" v-model="coalmine.coalmineType" >
-                  <span>生产矿井</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="基建矿井" v-model="coalmine.coalmineType">
-                  <span>基建矿井</span>
+                <div class="input-group-line">
+                  <div class="group-left">矿井类型</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="生产矿井" v-model="coalmineOld.coalmineType" >
+                    <span>生产矿井</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="基建矿井" v-model="coalmineOld.coalmineType">
+                    <span>基建矿井</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">瓦斯等级</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="高瓦斯" v-model="coalmine.gasGrade">
-                  <span>高瓦斯</span>
-                  <input class="refresh" style="margin-left: 13.5%;" type="radio"  value="低瓦斯" v-model="coalmine.gasGrade">
-                  <span>低瓦斯</span>
+                <div class="input-group-line">
+                  <div class="group-left">瓦斯等级</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="高瓦斯" v-model="coalmineOld.gasGrade">
+                    <span>高瓦斯</span>
+                    <input class="refresh" style="margin-left: 13.5%;" type="radio"  value="低瓦斯" v-model="coalmineOld.gasGrade">
+                    <span>低瓦斯</span>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -351,24 +357,27 @@
             <h4 class="modal-title">修改周期信息</h4>
           </div>
           <div class="modal-body">
-            <div class="input-group-line">
-              <div class="group-left">周期类型</div>
-              <div class="group-right">
-                <input class="form-control refresh" readonly="readonly" type="text" name="" v-model="periodOld.periodName">
+            <form data-vv-scope="update_period_form">
+              <div class="input-group-line">
+                <div class="group-left">周期类型</div>
+                <div class="group-right">
+                  <input class="form-control refresh" readonly="readonly" type="text" name="" v-model="periodOld.periodName">
+                </div>
               </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">周期值</div>
-              <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="periodOld.periodNum">
+              <div class="input-group-line">
+                <div class="group-left">周期值</div>
+                <div class="group-right" :class="{'is-danger':errors.has('update_period_form.update_periodNum')}">
+                  <input class="form-control refresh" v-validate="'required|numeric'" type="text" name="update_periodNum" v-model="periodOld.periodNum">
+                </div>
+                 <span v-show="errors.has('update_period_form.update_periodNum')" class="word-danger">{{ errors.first('update_period_form.update_periodNum') ? "不能为空" : "" }}</span>
               </div>
-            </div>
-            <div class="input-group-line">
-              <div class="group-left">描述</div>
-              <div class="group-right">
-                <input class="form-control refresh" type="text" name="" v-model="periodOld.description">
+              <div class="input-group-line">
+                <div class="group-left">描述</div>
+                <div class="group-right">
+                  <input class="form-control refresh" readonly="readonly" type="text" name="" v-model="periodOld.description">
+                </div>
               </div>
-            </div>
+            </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary modal-btn" @click="updatePeriod()">保存</button>
@@ -440,6 +449,7 @@ import axios from 'axios';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
 import {currentTime} from '../../assets/script/date';
+import { Validator } from 'vee-validate';
 export default {
   name: 'setting',
   data () {
@@ -447,6 +457,7 @@ export default {
       //baseUrl:"http://localhost:9000/main/",
       basePath:"appMSJava/static",
       coalmine:{},
+      coalmineOld:{},
 
       periodNew:{},
       periodOld:{},
@@ -713,25 +724,30 @@ export default {
           delete self.periodOld.uber;
         }
       });
+      self.errors.clear('update_period_form');
       $("#update_period_modal").modal('show');
     },
 
     /* 修改并更新周期信息 */
     updatePeriod() {
       let self = this;
-      axios.put('/base/period/', self.periodOld).then((response) => {
-        let { meta, data } = response.data;
-        if (meta.success) {
-            if (data && data.result == 1) {
-              bootbox.alert({ title:'修改周期信息', message: '周期信息修改成功!' });
-            }else {
-              bootbox.alert({ title:'修改周期信息', message: '周期信息修改失败!' });
-            }
-            $("#update_period_modal").modal('hide');
-            self.loadPeriodList();
-        } else {
-          bootbox.alert({ title:'修改周期信息', message: meta.message });
-        }
+      this.$validator.validateAll("update_period_form").then(() => {
+        axios.put('/base/period/', self.periodOld).then((response) => {
+          let { meta, data } = response.data;
+          if (meta.success) {
+              if (data && data.result == 1) {
+                bootbox.alert({ title:'修改周期信息', message: '周期信息修改成功!' });
+              }else {
+                bootbox.alert({ title:'修改周期信息', message: '周期信息修改失败!' });
+              }
+              $("#update_period_modal").modal('hide');
+              self.loadPeriodList();
+          } else {
+            bootbox.alert({ title:'修改周期信息', message: meta.message });
+          }
+        });
+      }).catch(() => {
+
       });
     },
     /* 周期复选框全选 */
@@ -952,6 +968,8 @@ export default {
         let {meta,data} = response.data;
         if (meta.success) {
           self.coalmine = data.coalmineInfo;
+          self.coalmineOld = deepCopy(data.coalmineInfo);
+          delete self.coalmineOld.uber;
         } else {
           bootbox.alert({
             title:"煤矿信息",
@@ -960,22 +978,36 @@ export default {
         }
       });
     },
+      /* 点击修改按钮 */
+    clickUpdateCoalmine(){
+      let self = this;
+      self.coalmineOld = deepCopy(self.coalmine);
+      delete self.coalmineOld.uber;
+      self.errors.clear('update_coalmine_form');
+      $("#update_coalmine_modal").modal('show');
+    },
 
     /* 修改煤矿信息 */
     updateCoalmine() {
       let self = this;
-      axios.put('/base/coalmine/', self.coalmine).then((response) => {
-        let { meta, data } = response.data;
-        if (meta.success) {
-            if (data && data.result == 1) {
-              bootbox.alert({ title:'修改煤矿信息', message: '煤矿信息修改成功!' });
-            }else {
-              bootbox.alert({title:'修改煤矿信息',  message: '煤矿信息修改失败!' });
-            }
-            $("#update_coalmine_modal").modal('hide');
-        } else {
-          bootbox.alert({ title:'修改煤矿信息', message: meta.message });
-        }
+      this.$validator.validateAll("update_coalmine_form").then(() => {
+        axios.put('/base/coalmine/', self.coalmineOld).then((response) => {
+          let { meta, data } = response.data;
+          if (meta.success) {
+              if (data && data.result == 1) {
+                self.coalmine = deepCopy(self.coalmineOld);
+                delete self.coalmine.uber;
+                bootbox.alert({ title:'修改煤矿信息', message: '煤矿信息修改成功!' });
+              }else {
+                bootbox.alert({title:'修改煤矿信息',  message: '煤矿信息修改失败!' });
+              }
+              $("#update_coalmine_modal").modal('hide');
+          } else {
+            bootbox.alert({ title:'修改煤矿信息', message: meta.message });
+          }
+        });
+      }).catch(() => {
+
       });
     },
 

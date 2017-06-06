@@ -83,28 +83,31 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">角色名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="roleNew.roleName
-                  ">
+              <form data-vv-scope="add_role_form">
+                <div class="input-group-line">
+                  <div class="group-left">角色名称</div>
+                  <div class="group-right"  :class="{'is-danger':errors.has('add_role_form.add_roleName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_roleName" v-model="roleNew.roleName
+                    ">
+                  </div>
+                  <span v-show="errors.has('add_role_form.add_roleName')" class="word-danger">{{ errors.first('add_role_form.add_roleName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="roleNew.inUse">
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="roleNew.inUse">
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="roleNew.inUse">
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="roleNew.inUse">
+                    <span>禁用</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">角色描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="roleNew.description">
+                <div class="input-group-line">
+                  <div class="group-left">角色描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="roleNew.description">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -127,28 +130,31 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">角色名称</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="roleOld.roleName
-                  ">
+              <form data-vv-scope="update_role_form">
+                <div class="input-group-line">
+                  <div class="group-left">角色名称</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_role_form.update_roleName')}">
+                    <input class="form-control refresh" type="text" v-validate="'required'" name="update_roleName" v-model="roleOld.roleName
+                    ">
+                  </div>
+                  <span v-show="errors.has('update_role_form.update_roleName')" class="word-danger">{{ errors.first('update_role_form.update_roleName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="roleOld.inUse">
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="roleOld.inUse">
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="roleOld.inUse">
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="roleOld.inUse">
+                    <span>禁用</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">角色描述</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="roleOld.description">
+                <div class="input-group-line">
+                  <div class="group-left">角色描述</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="roleOld.description">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -195,6 +201,7 @@ import { deepCopy } from '../../assets/script/extends';
 import ztree from '../../assets/script/ztree/jquery.ztree.core.min';
 import exedit from '../../assets/script/ztree/jquery.ztree.exedit.min';
 import excheck from '../../assets/script/ztree/jquery.ztree.excheck.min';
+import { Validator } from 'vee-validate';
 export default {
   name: 'role',
   data () {
@@ -307,20 +314,24 @@ export default {
     /* 添加一个新的角色 */
     addRole() {
       let self = this;
-      axios.post('/base/role', self.roleNew).then((response) => {
-        let meta = response.data.meta;
-        if (meta.success) {
-          let data = response.data.data;
-          if (data && data.result == 1) {
-            bootbox.alert({ title:'添加角色信息', message: '角色信息添加成功!' });
-          }else {
-            bootbox.alert({ title:'添加角色信息', message: '角色信息添加失败!' });
+      this.$validator.validateAll("add_role_form").then(() => {
+        axios.post('/base/role', self.roleNew).then((response) => {
+          let meta = response.data.meta;
+          if (meta.success) {
+            let data = response.data.data;
+            if (data && data.result == 1) {
+              bootbox.alert({ title:'添加角色信息', message: '角色信息添加成功!' });
+            }else {
+              bootbox.alert({ title:'添加角色信息', message: '角色信息添加失败!' });
+            }
+            $("#add_role_modal").modal('hide');
+            self.defaultLoadRoleList();
+          } else {
+            bootbox.alert({ title:'添加角色信息', message: '服务器内部错误, 角色信息添加失败!'});
           }
-          $("#add_role_modal").modal('hide');
-          self.defaultLoadRoleList();
-        } else {
-          bootbox.alert({ title:'添加角色信息', message: '服务器内部错误, 角色信息添加失败!'});
-        }
+        });
+      }).catch(() => {
+
       });
     },
 
@@ -385,25 +396,30 @@ export default {
           delete self.roleOld.uber;
         }
       });
+      self.errors.clear('update_role_form');
       $("#update_role_modal").modal('show');
     },
 
     /* 修改并更新角色信息 */
     updateRole() {
       let self = this;
-      axios.put('/base/role/', self.roleOld).then((response) => {
-        let { meta, data } = response.data;
-        if (meta.success) {
-            if (data && data.result == 1) {
-              bootbox.alert({ title:'修改角色信息', message: '角色信息修改成功!' });
-            }else {
-              bootbox.alert({ title:'修改角色信息', message: '角色信息修改失败!' });
-            }
-            $("#update_role_modal").modal('hide');
-            self.defaultLoadRoleList();
-        } else {
-          bootbox.alert({  title:'修改角色信息', message: meta.message });
-        }
+      this.$validator.validateAll("update_role_form").then(() => {
+        axios.put('/base/role/', self.roleOld).then((response) => {
+          let { meta, data } = response.data;
+          if (meta.success) {
+              if (data && data.result == 1) {
+                bootbox.alert({ title:'修改角色信息', message: '角色信息修改成功!' });
+              }else {
+                bootbox.alert({ title:'修改角色信息', message: '角色信息修改失败!' });
+              }
+              $("#update_role_modal").modal('hide');
+              self.defaultLoadRoleList();
+          } else {
+            bootbox.alert({  title:'修改角色信息', message: meta.message });
+          }
+        });
+      }).catch(() => {
+
       });
     },
 

@@ -33,7 +33,7 @@
       </div>
       <div class="table-box outside-box">
         <div class="btn-box">
-          <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_user_modal">添加用户</button>
+          <button class="btn btn-primary fl" type="button" data-toggle="modal" data-target="#add_user_modal" @click="errors.clear()">添加用户</button>
           <button class="btn btn-primary fl" type="button" @click="checkSelect('DELETE_USER')">批量删除</button>
         </div>
         <div class="data-box">
@@ -89,42 +89,46 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">用户名</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="userNew.userName
-                  ">
+              <form data-vv-scope="add_user_form">
+                <div class="input-group-line">
+                  <div class="group-left">用户名</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_user_form.add_userName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="add_userName"  v-model="userNew.userName
+                    ">
+                  </div>
+                  <span v-show="errors.has('add_user_form.add_userName')" class="word-danger">{{ errors.first('add_user_form.add_userName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">密码</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="password" name="" v-model="userNew.password
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">密码</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('add_user_form.add_password')}">
+                    <input class="form-control refresh" type="password" v-validate="'required'" name="add_password" v-model="userNew.password
+                    ">
+                  </div>
+                  <span v-show="errors.has('add_user_form.add_password')" class="word-danger">{{ errors.first('add_user_form.add_password') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="userNew.inUse">
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="userNew.inUse">
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="userNew.inUse">
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="userNew.inUse">
+                    <span>禁用</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">创建时间</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userNew.createTime
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">创建时间</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userNew.createTime
+                    ">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="userNew.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="userNew.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -145,50 +149,54 @@
             </button>
             <h4 class="modal-title">修改用户信息</h4>
           </div>
-              <div class="modal-body">
+          <div class="modal-body">
             <div class="modal-table-box">
-              <div class="input-group-line">
-                <div class="group-left">用户名</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="userOld.userName
-                  ">
+              <form data-vv-scope="update_user_form">
+                <div class="input-group-line">
+                  <div class="group-left">用户名</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_user_form.update_userName')}">
+                    <input class="form-control refresh" v-validate="'required'" type="text" name="update_userName" v-model="userOld.userName
+                    ">
+                  </div>
+                  <span v-show="errors.has('update_user_form.update_userName')" class="word-danger">{{ errors.first('update_user_form.update_userName') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">密码</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="password" name="" v-model="userOld.password
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">密码</div>
+                  <div class="group-right" :class="{'is-danger':errors.has('update_user_form.update_password')}">
+                    <input class="form-control refresh" type="password" v-validate="'required'" name="update_password" v-model="userOld.password
+                    ">
+                  </div>
+                  <span v-show="errors.has('update_user_form.update_password')" class="word-danger">{{ errors.first('update_user_form.update_password') ? "不能为空" : "" }}</span>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">是否启用</div>
-                <div class="group-right">
-                  <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="userOld.inUse">
-                  <span>启用</span>
-                  <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="userOld.inUse">
-                  <span>禁用</span>
+                <div class="input-group-line">
+                  <div class="group-left">是否启用</div>
+                  <div class="group-right">
+                    <input class="refresh" style="margin-left: 2%;" checked="checked" type="radio" value="1" v-model="userOld.inUse">
+                    <span>启用</span>
+                    <input class="refresh" style="margin-left: 10%;" type="radio" value="0" v-model="userOld.inUse">
+                    <span>禁用</span>
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">创建时间</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userOld.createTime
-                  ">
+                <div class="input-group-line">
+                  <div class="group-left">创建时间</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userOld.createTime
+                    ">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">最近登录时间</div>
-                <div class="group-right">
-                  <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userOld.lastLoginTime">
+                <div class="input-group-line">
+                  <div class="group-left">最近登录时间</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" disabled="disabled" type="text" name="" v-model="userOld.lastLoginTime">
+                  </div>
                 </div>
-              </div>
-              <div class="input-group-line">
-                <div class="group-left">备注</div>
-                <div class="group-right">
-                  <input class="form-control refresh" type="text" name="" v-model="userOld.remark">
+                <div class="input-group-line">
+                  <div class="group-left">备注</div>
+                  <div class="group-right">
+                    <input class="form-control refresh" type="text" name="" v-model="userOld.remark">
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div class="modal-footer">
@@ -234,6 +242,8 @@ import axios from 'axios';
 import {currentTime} from '../../assets/script/date';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
+import { Validator } from 'vee-validate';
+
 export default {
   name: 'user',
   data () {
@@ -267,7 +277,7 @@ export default {
           createTime: self.current(),
           lastLoginTime: self.current(),
           remark: '',
-        }
+        };
       });
     },
 
@@ -331,20 +341,27 @@ export default {
     /* 添加一个新的用户 */
     addUser() {
       let self = this;
-      axios.post('/base/user', self.userNew).then((response) => {
-        let meta = response.data.meta;
-        if (meta.success) {
-          let data = response.data.data;
-          if (data && data.result == 1) { 
-            bootbox.alert({ title:'添加用户信息', message: '用户信息添加成功!' }); 
-          }else { 
-            bootbox.alert({ title:'添加用户信息', message: '用户信息添加失败!' }); 
+
+      this.$validator.validateAll("add_user_form").then(() => {
+
+        axios.post('/base/user', self.userNew).then((response) => {
+          let meta = response.data.meta;
+          if (meta.success) {
+            let data = response.data.data;
+            if (data && data.result == 1) { 
+              bootbox.alert({ title:'添加用户信息', message: '用户信息添加成功!' }); 
+            }else { 
+              bootbox.alert({ title:'添加用户信息', message: '用户信息添加失败!' }); 
+            }
+            $("#add_user_modal").modal('hide');
+            self.defaultLoadUserList();
+          } else {
+            bootbox.alert({ title:'添加用户信息', message: '服务器内部错误, 用户信息添加失败!'});
           }
-          $("#add_user_modal").modal('hide');
-          self.defaultLoadUserList();
-        } else {
-          bootbox.alert({ title:'添加用户信息', message: '服务器内部错误, 用户信息添加失败!'});
-        }
+        });
+
+      }).catch(() => {
+
       });
     },
     
@@ -411,25 +428,30 @@ export default {
           delete self.userOld.uber;
         }
       });
+      self.errors.clear('update_user_form');
       $("#update_user_modal").modal('show');
     },
 
     /* 修改并更新用户信息 */
     updateUser () {
       let self = this;
-      axios.put('/base/user/', self.userOld).then((response) => {
-        let { meta, data } = response.data;
-        if (meta.success) {
-            if (data && data.result == 1) { 
-              bootbox.alert({ title:'修改用户信息',  message: '用户信息修改成功!' }); 
-            }else { 
-              bootbox.alert({ title:'修改用户信息',  message: '用户信息修改失败!' }); 
-            }
-            $("#update_user_modal").modal('hide');
-            self.defaultLoadUserList();
-        } else { 
-          bootbox.alert({  title:'修改用户信息', message: meta.message }); 
-        }
+      this.$validator.validateAll("update_user_form").then(() => {
+        axios.put('/base/user/', self.userOld).then((response) => {
+          let { meta, data } = response.data;
+          if (meta.success) {
+              if (data && data.result == 1) { 
+                bootbox.alert({ title:'修改用户信息',  message: '用户信息修改成功!' }); 
+              }else { 
+                bootbox.alert({ title:'修改用户信息',  message: '用户信息修改失败!' }); 
+              }
+              $("#update_user_modal").modal('hide');
+              self.defaultLoadUserList();
+          } else { 
+            bootbox.alert({  title:'修改用户信息', message: meta.message }); 
+          }
+        });
+      }).catch(() => {
+
       });
     },
 
