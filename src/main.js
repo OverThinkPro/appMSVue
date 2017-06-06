@@ -36,36 +36,13 @@ Vue.config.productionTip = false;
 router.beforeEach((to, from, next) => {
   if (to.path == '/Login') {
     window.sessionStorage.removeItem('user');
+    // window.sessionStorage.removeItem('menuList');
   }
   let user = window.sessionStorage.getItem('user');
   if (!user && to.path != '/Login') {
     next({ path: '/Login' });
   } else {
     next();
-    // let success = false;
-    // let menuList = JSON.parse(window.sessionStorage.getItem('menuList'));
-    //
-    // if (menuList) {
-    //   for (let i = 0; i < menuList.length; i++) {
-    //     if (to.path == menuList[i]) {
-    //       success = true;
-    //       break;
-    //     } else {
-    //       success = false;
-    //       for (let j = 0; j < menuList[i].children.length; j++) {
-    //         if (to.path == menuList[i]) {
-    //           success = true;
-    //           break;
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-    // if (success) {
-    //   next();
-    // } else {
-    //   next({ path: '/Login' });
-    // }
   }
 });
 
