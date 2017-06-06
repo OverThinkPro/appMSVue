@@ -371,7 +371,7 @@ export default {
         }),
         stroke: new ol.style.Stroke({
           color: '#319FD3',
-          width: 2
+          width: 4
         })
       });
       // 高亮区域样式
@@ -381,7 +381,7 @@ export default {
         }),
         stroke: new ol.style.Stroke({
           color: 'red',
-          width: 2
+          width: 4
         })
       });
       // 地图

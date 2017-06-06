@@ -358,8 +358,8 @@ export default {
             properties = { "name": staff.staff_name, "id": staff.staff_id, "staffInfoId": staff.staff_info_id};
 
         // 随机数仿真测试
-        geometry.coordinates[0] += index * 100000 * Math.random();
-        geometry.coordinates[1] += index * 1000 * Math.random();
+        // geometry.coordinates[0] += index * 100000 * Math.random();
+        // geometry.coordinates[1] += index * 1000 * Math.random();
         featureList.push(createPointFeature(geometry, properties));
       });
 

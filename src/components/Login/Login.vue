@@ -7,24 +7,29 @@
       <div id="l-main" class="l-container">
         <div class="lr-container">
           <div class="login-wrapper">
-            <div class="input-line">
-              <label for="">账户</label>
-              <input id="account" class="form-control" :class="{'is-danger':errors.has('account')}" v-validate="'required'" type="text" name="account" v-model="user.userName">
-            </div>
-            <div class="input-line">
-              <label for="">密码</label>
-              <input id="password" class="form-control" :class="{'is-danger':errors.has('password')}" v-validate="'required|min:6'" type="password" name="password" v-model="user.password">
-            </div>
-            <div class="input-line" style="margin-bottom: 25px;">
-              <label for="">验证码</label>
-              <div id="input-row">
-                <input type="text" class="form-control" :class="{'is-danger':errors.has('verifyCodeInp')}" v-validate="'required'" name="verifyCodeInp">
-                <div id="verifyCodeContainer"></div>
+            <form data-vv-scope="my_login_form">
+              <div class="input-line">
+                <label for="">账户</label>
+                <!-- <input id="account" class="form-control" :class="{'is-danger':errors.has('my_login_form.account')}" v-validate="'required'" type="text" name="account" v-model="user.userName"> -->
+                <input id="account" class="form-control" v-validate="'required'" type="text" name="account" v-model="user.userName">
               </div>
-            </div>
-            <div class="submit_btn">
-              <button type="button" class="btn btn-lg btn-primary btn-block" @click="doLogin()">登录</button>
-            </div>
+              <div class="input-line">
+                <label for="">密码</label>
+                <!-- <input id="password" class="form-control" :class="{'is-danger':errors.has('my_login_form.password')}" v-validate="'required|min:6'" type="password" name="password" v-model="user.password"> -->
+                <input id="password" class="form-control" v-validate="'required|min:6'" type="password" name="password" v-model="user.password">
+              </div>
+              <div class="input-line" style="margin-bottom: 25px;">
+                <label for="">验证码</label>
+                <div id="input-row">
+                  <!-- <input type="text" class="form-control" :class="{'is-danger':errors.has('my_login_form.verifyCodeInp')}" v-validate="'required'" name="verifyCodeInp"> -->
+                  <input type="text" class="form-control" v-validate="'required'" name="verifyCodeInp">
+                  <div id="verifyCodeContainer"></div>
+                </div>
+              </div>
+              <div class="submit_btn">
+                <button type="button" class="btn btn-lg btn-primary btn-block" @click="doLogin()">登录</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -55,7 +60,7 @@ export default {
   mounted () {
     this.initEvent();
     this.loadVerify();
-    // this.errors.clear();
+    this.errors.clear('my_login_form');
     window.addEventListener('keyup', this.doLogin());
   },
   methods: {
@@ -73,7 +78,7 @@ export default {
     doLogin () {
       let self = this;
 
-      this.$validator.validateAll().then(() => {
+      this.$validator.validateAll('my_login_form').then(() => {
 
         let verifyResult = self.verifyCode.validate($("input[name='verifyCodeInp']").val());
         if (verifyResult) {
@@ -84,6 +89,7 @@ export default {
                 if (data && data.user) {
                   let user = data.user;
 
+                  self.errors.clear();
                   window.sessionStorage.setItem('user', JSON.stringify(user));
                   if (data.isHome > 0) {
                     self.$router.push("/Main");

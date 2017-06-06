@@ -839,7 +839,7 @@ export default {
                       }),
                       stroke: new ol.style.Stroke({
                         color: '#319FD3',
-                        width: 2
+                        width: 4
                       })
                     })
                   });

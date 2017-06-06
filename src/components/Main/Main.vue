@@ -791,10 +791,10 @@ export default {
             rotation: Math.PI/35
   				})
   			});
-        self.mapCache.realMap.on('click', function (evt) {
-          var point = evt.coordinate; //鼠标单击点坐标
-          alert(point);
-        });
+        // self.mapCache.realMap.on('click', function (evt) {
+        //   var point = evt.coordinate; //鼠标单击点坐标
+        //   alert(point);
+        // });
         // 装载人员位置图层
         // self.loadMapStaffLayer();
 
@@ -842,7 +842,7 @@ export default {
           }),
           stroke: new ol.style.Stroke({
             color: '#319FD3',
-            width: 2
+            width: 4
           })
         });
         self.mapCache.regionLayer = new ol.layer.Vector({
@@ -1008,8 +1008,8 @@ export default {
             properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name, "jobId": staff.job_id, "jobIconUrl": staff.job_icon_url};
 
         // 装载员工pointFeature
-        geometry.coordinates[0] += index * 100000 * Math.random();
-        geometry.coordinates[0] += index * 1000 * Math.random();
+        // geometry.coordinates[0] += index * 100000 * Math.random();
+        // geometry.coordinates[0] += index * 1000 * Math.random();
         featureList.push(self.createFeature(geometry, properties));
       });
 

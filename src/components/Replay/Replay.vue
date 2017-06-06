@@ -343,69 +343,72 @@ export default {
       }
       self.currentlayer = replayLayer;
       self.replayMap.addLayer(replayLayer);
-      // 获取全部坐标点
-      self.staffMapCache.staffList.forEach(function(staff, index) {
-        let x = staff.pointx, y = staff.pointy;
-        let pointFeature = new ol.Feature({
-          geometry: new ol.geom.Point(ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857'))
+
+      if (self.staffMapCache.staffList.length > 0) {
+        // 获取全部坐标点
+        self.staffMapCache.staffList.forEach(function(staff, index) {
+          let x = staff.pointx, y = staff.pointy;
+          let pointFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857'))
+          });
+
+          let propertiesList = new Array();
+          propertiesList.push(staff.staff_id, staff.staff_name, staff.staff_info_his_id, x, y);
+          pointFeature.setProperties(propertiesList);
+
+          if (pointFeature != null) {
+            pointList.push(pointFeature);
+          }
         });
 
-        let propertiesList = new Array();
-        propertiesList.push(staff.staff_id, staff.staff_name, staff.staff_info_his_id, x, y);
-        pointFeature.setProperties(propertiesList);
-
-        if (pointFeature != null) {
-          pointList.push(pointFeature);
-        }
-      });
-
-      let j = 0;
-      let iconStyle = new ol.style.Style({
-          fill: new ol.style.Fill({ //矢量图层填充颜色，以及透明度
-            color: 'rgba(255, 255, 255, 0.6)'
-          }),
-          stroke: new ol.style.Stroke({ //边界样式
-            color: '#319FD3',
-            width: 10
-          }),
-          text: new ol.style.Text({ //文本样式
-            font: '30px Calibri,sans-serif',
-            fill: new ol.style.Fill({
-              color: '#000'
+        let j = 0;
+        let iconStyle = new ol.style.Style({
+            fill: new ol.style.Fill({ //矢量图层填充颜色，以及透明度
+              color: 'rgba(255, 255, 255, 0.6)'
             }),
-            stroke: new ol.style.Stroke({
-              color: '#fff',
+            stroke: new ol.style.Stroke({ //边界样式
+              color: '#319FD3',
               width: 10
+            }),
+            text: new ol.style.Text({ //文本样式
+              font: '30px Calibri,sans-serif',
+              fill: new ol.style.Fill({
+                color: '#000'
+              }),
+              stroke: new ol.style.Stroke({
+                color: '#fff',
+                width: 10
+              })
             })
-          })
-      });
+        });
 
-      let newCenter = pointList[0].getGeometry().getCoordinates();
-      self.replayMap.getView().setCenter(newCenter);
-      var stopTime = setInterval(function() {
-        if (j + 1 <= pointList.length) {
-          if (j > 0) {
-            let doubleCoordinatePoint = new Array();
-            let coordinateFirst = pointList[j - 1].getGeometry().getCoordinates();
-            let coordinateSecond = pointList[j].getGeometry().getCoordinates();
-            doubleCoordinatePoint.push(coordinateFirst, coordinateSecond);
+        let newCenter = pointList[0].getGeometry().getCoordinates();
+        self.replayMap.getView().setCenter(newCenter);
+        var stopTime = setInterval(function() {
+          if (j + 1 <= pointList.length) {
+            if (j > 0) {
+              let doubleCoordinatePoint = new Array();
+              let coordinateFirst = pointList[j - 1].getGeometry().getCoordinates();
+              let coordinateSecond = pointList[j].getGeometry().getCoordinates();
+              doubleCoordinatePoint.push(coordinateFirst, coordinateSecond);
 
-            let lineString = new ol.geom.LineString(doubleCoordinatePoint);
+              let lineString = new ol.geom.LineString(doubleCoordinatePoint);
 
-            let lineFeature = new ol.Feature({
-              geometry: lineString
-            });
+              let lineFeature = new ol.Feature({
+                geometry: lineString
+              });
 
-            replayLayer.getSource().addFeature(lineFeature);
-            pointList[j - 1].setStyle(null);
+              replayLayer.getSource().addFeature(lineFeature);
+              pointList[j - 1].setStyle(null);
+            }
+            pointList[j].setStyle(iconStyle);
+            replayLayer.getSource().addFeature(pointList[j]);
+          } else {
+            clearInterval(stopTime);
           }
-          pointList[j].setStyle(iconStyle);
-          replayLayer.getSource().addFeature(pointList[j]);
-        } else {
-          clearInterval(stopTime);
-        }
-        j++;
-      }, 2000);
+          j++;
+        }, 2000);
+      }
     }
   }
 };
