@@ -78,7 +78,7 @@ export default {
     doLogin () {
       let self = this;
 
-      this.$validator.validateAll('my_login_form').then(() => {
+      // this.$validator.validateAll('my_login_form').then(() => {
 
         let verifyResult = self.verifyCode.validate($("input[name='verifyCodeInp']").val());
         if (verifyResult) {
@@ -106,9 +106,9 @@ export default {
         } else {
           $("input[name='verifyCodeInp']").val("");
         }
-      }).catch(() => {
-
-      });
+      // }).catch(() => {
+      //
+      // });
     }
   }
 };

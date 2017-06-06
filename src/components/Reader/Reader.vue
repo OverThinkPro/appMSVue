@@ -729,9 +729,9 @@ export default {
           layers: [
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://192.168.2.105:8080/geoserver/wms',
+                url: 'http://localhost:8080/geoserver/map/wms',
                 params: {
-                  'LAYERS': 'myditu',
+                  'LAYERS': 'map:minegroup',
                   'VERSION': '1.1.0'
                 },
                 serverType: 'geoserver'
@@ -762,9 +762,9 @@ export default {
           layers: [
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://192.168.2.105:8080/geoserver/wms',
+                url: 'http://localhost:8080/geoserver/map/wms',
                 params: {
-                  'LAYERS': 'myditu',
+                  'LAYERS': 'map:minegroup',
                   'VERSION': '1.1.0'
                 },
                 serverType: 'geoserver'
@@ -792,9 +792,9 @@ export default {
           layers: [
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://192.168.2.105:8080/geoserver/wms',
+                url: 'http://localhost:8080/geoserver/map/wms',
                 params: {
-                  'LAYERS': 'myditu',
+                  'LAYERS': 'map:minegroup',
                   'VERSION': '1.1.0'
                 },
                 serverType: 'geoserver'
