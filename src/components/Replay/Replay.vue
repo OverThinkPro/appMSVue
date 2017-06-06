@@ -368,7 +368,7 @@ export default {
             }),
             stroke: new ol.style.Stroke({ //边界样式
               color: '#319FD3',
-              width: 10
+              width: 12
             }),
             text: new ol.style.Text({ //文本样式
               font: '30px Calibri,sans-serif',
@@ -377,7 +377,7 @@ export default {
               }),
               stroke: new ol.style.Stroke({
                 color: '#fff',
-                width: 10
+                width: 12
               })
             })
         });

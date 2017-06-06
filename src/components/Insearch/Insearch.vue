@@ -191,7 +191,7 @@ export default {
           ],
           view: new ol.View({
             center: [-7352981.95804323, 4148924.9077592203],
-            zoom: 13,
+            zoom: 15,
             minZoom: 3,
             maxZoom: 20,
             rotation: Math.PI/35
@@ -366,7 +366,10 @@ export default {
 
       let featureCollection = createFeatureCollection(featureList);
       let pointSource = new ol.source.Vector({
-        features: new ol.format.GeoJSON().readFeatures(featureCollection)
+        features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+          dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+          featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+        })
       });
       let pointLayer = new ol.layer.Vector({
         source: pointSource,
@@ -394,7 +397,7 @@ export default {
       self.insearchMap.addLayer(pointLayer);
       let newPoint = JSON.parse(self.staffMapCache.staffList[0].point);
       let newCenter = newPoint.coordinates;
-      self.insearchMap.getView().setCenter(newCenter);
+      // self.insearchMap.getView().setCenter(newCenter);
 
       function createPointFeature(geometry, properties) {
         let feature = {
