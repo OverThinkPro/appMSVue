@@ -16,7 +16,7 @@
           <li role="presentation"><a href="" data-target="#period_setting_tab" aria-controls="period_setting_tab" role="tab" data-toggle="tab" @click="clickPeriodTab()">人员位置数据采集周期</a></li>
           <li role="presentation"><a href="" data-target="#alarm_type_tab" aria-controls="alarm_type_tab" role="tab" data-toggle="tab" @click="clickAlarmTypeTab()">报警声音</a></li>
           <li role="presentation"><a href="" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab" @click="clickMapTab()">地图底图</a></li>
-          <li role="presentation"><a href="" data-target="#job_type_tab" aria-controls="job_type_tab" role="tab" data-toggle="tab" @click="clickJobTypeTab()">工种图例</a></li>
+          <li role="presentation"><a href="" data-target="#job_type_tab" id="job_type_tab_title" aria-controls="job_type_tab" role="tab" data-toggle="tab" @click="clickJobTypeTab()">工种图例</a></li>
         </ul>
         <div class="tab-content">
           <!-- 煤矿信息 -->
@@ -136,7 +136,7 @@
             </div>
           </div>
           <!-- 工种图例 -->
-          <div role="tabpanel" class="tab-pane" id="job_type_tab">
+          <div role="tabpanel" class="tab-pane" id="job_type_tab1">
             <div class="job-type-wrap">
               <div class="row">
                 <div class="col-sm-6 col-md-2" style="height:230px" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
@@ -152,9 +152,98 @@
               </div>
             </div>
           </div>
+           <!-- 工种图例 -->
+          <div role="tabpanel" class="tab-pane" id="job_type_tab">
+            <div class="job-type-wrap" id="crop-avatar">
+              <!-- <div class="container" id="crop-avatar" > -->
+              <div class="row">
+                <div class="col-sm-6 col-md-2" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
+                  <div class="avatar-view thumbnail" title="Change the avatar">
+                    <img v-if="jobType.jobIconUrl!=''" :src="jobType.jobIconUrl" height="200" width="200" :onerror="defaultJobTypePic">
+                    <!-- <img v-else src="../../assets/logo.png" height="200" width="200" :onerror="defaultJobTypePic"> -->
+                    <div class="caption">
+                      <p>{{jobType.jobName}}</p>
+                      <!-- <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p> -->
+                      <input type="hidden" :name="jobType.jobId">
+                    </div>
+                    
+                  </div>
+                </div> 
+              </div>
+               <!--  </div> -->
+                 <!-- Current avatar -->
+             
+
+                <!-- Cropping modal -->
+                <div class="modal fade" id="update_job_pic_modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <form class="avatar-form" action="/main/base/jobtype/upload" enctype="multipart/form-data" method="post">
+                        <div class="modal-header">
+                          <button class="close" data-dismiss="modal" type="button">&times;</button>
+                          <h4 class="modal-title" id="avatar-modal-label">Change Avatar</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="avatar-body">
+
+                            <!-- Upload image and data -->
+                            <div class="avatar-upload">
+                              <input class="avatar-src" name="avatar_src" type="hidden">
+                              <input class="avatar-data" name="avatar_data" type="hidden">
+                              <label for="avatarInput">Local upload</label>
+                              <input class="avatar-input" id="avatarInput" name="avatar_file" type="file">
+                            </div>
+
+                            <!-- Crop and preview -->
+                            <div class="row">
+                              <div class="col-md-9">
+                                <div class="avatar-wrapper"></div>
+                              </div>
+                              <div class="col-md-3">
+                                <div class="avatar-preview preview-lg"></div>
+                                <div class="avatar-preview preview-md"></div>
+                                <div class="avatar-preview preview-sm"></div>
+                              </div>
+                            </div>
+
+                            <div class="row avatar-btns">
+                              <div class="col-md-9">
+                                <div class="btn-group">
+                                  <button class="btn btn-primary" data-method="rotate" data-option="-90" type="button" title="Rotate -90 degrees">Rotate Left</button>
+                                  <button class="btn btn-primary" data-method="rotate" data-option="-15" type="button">-15deg</button>
+                                  <button class="btn btn-primary" data-method="rotate" data-option="-30" type="button">-30deg</button>
+                                  <button class="btn btn-primary" data-method="rotate" data-option="-45" type="button">-45deg</button>
+                                </div>
+                                <div class="btn-group">
+                                  <button class="btn btn-primary" data-method="rotate" data-option="90" type="button" title="Rotate 90 degrees">Rotate Right</button>
+                                  <button class="btn btn-primary" data-method="rotate" data-option="15" type="button">15deg</button>
+                                  <button class="btn btn-primary" data-method="rotate" data-option="30" type="button">30deg</button>
+                                  <button class="btn btn-primary" data-method="rotate" data-option="45" type="button">45deg</button>
+                                </div>
+                              </div>
+                              <div class="col-md-3">
+                                <button class="btn btn-primary btn-block avatar-save" type="submit">Done</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div><!-- /.modal -->
+                <!-- Loading state -->
+                <div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+            </div>
+          </div>
+
+
         </div>
       </div>
     </main>
+    
     <!-- 修改煤矿信息模态框 -->
     <div class="modal fade" id="update_coalmine_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -408,8 +497,8 @@
         </div>
       </div>
     </div>
-    <!-- 修改工种图标模态框 -->
-    <div class="modal fade" id="update_job_pic_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <!-- 修改工种图标模态框 -->
+    <div class="modal fade" id="update_job_pic_modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -440,12 +529,16 @@
         </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
 <script>
 import bootbox from 'bootbox/bootbox.min';
 import axios from 'axios';
+import { cropper } from '../../assets/script/cropper/js/cropper.js';
+import { cropperMain } from '../../assets/script/cropper/js/main.js';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
 import {currentTime} from '../../assets/script/date';
@@ -455,7 +548,7 @@ export default {
   data () {
     return {
       //baseUrl:"http://localhost:9000/main/",
-      basePath:"appMSJava/static",
+      basePath:"http://localhost:8080/appMSJava",
       coalmine:{},
       coalmineOld:{},
 
@@ -487,6 +580,9 @@ export default {
   mounted () {
     this.initEvent();
     this.loadCoalmine();
+    this.clickPeriodTab();
+    this.clickAlarmTypeTab();
+    this.clickJobTypeTab();
   },
   methods: {
     initEvent () {
@@ -1049,7 +1145,7 @@ export default {
           delete self.jobType.uber;
         }
       });
-      $("#update_job_pic_modal").modal('show');
+      $("#update_job_pic_modal1").modal('show');
     },
 
     // 修改工种图例信息
@@ -1070,7 +1166,7 @@ export default {
             }else {
               bootbox.alert({ title:"工种图例", message: '工种信息修改失败!' });
             }
-            $("#update_job_pic_modal").modal('hide');
+            $("#update_job_pic_modal1").modal('hide');
             self.defaultLoadJobType();
         } else { bootbox.alert({ title:"工种图例", message: meta.message }); }
       });
@@ -1104,6 +1200,8 @@ export default {
 </script>
 
 <style lang="css" scoped>
+@import "../../assets/script/cropper/css/cropper.css";
+@import "../../assets/script/cropper/css/main.css";
 #setting {
   width: 100%;
 }
@@ -1126,5 +1224,17 @@ export default {
 } */
 .table > tbody > tr > td{
   line-height: 1.4;
+}
+
+#update_job_pic_modal .modal-dialog {
+    width: 1000px;
+}
+.avatar-view {
+    height: 250px;
+
+}
+.container{
+  margin:0;
+  padding: 0;
 }
 </style>

@@ -10,27 +10,29 @@
 })(function ($) {
 
   'use strict';
-
+  var jobId = null;
+  var basePath = "http://localhost:8080/appMSJava";
   var console = window.console || { log: function () {} };
 
   function CropAvatar($element) {
+
     this.$container = $element;
 
-    this.$avatarView = this.$container.find('.avatar-view');
-    this.$avatar = this.$avatarView.find('img');
-    this.$avatarModal = this.$container.find('#avatar-modal');
-    this.$loading = this.$container.find('.loading');
+    this.$avatarView = $('.avatar-view');
+    this.$avatar = null;
+    this.$avatarModal = $('#update_job_pic_modal');
+    this.$loading = $('.loading');
 
-    this.$avatarForm = this.$avatarModal.find('.avatar-form');
-    this.$avatarUpload = this.$avatarForm.find('.avatar-upload');
-    this.$avatarSrc = this.$avatarForm.find('.avatar-src');
-    this.$avatarData = this.$avatarForm.find('.avatar-data');
-    this.$avatarInput = this.$avatarForm.find('.avatar-input');
-    this.$avatarSave = this.$avatarForm.find('.avatar-save');
-    this.$avatarBtns = this.$avatarForm.find('.avatar-btns');
+    this.$avatarForm = $('.avatar-form');
+    this.$avatarUpload = $('.avatar-upload');
+    this.$avatarSrc = $('.avatar-src');
+    this.$avatarData = $('.avatar-data');
+    this.$avatarInput = $('.avatar-input');
+    this.$avatarSave = $('.avatar-save');
+    this.$avatarBtns = $('.avatar-btns');
 
-    this.$avatarWrapper = this.$avatarModal.find('.avatar-wrapper');
-    this.$avatarPreview = this.$avatarModal.find('.avatar-preview');
+    this.$avatarWrapper = $('.avatar-wrapper');
+    this.$avatarPreview = $('.avatar-preview');
 
     this.init();
     console.log(this);
@@ -76,9 +78,7 @@
       });
     },
 
-    initPreview: function () {
-      var url = this.$avatar.attr('src');
-
+    initPreview: function (url) {
       this.$avatarPreview.empty().html('<img src="' + url + '">');
     },
 
@@ -124,9 +124,13 @@
       this.$avatarForm.attr('target', target).after($iframe.hide());
     },
 
-    click: function () {
+    click: function (e) {
+      this.$avatar = e.target;
+      jobId = e.currentTarget.lastChild.lastChild.attributes.name.value;
+      var url = this.$avatar.src;
+
       this.$avatarModal.modal('show');
-      this.initPreview();
+      this.initPreview(url);
     },
 
     change: function () {
@@ -190,7 +194,7 @@
 
     startCropper: function () {
       var _this = this;
-
+      console.log("startCropper");
       if (this.active) {
         this.$img.cropper('replace', this.url);
       } else {
@@ -198,15 +202,17 @@
         this.$avatarWrapper.empty().html(this.$img);
         this.$img.cropper({
           aspectRatio: 1,
-          preview: this.$avatarPreview.selector,
+          preview: this.$avatarPreview,
           strict: false,
           crop: function (data) {
+            console.log(data);
             var json = [
                   '{"x":' + data.x,
                   '"y":' + data.y,
                   '"height":' + data.height,
                   '"width":' + data.width,
-                  '"rotate":' + data.rotate + '}'
+                  '"rotate":' + data.rotate,
+                  '"jobId":' + jobId + '}'
                 ].join();
 
             _this.$avatarData.val(json);
@@ -214,6 +220,7 @@
         });
 
         this.active = true;
+        console.log(this);
       }
     },
 
@@ -229,7 +236,7 @@
       var url = this.$avatarForm.attr('action'),
           data = new FormData(this.$avatarForm[0]),
           _this = this;
-
+  
       $.ajax(url, {
         type: 'post',
         data: data,
@@ -242,7 +249,9 @@
         },
 
         success: function (data) {
+          alert("success");
           _this.submitDone(data);
+          $('#job_type_tab_title').click();
         },
 
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -250,6 +259,8 @@
         },
 
         complete: function () {
+          alert("complete");
+          $('#job_type_tab_title').click();
           _this.submitEnd();
         }
       });
@@ -265,10 +276,12 @@
 
     submitDone: function (data) {
       console.log(data);
-
-      if ($.isPlainObject(data) && data.state === 200) {
-        if (data.result) {
-          this.url = data.result;
+      let meta = data.meta;
+      let resultData = data.data;
+      
+      if ($.isPlainObject(data) && meta.success) {
+        if (resultData.fileUrl) {
+          this.url = resultData.fileUrl;
 
           if (this.support.datauri || this.uploaded) {
             this.uploaded = false;
@@ -298,7 +311,8 @@
 
     cropDone: function () {
       this.$avatarForm.get(0).reset();
-      this.$avatar.attr('src', this.url);
+      console.log(this.$avatar);
+      this.$avatar.src = basePath + this.url;
       this.stopCropper();
       this.$avatarModal.modal('hide');
     },
