@@ -181,7 +181,7 @@
                       <form class="avatar-form" action="/main/base/jobtype/upload" enctype="multipart/form-data" method="post">
                         <div class="modal-header">
                           <button class="close" data-dismiss="modal" type="button">&times;</button>
-                          <h4 class="modal-title" id="avatar-modal-label">Change Avatar</h4>
+                          <h4 class="modal-title" id="avatar-modal-label">工种图例上传</h4>
                         </div>
                         <div class="modal-body">
                           <div class="avatar-body">
@@ -190,7 +190,7 @@
                             <div class="avatar-upload">
                               <input class="avatar-src" name="avatar_src" type="hidden">
                               <input class="avatar-data" name="avatar_data" type="hidden">
-                              <label for="avatarInput">Local upload</label>
+                              <label for="avatarInput">工种图例上传</label>
                               <input class="avatar-input" id="avatarInput" name="avatar_file" type="file">
                             </div>
 
