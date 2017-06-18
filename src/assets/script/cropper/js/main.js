@@ -249,9 +249,9 @@
         },
 
         success: function (data) {
-          alert("success");
           _this.submitDone(data);
-          $('#job_type_tab_title').click();
+          //alert("click:ajaxUpload-success");
+          document.getElementById("job_type_tab_title").click(); 
         },
 
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -259,9 +259,10 @@
         },
 
         complete: function () {
-          alert("complete");
-          $('#job_type_tab_title').click();
+          //alert("complete");
           _this.submitEnd();
+          //alert("click:ajaxUpload-success");
+          document.getElementById("job_type_tab_title").click(); 
         }
       });
     },
@@ -306,7 +307,7 @@
     },
 
     submitEnd: function () {
-      this.$loading.fadeOut();
+      this.$loading.fadeOut();    
     },
 
     cropDone: function () {
