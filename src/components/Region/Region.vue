@@ -298,6 +298,7 @@ export default {
         regionList: [],
         total: 0
       },
+      startRealRegionLayer: {}
     };
   },
   mounted () {
@@ -390,7 +391,7 @@ export default {
         layers: [
           new ol.layer.Image({
             source: new ol.source.ImageWMS({
-              url: 'http://localhost:8080/geoserver/map/wms',
+              url: 'http://192.168.2.153:8080/geoserver/map/wms',
               params: {
                 'LAYERS': 'map:minegroup',
                 'VERSION': '1.1.0'
@@ -404,7 +405,9 @@ export default {
       // 添加移除事件
       self.addRemovePolygonEvent(self.mapCache.regionMap);
       // 渲染区域图层
-      self.loadRegionMapLayer(self.mapCache.regionMap);
+      self.startRealRegionLayer = setInterval(function() {
+        self.loadRegionMapLayer(self.mapCache.regionMap);
+      }, 60000);
     },
     loadRegionMapLayer (currentMap) {
       let self = this;
@@ -432,10 +435,11 @@ export default {
 
                   featureCollection = self.createFeatureCollection(featureList);
                   self.mapCache.regionSource = new ol.source.Vector({
-                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-                    })
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
                   });
                   self.mapCache.regionLayer = new ol.layer.Vector({
                     source: self.mapCache.regionSource,
@@ -677,7 +681,8 @@ export default {
       let geoPolygon = "Polygon((";
 
       pointList.forEach(function(coordinate, index) {
-        let pointCoordinate = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+        let pointCoordinate = coordinate;
+        // let pointCoordinate = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
         geoPolygon += (pointCoordinate[0] + " " + pointCoordinate[1]) + ",";
       });
       geoPolygon = geoPolygon.substring(0, geoPolygon.length - 1) + "))";

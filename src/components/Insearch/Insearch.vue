@@ -78,7 +78,10 @@
           <div role="tabpanel" class="tab-pane active" id="staff_map_tab">
             <div class="map-box">
               <div id="map">
-
+                <div id="popup" class="ol-popup">
+                  <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                  <div id="popup-content"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -137,8 +140,43 @@ export default {
   name: 'insearch',
   data () {
     return {
-      insearchMap: {},
-      currentlayer: {},
+      mapCache: {
+        // 弹出框的缓存信息
+        popupInfo: {
+          container: {},
+          content: {},
+          closer: {}
+        },
+        popup: {},
+        // 实时地图
+        insearchMap: {},
+        /**
+         * [staffLayer description] 人员图层
+         * @type {Object}
+         */
+        staffLayer: {},
+        staffSource: {},
+        /**
+         * [readerLayer description] 分站图层
+         * @type {Object}
+         */
+        readerLayer: {},
+        readerSource: {},
+        /**
+         * [regionLayer description] 区域图层
+         * @type {Object}
+         */
+        regionLayer: {},
+        regionSource: {},
+        /**
+         * 样式
+         * @type {Object}
+         */
+        staffStyle: {},
+        readerStyle: {},
+        regionStyle: {},
+        hightLightStyle: {},
+      },
       staffListCache: {
         staffList: [],
         total: 0
@@ -154,6 +192,7 @@ export default {
     };
   },
   mounted () {
+    this.initEvent();
     this.loadMap();
     initLoad();
     this.doInSearchOper();
@@ -165,42 +204,173 @@ export default {
     clearInterval(this.startInsearch);
   },
   methods: {
+    initEvent () {
+      let self = this;
+
+      /* Start map container element init */
+      self.mapCache.popupInfo = {
+          container: document.getElementById("popup"),
+          content: document.getElementById('popup-content'),
+          closer: document.getElementById('popup-closer')
+      };
+      self.mapCache.popup = new ol.Overlay(({
+        element: self.mapCache.popupInfo.container,
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        }
+      }));
+      self.mapCache.popupInfo.closer.onclick = function() {
+        self.mapCache.popup.setPosition(undefined);
+        self.mapCache.popupInfo.closer.blur();
+        return false;
+      };
+      self.mapCache.hightLightStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 4,
+            fill: new ol.style.Fill({
+                color: 'red'
+            })
+        })
+      });
+      /* End map container element init */
+    },
     clearSearch () {
       $("input.refresh").val("");
       $("select.refresh").find("option:eq(0)").prop('selected', true);
     },
+    /**
+     * ----------------------------------------------------------------------
+     * Start map function module.
+     * description 地图功能模块
+     * author Zychaowill
+     */
     loadMap () {
-        var view = new ol.View({
-          center: [-7352981.95804323, 4148924.9077592203],
-          minZoom: 8,
-          zoom: 3
-        });
-        this.insearchMap = new ol.Map({
-          target: 'map',
-          layers: [
-            new ol.layer.Image({
-              source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/map/wms',
-                params: {
-                  'LAYERS': 'map:minegroup',
-                  'VERSION': '1.1.0'
-                },
-                serverType: 'geoserver'
-              })
+      let self = this;
+
+      self.mapCache.insearchMap = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+              url: 'http://192.168.2.153:8080/geoserver/map/wms',
+              params: {
+                'LAYERS': 'map:minegroup',
+                'VERSION': '1.1.0'
+              },
+              serverType: 'geoserver'
             })
-          ],
-          view: new ol.View({
-            center: [-7352981.95804323, 4148924.9077592203],
-            zoom: 15,
-            minZoom: 3,
-            maxZoom: 20,
-            rotation: Math.PI/35
           })
+        ],
+        view: new ol.View({
+          center: [-7352981.95804323, 4148924.9077592203],
+          zoom: 15,
+          minZoom: 3,
+          maxZoom: 20,
+          rotation: Math.PI/35
+        })
+      });
+
+      self.mapCache.hightLightStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 4,
+            fill: new ol.style.Fill({
+                color: 'red'
+            })
+        })
+      });
+      // 添加人员、分站、区域图层
+      self.mapCache.staffSource = new ol.source.Vector();
+      self.mapCache.staffStyle = new ol.style.Style({
+          image: new ol.style.Circle({
+              radius: 5,
+              fill: new ol.style.Fill({
+                  color: '#6699CC'
+              })
+          })
+      });
+      self.mapCache.staffStyle = new ol.style.Style({
+        image: new ol.style.Icon({
+          src: 'static/jobTypePics/1.png',
+          scale: 0.1
+        })
+      });
+      self.mapCache.staffLayer = new ol.layer.Vector({
+        source: self.mapCache.staffSource,
+        style: self.mapCache.staffStyle
+      });
+
+      self.mapCache.readerSource = new ol.source.Vector();
+      self.mapCache.readerStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+          src: 'static/icon/reader.png',
+          scale: 0.4,  //图标缩放比例
+        })),
+      });
+      self.mapCache.readerLayer = new ol.layer.Vector({
+        source: self.mapCache.readerSource,
+        style: self.mapCache.readerStyle
+      });
+
+      self.mapCache.regionSource = new ol.source.Vector();
+      self.mapCache.regionStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(255, 255, 255, 0)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#319FD3',
+          width: 4
+        })
+      });
+      self.mapCache.regionLayer = new ol.layer.Vector({
+        source: self.mapCache.regionSource,
+        style: self.mapCache.regionStyle
+      });
+
+      self.mapCache.insearchMap.addLayer(self.mapCache.regionLayer);
+      self.mapCache.insearchMap.addLayer(self.mapCache.readerLayer);
+      self.mapCache.insearchMap.addLayer(self.mapCache.staffLayer);
+
+      self.mapCache.insearchMap.on('click', function(event) {
+        let coordinate = event.coordinate;
+        let feature = event.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+          if (layer == self.mapCache.staffLayer) {
+            return feature;
+          }
         });
-        this.insearchMap.on('click', function (evt) {
-          var point = evt.coordinate; //鼠标单击点坐标
-          alert(point);
-        });
+        if (feature && feature.get('type') == 'Point') {
+          self.renderFeaturePopup(coordinate, feature);
+        }
+      });
+    },
+    // 渲染popup
+    renderFeaturePopup (coordinate, feature) {
+      let self = this;
+      let staffId = feature.get('id'),
+          staffName = feature.get('name'),
+          unitName = feature.get('unitName');
+
+      let featureInfo = {
+        'geo': coordinate,
+        'att': {
+           staffId: staffId,
+           staffName: staffName,
+           unitName: unitName
+        }
+      };
+
+      self.setFeatureInfo(featureInfo);
+      self.mapCache.popup.setPosition(coordinate);
+    },
+    setFeatureInfo (featureInfo) {
+      let containerDiv = document.createElement('div');
+      containerDiv.className = 'popup-container';
+
+      let att = featureInfo.att;
+      containerDiv.innerText = '员工编号: ' + att.staffId + " 员工姓名: " + att.staffName + " 部门名称: " + att.unitName;
+
+      this.mapCache.popupInfo.content.innerHTML = '';
+      this.mapCache.popupInfo.content.appendChild(containerDiv);
     },
     defaultLoadUnitInfo () {
       let self = this;
@@ -259,12 +429,14 @@ export default {
       let self = this;
       initPagination('staffPagingBox', 'staffPaging');
       // 终止上一次实时查询定时器
-      clearInterval(this.startInsearch);
+      clearInterval(self.startInsearch);
 
-      this.loadStaffList(null);
-      this.loadStaffMap();
+      self.loadStaffList(null);
+      self.loadStaffMap();
       // 开启新一次实时查询定时器
-      this.startInsearch = setInterval(function() {
+      self.mapCache.startInsearch = setInterval(function() {
+        self.loadMapRegionLayer();
+        self.loadMapReaderLayer();
         self.loadStaffMap();
       }, 3000);
     },
@@ -355,67 +527,144 @@ export default {
       let featureList = new Array();
       self.staffMapCache.staffList.forEach(function(staff, index) {
         let geometry = JSON.parse(staff.point),
-            properties = { "name": staff.staff_name, "id": staff.staff_id, "staffInfoId": staff.staff_info_id};
+            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name, "jobId": staff.job_id, "jobIconUrl": staff.job_icon_url};
 
         // 随机数仿真测试
         // geometry.coordinates[0] += index * 100000 * Math.random();
         // geometry.coordinates[1] += index * 1000 * Math.random();
-        featureList.push(createPointFeature(geometry, properties));
+        featureList.push(self.createFeature(geometry, properties));
       });
 
 
-      let featureCollection = createFeatureCollection(featureList);
-      let pointSource = new ol.source.Vector({
-        features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-          dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-          featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-        })
+      let featureCollection = self.createFeatureCollection(featureList);
+      self.mapCache.staffSource = new ol.source.Vector({
+        // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+        //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+        //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+        // })
+        features: new ol.format.GeoJSON().readFeatures(featureCollection)
       });
-      let pointLayer = new ol.layer.Vector({
-        source: pointSource,
-        style: new ol.style.Style({
-            fill: new ol.style.Fill({
-                color: 'rgba(255, 255, 255, 0.2)'
-            }),
-            stroke: new ol.style.Stroke({
-                color: '#ffcc33',
-                width: 2
-            }),
-            image: new ol.style.Circle({
-                radius: 7,
-                fill: new ol.style.Fill({
-                    color: '#6699CC'
-                })
+      self.mapCache.staffLayer.setSource(self.mapCache.staffSource);
+
+      // 设置不同样式
+      let staffFeatureList = self.mapCache.staffSource.getFeatures();
+
+      staffFeatureList.forEach(function(feature, index) {
+        feature.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+              src: 'static/' + feature.get('jobIconUrl'),
+              scale: 0.1
             })
-        })
+        }));
       });
-      if (self.currentlayer) {
-        self.insearchMap.removeLayer(self.currentlayer);
-      }
-      self.currentlayer = pointLayer;
 
-      self.insearchMap.addLayer(pointLayer);
-      let newPoint = JSON.parse(self.staffMapCache.staffList[0].point);
-      let newCenter = newPoint.coordinates;
+      // 设置地图视角中心位置
+      // let newPoint = JSON.parse(self.staffMapCache.staffList[0].point);
+      // let newCenter = newPoint.coordinates;
       // self.insearchMap.getView().setCenter(newCenter);
+    },
+    loadMapStaffHighLight () {
+      let self = this,
+          featureList = self.mapCache.staffSource.getFeatures();
 
-      function createPointFeature(geometry, properties) {
-        let feature = {
-          "type": "Feature",
-          "geometry": geometry,
-          "properties": properties
-        };
-        return feature;
-      }
 
-      function createFeatureCollection(features) {
-        let featureCollection = {
-          "type": "FeatureCollection",
-          "features": features
-        };
-        return featureCollection;
-      }
+    },
+    /**
+     *  渲染分站图层
+     */
+    loadMapReaderLayer() {
+      let self = this,
+          currentMap = self.mapCache.insearchMap;
+
+      axios.get('/base/map/reader/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.readerList) {
+                  let readerList = data.readerList,
+                      featureList = new Array(), featureCollection;
+
+                  readerList.forEach(function(reader, index) {
+                    let geometry = JSON.parse(reader.geoPoint),
+                        pointFeature = self.createFeature(geometry, { "type": "Point", "id": reader.readerId});
+
+                    featureList.push(pointFeature);
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.readerSource = new ol.source.Vector({
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
+                  });
+
+                  // 改变分站图层数据源
+                  self.mapCache.readerLayer.setSource(self.mapCache.readerSource);
+                  // currentMap.getView().setCenter(featureList[0].geometry.coordinates);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    /**
+     *  渲染区域图层
+     */
+    loadMapRegionLayer () {
+      let self = this,
+          currentMap = self.mapCache.insearchMap;
+
+      axios.get('/base/map/region/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.regionList) {
+                  let regionList = data.regionList,
+                      featureList = new Array(), featureCollection;
+
+                  regionList.forEach(function(region, index) {
+                    let geometry = JSON.parse(region.geoPolygon);
+
+                    featureList.push(self.createFeature(geometry, { "type": "Polygon", "id": region.regionId, "name": region.regionName }));
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.regionSource = new ol.source.Vector({
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
+                  });
+
+                  self.mapCache.regionLayer.setSource(self.mapCache.regionSource);
+                  // console.log("----------", featureList[0].geometry.coordinates);
+                  // currentMap.getView().setCenter(featureList[0].geometry.coordinates);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    createFeature(geometry, properties) {
+      let feature = {
+        "type": "Feature",
+        "geometry": geometry,
+        "properties": properties
+      };
+      return feature;
+    },
+    createFeatureCollection(features) {
+      let featureCollection = {
+        "type": "FeatureCollection",
+        "features": features
+      };
+      return featureCollection;
     }
+    /**
+     * End map function module.
+     * ----------------------------------------------------------------------
+     */
   }
 };
 </script>

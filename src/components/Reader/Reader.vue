@@ -678,7 +678,8 @@ export default {
                           });
 
                       if (feature && type) {
-                        self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+                        // self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+                        self.reader.geoPointRef = self.createPointJson(coordinate);
                         $("#geoPointRefLabel").text(self.reader.geoPointRef);
                         $("#updateMoveReaderToggle").prop('disabled', false);
                       }
@@ -729,7 +730,7 @@ export default {
           layers: [
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/map/wms',
+                url: 'http://192.168.2.153:8080/geoserver/map/wms',
                 params: {
                   'LAYERS': 'map:minegroup',
                   'VERSION': '1.1.0'
@@ -762,7 +763,7 @@ export default {
           layers: [
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/map/wms',
+                url: 'http://192.168.2.153:8080/geoserver/map/wms',
                 params: {
                   'LAYERS': 'map:minegroup',
                   'VERSION': '1.1.0'
@@ -792,7 +793,7 @@ export default {
           layers: [
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/map/wms',
+                url: 'http://192.168.2.153:8080/geoserver/map/wms',
                 params: {
                   'LAYERS': 'map:minegroup',
                   'VERSION': '1.1.0'
@@ -828,10 +829,11 @@ export default {
                   featureCollection = self.createFeatureCollection(featureList);
                   self.mapCache.regionLayer = new ol.layer.Vector({
                     source: new ol.source.Vector({
-                      features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-                        dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-                        featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-                      })
+                      // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                      //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                      //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                      // })
+                      features: new ol.format.GeoJSON().readFeatures(featureCollection)
                     }),
                     style: new ol.style.Style({
                       fill: new ol.style.Fill({
@@ -869,10 +871,11 @@ export default {
 
                   featureCollection = self.createFeatureCollection(featureList);
                   self.mapCache.readerSource = new ol.source.Vector({
-                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-                    })
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
                   });
                   self.mapCache.readerLayer = new ol.layer.Vector({
                     source: self.mapCache.readerSource,
@@ -908,7 +911,8 @@ export default {
 
                   readerList.forEach(function(reader, index) {
                     let geoPoint = JSON.parse(reader.geoPoint),
-                        newFeature = new ol.Feature(new ol.geom.Point(ol.proj.transform(geoPoint.coordinates, 'EPSG:4326', 'EPSG:3857')));
+                        // newFeature = new ol.Feature(new ol.geom.Point(ol.proj.transform(geoPoint.coordinates, 'EPSG:4326', 'EPSG:3857')));
+                        newFeature = new ol.Feature(new ol.geom.Point(geoPoint.coordinates));
 
                     if (reader.readerId == self.reader.readerId) {
                       newFeature.setStyle(self.createElementStyle());
@@ -1033,7 +1037,8 @@ export default {
       Modify.prototype.handleUpEvent = function() {
         let type = ($("input[name='move']:radio:checked").val() == 'move');
         if (this._coordinate && type) {
-          self.reader.geoPoint = self.createPointJson(ol.proj.transform(this._coordinate, 'EPSG:3857', 'EPSG:4326'));
+          // self.reader.geoPoint = self.createPointJson(ol.proj.transform(this._coordinate, 'EPSG:3857', 'EPSG:4326'));
+          self.reader.geoPoint = self.createPointJson(this._coordinate);
           $("#geoPointLabel").text(self.reader.geoPoint);
         }
         this._coordinate = null;
@@ -1059,8 +1064,8 @@ export default {
           return feature;
         });
         if (type == 'mark') {
-
-          let point = ol.proj.transform(currentPoint, 'EPSG:3857', 'EPSG:4326'),
+          let point = currentPoint,
+          // let point = ol.proj.transform(currentPoint, 'EPSG:3857', 'EPSG:4326'),
               geoPoint = self.createPointJson(point);
 
           axios.get('/base/reader/range/', { params: { 'geoPoint': geoPoint }})
@@ -1099,7 +1104,8 @@ export default {
       };
 
       self.mapCache.readerSource.addFeature(self.mapCache.readerPoint.readerFeature);
-      self.reader.geoPoint = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+      // self.reader.geoPoint = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+      self.reader.geoPoint = self.createPointJson(coordinate);
       $("input[name='mark']:radio").eq(1).prop('checked', true);
     },
     // 选择参照点元素
@@ -1116,7 +1122,8 @@ export default {
         bootbox.alert("不可选择自身作为参照点!请重新选择!");
         return false;
       } else {
-        self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+        // self.reader.geoPointRef = self.createPointJson(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+        self.reader.geoPointRef = self.createPointJson(coordinate);
 
         self.errors.clear('add_reader_form');
         $("#add_reader_modal").modal('show');

@@ -126,6 +126,35 @@ export default {
   name: 'replay',
   data () {
     return {
+      mapCache: {
+        // 历史轨迹回放地图
+        replayMap: {},
+        /**
+         * [staffLayer description] 人员图层
+         * @type {Object}
+         */
+        staffLayer: {},
+        staffSource: {},
+        /**
+         * [readerLayer description] 分站图层
+         * @type {Object}
+         */
+        readerLayer: {},
+        readerSource: {},
+        /**
+         * [regionLayer description] 区域图层
+         * @type {Object}
+         */
+        regionLayer: {},
+        regionSource: {},
+        /**
+         * 样式
+         * @type {Object}
+         */
+        staffStyle: {},
+        readerStyle: {},
+        regionStyle: {},
+      },
       staffListCache: {
         staffList: [],
         total: 0
@@ -178,35 +207,160 @@ export default {
      * description 历史轨迹地图功能模块
      */
     loadMap () {
-        var view = new ol.View({
-          center: [-7352981.95804323, 4148924.9077592203],
-          minZoom: 8,
-          zoom: 3
-        });
+      let self = this;
 
-        this.replayMap = new ol.Map({
-          target: 'map',
-          layers: [
-            new ol.layer.Image({
-              source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/map/wms',
-                params: {
-                  'LAYERS': 'map:minegroup',
-                  'VERSION': '1.1.0'
-                },
-                serverType: 'geoserver'
-              })
+      self.mapCache.replayMap = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Image({
+            source: new ol.source.ImageWMS({
+              url: 'http://192.168.2.153:8080/geoserver/map/wms',
+              params: {
+                'LAYERS': 'map:minegroup',
+                'VERSION': '1.1.0'
+              },
+              serverType: 'geoserver'
             })
-          ],
-          view: new ol.View({
-            center: [-7352981.95804323, 4148924.9077592203],
-            zoom: 15,
-            minZoom: 3,
-            maxZoom: 20,
-            rotation: Math.PI/35
           })
-        });
+        ],
+        view: new ol.View({
+          center: [-7352981.95804323, 4148924.9077592203],
+          zoom: 15,
+          minZoom: 3,
+          maxZoom: 20,
+          rotation: Math.PI/35
+        })
+      });
+
+      // 添加人员、分站、区域图层
+      self.mapCache.readerSource = new ol.source.Vector();
+      self.mapCache.readerStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+          src: 'static/icon/reader.png',
+          scale: 0.4,  //图标缩放比例
+        })),
+      });
+      self.mapCache.readerLayer = new ol.layer.Vector({
+        source: self.mapCache.readerSource,
+        style: self.mapCache.readerStyle
+      });
+
+      self.mapCache.regionSource = new ol.source.Vector();
+      self.mapCache.regionStyle = new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(255, 255, 255, 0)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#319FD3',
+          width: 4
+        })
+      });
+      self.mapCache.regionLayer = new ol.layer.Vector({
+        source: self.mapCache.regionSource,
+        style: self.mapCache.regionStyle
+      });
+
+      self.mapCache.replayMap.addLayer(self.mapCache.regionLayer);
+      self.mapCache.replayMap.addLayer(self.mapCache.readerLayer);
+
+      self.loadMapRegionLayer();
+      self.loadMapReaderLayer();
     },
+    /**
+     *  渲染分站图层
+     */
+    loadMapReaderLayer() {
+      let self = this,
+          currentMap = self.mapCache.replayMap;
+
+      axios.get('/base/map/reader/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.readerList) {
+                  let readerList = data.readerList,
+                      featureList = new Array(), featureCollection;
+
+                  readerList.forEach(function(reader, index) {
+                    let geometry = JSON.parse(reader.geoPoint),
+                        pointFeature = self.createFeature(geometry, { "type": "Point", "id": reader.readerId});
+
+                    featureList.push(pointFeature);
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.readerSource = new ol.source.Vector({
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
+                  });
+
+                  // 改变分站图层数据源
+                  self.mapCache.readerLayer.setSource(self.mapCache.readerSource);
+                  // currentMap.getView().setCenter(featureList[0].geometry.coordinates);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    /**
+     *  渲染区域图层
+     */
+    loadMapRegionLayer () {
+      let self = this,
+          currentMap = self.mapCache.replayMap;
+
+      axios.get('/base/map/region/')
+            .then((response) => {
+              let { meta, data } = response.data;
+
+              if (meta.success) {
+                if (data && data.regionList) {
+                  let regionList = data.regionList,
+                      featureList = new Array(), featureCollection;
+
+                  regionList.forEach(function(region, index) {
+                    let geometry = JSON.parse(region.geoPolygon);
+
+                    featureList.push(self.createFeature(geometry, { "type": "Polygon", "id": region.regionId, "name": region.regionName }));
+                  });
+
+                  featureCollection = self.createFeatureCollection(featureList);
+                  self.mapCache.regionSource = new ol.source.Vector({
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
+                  });
+
+                  self.mapCache.regionLayer.setSource(self.mapCache.regionSource);
+                  // console.log("----------", featureList[0].geometry.coordinates);
+                  // currentMap.getView().setCenter(featureList[0].geometry.coordinates);
+                } else { bootbox.alert("区域图层装载失败!"); }
+              } else { bootbox.alert("服务器内部错误,区域图层装载失败!"); }
+            });
+    },
+    createFeature(geometry, properties) {
+      let feature = {
+        "type": "Feature",
+        "geometry": geometry,
+        "properties": properties
+      };
+      return feature;
+    },
+    createFeatureCollection(features) {
+      let featureCollection = {
+        "type": "FeatureCollection",
+        "features": features
+      };
+      return featureCollection;
+    },
+    /**
+     * End map function.
+     */
     /* 默认查询 */
     defaultLoadUnit () {
       let self = this;
@@ -339,17 +493,18 @@ export default {
       });
 
       if (self.currentlayer) {
-        self.replayMap.removeLayer(self.currentlayer);
+        self.mapCache.replayMap.removeLayer(self.currentlayer);
       }
       self.currentlayer = replayLayer;
-      self.replayMap.addLayer(replayLayer);
+      self.mapCache.replayMap.addLayer(replayLayer);
 
       if (self.staffMapCache.staffList.length > 0) {
         // 获取全部坐标点
         self.staffMapCache.staffList.forEach(function(staff, index) {
           let x = staff.pointx, y = staff.pointy;
           let pointFeature = new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857'))
+            // geometry: new ol.geom.Point(ol.proj.transform([parseFloat(x), parseFloat(y)], 'EPSG:4326', 'EPSG:3857'))
+            geometry: new ol.geom.Point([parseFloat(x), parseFloat(y)])
           });
 
           let propertiesList = new Array();
@@ -383,7 +538,7 @@ export default {
         });
 
         let newCenter = pointList[0].getGeometry().getCoordinates();
-        self.replayMap.getView().setCenter(newCenter);
+        self.mapCache.replayMap.getView().setCenter(newCenter);
         var stopTime = setInterval(function() {
           if (j + 1 <= pointList.length) {
             if (j > 0) {

@@ -968,9 +968,9 @@ export default {
     startRealStaffRender () {
       let self = this;
 
-      // self.startRealStaffLayer = setInterval(function() {
+      self.startRealStaffLayer = setInterval(function() {
         self.loadMapStaffLayer();
-      // }, 3000);
+      }, 3000);
     },
     loadMapStaffLayer () {
       let self = this;
@@ -1016,10 +1016,11 @@ export default {
       // 构造FeatureCollection装配的数据源
       let featureCollection = self.createFeatureCollection(featureList);
       self.mapCache.staffSource = new ol.source.Vector({
-        features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-          dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-          featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-        })
+        // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+        //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+        //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+        // })
+        features: new ol.format.GeoJSON().readFeatures(featureCollection)
       });
       self.mapCache.staffLayer.setSource(self.mapCache.staffSource);
 
@@ -1078,10 +1079,11 @@ export default {
 
                   featureCollection = self.createFeatureCollection(featureList);
                   self.mapCache.readerSource = new ol.source.Vector({
-                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-                    })
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
                   });
 
                   // 改变分站图层数据源
@@ -1119,10 +1121,11 @@ export default {
 
                   featureCollection = self.createFeatureCollection(featureList);
                   self.mapCache.regionSource = new ol.source.Vector({
-                    features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
-                      dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
-                      featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
-                    })
+                    // features: new ol.format.GeoJSON().readFeatures(featureCollection, {     // 用readFeatures方法可以自定义坐标系
+                    //   dataProjection: 'EPSG:4326',    // 设定JSON数据使用的坐标系
+                    //   featureProjection: 'EPSG:3857' // 设定当前地图使用的feature的坐标系
+                    // })
+                    features: new ol.format.GeoJSON().readFeatures(featureCollection)
                   });
 
                   self.mapCache.regionLayer.setSource(self.mapCache.regionSource);
