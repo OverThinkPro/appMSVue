@@ -15,7 +15,7 @@
           <li role="presentation" class="active"><a href="" data-target="#coalmine_info_tab" aria-controls="coalmine_info_tab" role="tab" data-toggle="tab" @click="clickCoalmineTab()">煤矿信息</a></li>
           <li role="presentation"><a href="" data-target="#period_setting_tab" aria-controls="period_setting_tab" role="tab" data-toggle="tab" @click="clickPeriodTab()">人员位置数据采集周期</a></li>
           <li role="presentation"><a href="" data-target="#alarm_type_tab" aria-controls="alarm_type_tab" role="tab" data-toggle="tab" @click="clickAlarmTypeTab()">报警声音</a></li>
-          <li role="presentation"><a href="" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab" @click="clickMapTab()">地图底图</a></li>
+          <!-- <li role="presentation"><a href="" data-target="#map_management_tab" aria-controls="map_management_tab" role="tab" data-toggle="tab" @click="clickMapTab()">地图底图</a></li> -->
           <li role="presentation"><a href="" data-target="#job_type_tab" id="job_type_tab_title" aria-controls="job_type_tab" role="tab" data-toggle="tab" @click="clickJobTypeTab()">工种图例</a></li>
         </ul>
         <div class="tab-content">
@@ -548,7 +548,7 @@ export default {
   data () {
     return {
       //baseUrl:"http://localhost:9000/main/",
-      basePath:"http://localhost:8080/appMSJava",
+      basePath:"http://localhost:8080/appMSJava/static",
       coalmine:{},
       coalmineOld:{},
 

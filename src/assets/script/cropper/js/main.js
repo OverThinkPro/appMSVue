@@ -11,7 +11,7 @@
 
   'use strict';
   var jobId = null;
-  var basePath = "http://localhost:8080/appMSJava";
+  var basePath = "http://localhost:8080/appMSJava/static";
   var console = window.console || { log: function () {} };
 
   function CropAvatar($element) {
