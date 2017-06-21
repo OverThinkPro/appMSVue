@@ -548,7 +548,7 @@ export default {
   data () {
     return {
       //baseUrl:"http://localhost:9000/main/",
-      basePath:"http://localhost:8080/appMSJava/static",
+      basePath:"http://localhost:8080/appMSJava/static/",
       coalmine:{},
       coalmineOld:{},
 
@@ -1124,6 +1124,7 @@ export default {
               /*jobType.jobIconUrl = self.basePath + url;
               self.jobTypeList.splice(i,1,jobType)*/
               self.jobTypeList[i].jobIconUrl = self.basePath + url+"?"+self.current();
+              console.log("-------------", self.jobTypeList[i].jobIconUrl);
             }else{
               self.jobTypeList[i].jobIconUrl = "";
             }
