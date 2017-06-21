@@ -136,7 +136,7 @@
             </div>
           </div>
           <!-- 工种图例 -->
-          <div role="tabpanel" class="tab-pane" id="job_type_tab1">
+          <!-- <div role="tabpanel" class="tab-pane" id="job_type_tab1">
             <div class="job-type-wrap">
               <div class="row">
                 <div class="col-sm-6 col-md-2" style="height:230px" v-for="(jobType, index) in jobTypeList" :key="jobType.key">
@@ -144,14 +144,14 @@
                     <img v-if="jobType.jobIconUrl!=''" :src="jobType.jobIconUrl" height="200" width="200" :onerror="defaultJobTypePic">
                     <img v-else src="../../assets/logo.png" height="200" width="200" :onerror="defaultJobTypePic">
                     <div class="caption">
-                     <!-- <h3>{{jobType.jobName}}</h3> -->
+                     <h3>{{jobType.jobName}}</h3>
                       <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
            <!-- 工种图例 -->
           <div role="tabpanel" class="tab-pane" id="job_type_tab">
             <div class="job-type-wrap" id="crop-avatar">
@@ -1124,7 +1124,7 @@ export default {
               /*jobType.jobIconUrl = self.basePath + url;
               self.jobTypeList.splice(i,1,jobType)*/
               self.jobTypeList[i].jobIconUrl = self.basePath + url+"?"+self.current();
-              console.log("-------------", self.jobTypeList[i].jobIconUrl);
+              console.log("-------------", self.jobTypeList[i].jobIconUrl)
             }else{
               self.jobTypeList[i].jobIconUrl = "";
             }
