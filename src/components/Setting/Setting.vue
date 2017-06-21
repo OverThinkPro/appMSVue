@@ -548,7 +548,7 @@ export default {
   data () {
     return {
       //baseUrl:"http://localhost:9000/main/",
-      basePath:"http://localhost:8080/appMSJava",
+      basePath:"http://localhost:8080/appMSJava/static",
       coalmine:{},
       coalmineOld:{},
 
