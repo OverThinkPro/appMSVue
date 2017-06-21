@@ -162,8 +162,8 @@
                     <img v-if="jobType.jobIconUrl!=''" :src="jobType.jobIconUrl" height="200" width="200" :onerror="defaultJobTypePic">
                     <!-- <img v-else src="../../assets/logo.png" height="200" width="200" :onerror="defaultJobTypePic"> -->
                     <div class="caption">
-                      <!-- <p>{{jobType.jobName}}</p> -->
-                      <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p>
+                      <p>{{jobType.jobName}}</p>
+                      <!-- <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p> -->
                       <input type="hidden" :name="jobType.jobId">
                     </div>
 
