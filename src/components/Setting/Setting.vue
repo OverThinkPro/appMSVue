@@ -162,17 +162,17 @@
                     <img v-if="jobType.jobIconUrl!=''" :src="jobType.jobIconUrl" height="200" width="200" :onerror="defaultJobTypePic">
                     <!-- <img v-else src="../../assets/logo.png" height="200" width="200" :onerror="defaultJobTypePic"> -->
                     <div class="caption">
-                      <p>{{jobType.jobName}}</p>
-                      <!-- <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p> -->
+                      <!-- <p>{{jobType.jobName}}</p> -->
+                      <p><a href="" class="strong" data-toggle="modal" data-target="" @click="clickJobTypeName(jobType.jobId)">{{jobType.jobName}}</a></p>
                       <input type="hidden" :name="jobType.jobId">
                     </div>
-                    
+
                   </div>
-                </div> 
+                </div>
               </div>
                <!--  </div> -->
                  <!-- Current avatar -->
-             
+
 
                 <!-- Cropping modal -->
                 <div class="modal fade" id="update_job_pic_modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
@@ -243,7 +243,7 @@
         </div>
       </div>
     </main>
-    
+
     <!-- 修改煤矿信息模态框 -->
     <div class="modal fade" id="update_coalmine_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
