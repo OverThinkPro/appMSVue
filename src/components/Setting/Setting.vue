@@ -539,6 +539,7 @@ import bootbox from 'bootbox/bootbox.min';
 import axios from 'axios';
 import { cropper } from '../../assets/script/cropper/js/cropper.js';
 import { cropperMain } from '../../assets/script/cropper/js/main.js';
+// import cropper from 'cropper/dist/cropper.min';
 import { initPagination } from '../../assets/script/initplugin';
 import { deepCopy } from '../../assets/script/extends';
 import {currentTime} from '../../assets/script/date';
@@ -548,7 +549,7 @@ export default {
   data () {
     return {
       //baseUrl:"http://localhost:9000/main/",
-      basePath:"http://localhost:8080/appMSJava/static/",
+      basePath:"http://localhost:8080/appMSJava/static",
       coalmine:{},
       coalmineOld:{},
 
@@ -1124,7 +1125,6 @@ export default {
               /*jobType.jobIconUrl = self.basePath + url;
               self.jobTypeList.splice(i,1,jobType)*/
               self.jobTypeList[i].jobIconUrl = self.basePath + url+"?"+self.current();
-              console.log("-------------", self.jobTypeList[i].jobIconUrl)
             }else{
               self.jobTypeList[i].jobIconUrl = "";
             }
@@ -1139,6 +1139,7 @@ export default {
 
     /* 点击修改工种图例 */
     clickJobTypeName(jobId){
+      console.log("method_name: ", "clickJobTypeName-", jobId);
       let self = this;
       self.jobTypeList.forEach((jobType, index) => {
         if (jobType.jobId == jobId) {
@@ -1146,6 +1147,8 @@ export default {
           delete self.jobType.uber;
         }
       });
+
+      console.log("jobType: ", self.jobType);
       $("#update_job_pic_modal1").modal('show');
     },
 
@@ -1203,6 +1206,7 @@ export default {
 <style lang="css" scoped>
 @import "../../assets/script/cropper/css/cropper.css";
 @import "../../assets/script/cropper/css/main.css";
+/*@import "../../../node_modules/cropper/dist/cropper.min.css"*/
 #setting {
   width: 100%;
 }

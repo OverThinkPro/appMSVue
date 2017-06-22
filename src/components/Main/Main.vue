@@ -533,33 +533,40 @@
           </div>
           <div class="modal-body">
             <div class="modal-table-box">
-              <div class="data-box">
-                <table class="table table-bordered table-hover">
-                  <thead>
-                    <tr>
-                      <th>呼叫员工</th>
-                      <th>所在区域名称</th>
-                      <th>呼叫时间</th>
-                      <th>处理情况</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-if="alarmListCache.alarmResultList != null" v-for="(alarm, index) in alarmListCache.alarmResultList" :key="alarm.key">
-                      <td>{{ alarm.staffName }}</td>
-                      <td>{{ alarm.readerId }}</td>
-                      <td>{{ alarm.alarmStartTime }}</td>
-                      <td>{{ filterAlarmHandler(alarm.alarmInHandle) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <nav class="pagination-box" id="alarmInfoPagingBox">
-                  <div id="alarmInfoPaging" class="pagination"></div>
-                </nav>
+              <div class="table-box">
+                <div class="btn-box">
+                  <button type="button" class="btn btn-primary fl" name="button" @click="doHandleStaffAlarm()">撤离呼叫</button>
+                </div>
+                <div class="data-box">
+                  <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th>选择</th>
+                        <th>呼叫员工</th>
+                        <th>所在区域名称</th>
+                        <th>呼叫时间</th>
+                        <th>处理情况</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-if="alarmListCache.alarmResultList != null" v-for="(alarm, index) in alarmListCache.alarmResultList" :key="alarm.key">
+                        <td><input type="checkbox" name="staffAlarmInp" :value="alarm.alarmId" /></td>
+                        <td>{{ alarm.staffName }}</td>
+                        <td>{{ alarm.readerId }}</td>
+                        <td>{{ alarm.alarmStartTime }}</td>
+                        <td>{{ filterAlarmHandler(alarm.alarmInHandle) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <nav class="pagination-box" id="alarmInfoPagingBox">
+                    <div id="alarmInfoPaging" class="pagination"></div>
+                  </nav>
+                </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal">退出</button>
+            <button type="button" class="btn btn-default modal-btn" data-dismiss="modal" @click="clearSearchInfo()">退出</button>
           </div>
         </div>
       </div>
@@ -1036,8 +1043,8 @@ export default {
       });
 
       // 设置地图视图中心
-      let newPoint = JSON.parse(staffPointList[0].point);
-      let coordinates = newPoint.coordinates;
+      // let newPoint = JSON.parse(staffPointList[0].point);
+      // let coordinates = newPoint.coordinates;
       // self.mapCache.realMap.getView().setCenter(coordinates);
     },
     loadMapStaffHighLight (unitId) {
@@ -1143,6 +1150,7 @@ export default {
     clearSearchInfo () {
       $("input.refresh").val("");
       $("select.refresh").children('option').eq(0).prop('selected', true);
+      $("input[name='staffAlarmInp']").filter(":checked").prop('checked', false);
     },
     /**
      * ----------------------------------------------------------------------
@@ -1361,6 +1369,35 @@ export default {
                   });
                 }
               } else { bootbox.alert({ message: meta.message }); }
+            });
+    },
+    doHandleStaffAlarm () {
+      let self = this;
+      let alarmIdArr = [], params = {};
+
+      if ($("input[name='staffAlarmInp']").filter(":checked").length <= 0) {
+        bootbox.alert({
+          message: '请先选择至少一个员工呼叫,再进行操作!'
+        });
+        return;
+      }
+
+      $("input[name='staffAlarmInp']:checkbox:checked").each(function(index, alarm) {
+        alarmIdArr.push($(alarm).val());
+      });
+
+      params.alarmIdArr = alarmIdArr;
+      axios.post('/staff/alarm', $.param(params))
+            .then((response) => {
+              let meta = response.data.meta;
+
+              if (meta.success) {
+                bootbox.alert("员工呼叫处理成功!");
+              } else {
+                bootbox.alert("员工呼叫处理失败!");
+              }
+              $("input[name='staffAlarmInp']").filter(":checked").prop('checked', false);
+              $("#staff_call_alarm_modal").modal('hide');
             });
     },
     /**
