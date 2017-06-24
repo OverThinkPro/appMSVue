@@ -88,7 +88,7 @@
           <div class="document-line" v-if="realAlarm != null" v-for="(alarm, index) in realAlarm" :key="alarm.key">
             <label class="label-line-left">{{ alarm.alarm_name }}</label>
             <label class="label-line-right">
-              <a href="javascript:void(0)" style="margin-right: 10px;" @click="checkLoadAlarmType(alarm.alarm_type_id)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
+              <a href="javascript:void(0)" style="margin-right: 5px;" @click="checkLoadAlarmType(alarm.alarm_type_id)" data-toggle="modal" :data-target="alarmTypes[alarm.alarm_name]" title="查看报警详情"><i class="glyphicon glyphicon-bullhorn"></i>&nbsp;{{ alarm.total }}条</a>
               <input type="checkbox" checked="checked" :data-cbinput="alarm.alarm_type_id" title="是否周期内重复报警" /><span style="color: #333;">重复</span>
             </label>
           </div>
@@ -688,8 +688,11 @@ export default {
     this.initEvent();
     this.loadMap();
     this.loadCoalmineInfo();
+    this.loadCountRealtimeInfo();
 
+    // 开启实时统计
     self.startRealCount = setInterval(function() {
+      self.loadCoalmineInfo();
       self.loadCountRealtimeInfo();
     }, 3000);
   },
@@ -781,9 +784,9 @@ export default {
   					// }),
             new ol.layer.Image({
               source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/map/wms',
+                url: 'http://localhost:8080/geoserver/wms',
                 params: {
-                  'LAYERS': 'map:minegroup',
+                  'LAYERS': 'myditu',
                   'VERSION': '1.1.0'
                 },
                 serverType: 'geoserver'
@@ -1557,7 +1560,7 @@ main {
 }
 
 .main-left {
-  width: 79%;
+  width: 77%;
   min-height: 700px;
   margin-right: 1%;
 }
@@ -1625,7 +1628,7 @@ main {
 /* End popup style */
 
 .main-right {
-  width: 20%;
+  width: 22%;
   min-height: 700px;
 }
 

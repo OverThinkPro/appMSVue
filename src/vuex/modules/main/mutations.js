@@ -108,7 +108,9 @@ export default {
   [types.INSERT_EVACUATE_CALL_INFO] (state, regionIdArr) {
     let param = {};
     param.regionIdArr = regionIdArr;
-    axios.post('/base/evacuate/region/u/d', $.param(param))
+    let userJson = window.sessionStorage.getItem('user');
+    let user = JSON.parse(userJson);
+    axios.post('/base/evacuate/region/u/' + user.userId, $.param(param))
           .then((response) => {
             let meta = response.data.meta;
 

@@ -391,9 +391,9 @@ export default {
         layers: [
           new ol.layer.Image({
             source: new ol.source.ImageWMS({
-              url: 'http://192.168.2.153:8080/geoserver/map/wms',
+              url: 'http://localhost:8080/geoserver/wms',
               params: {
-                'LAYERS': 'map:minegroup',
+                'LAYERS': 'myditu',
                 'VERSION': '1.1.0'
               },
               serverType: 'geoserver'
@@ -404,7 +404,9 @@ export default {
       });
       // 添加移除事件
       self.addRemovePolygonEvent(self.mapCache.regionMap);
-      // 渲染区域图层
+      // 初始加载区域图层数据源
+      self.loadRegionMapLayer(self.mapCache.regionMap);
+      // 实时装载区域图层
       self.startRealRegionLayer = setInterval(function() {
         self.loadRegionMapLayer(self.mapCache.regionMap);
       }, 60000);
@@ -639,7 +641,7 @@ export default {
                 if (data && data.result > 0) {
                   bootbox.alert("区域位置批量修改成功!");
                   self.updateRegionMap = {};
-                  self.loadReaderList();
+                  // self.loadReaderList();
                   self.loadRegionMapLayer();
                 }
               } else { bootbox.alert("区域位置批量修改失败!"); }

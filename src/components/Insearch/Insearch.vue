@@ -253,9 +253,9 @@ export default {
         layers: [
           new ol.layer.Image({
             source: new ol.source.ImageWMS({
-              url: 'http://192.168.2.153:8080/geoserver/map/wms',
+              url: 'http://localhost:8080/geoserver/wms',
               params: {
-                'LAYERS': 'map:minegroup',
+                'LAYERS': 'myditu',
                 'VERSION': '1.1.0'
               },
               serverType: 'geoserver'

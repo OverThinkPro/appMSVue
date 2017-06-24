@@ -36,15 +36,15 @@
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-input" :class="{'is-danger':errors.has('startTimeInp')}">
-              <input id="startTime"  v-validate="'required'" name="startTimeInp" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择开始时间">
+              <input id="startTime" v-validate="'required'" name="startTimeInp" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择开始时间">
             </div>
-            <span v-show="errors.has('startTimeInp')" class="word-danger">{{ errors.first('startTimeInp') ? "开始时间不能为空" : "" }}</span>
+            <!-- <span v-show="errors.has('startTimeInp')" class="word-danger">{{ errors.first('startTimeInp') ? "开始时间不能为空" : "" }}</span> -->
           </div>
           <div class="ss-bar-line">
             <div class="ss-bar-input" :class="{'is-danger':errors.has('endTimeInp')}">
               <input id="endTime" v-validate="'required'" name="endTimeInp" class="form-control refresh" type="text" readonly="readonly" placeholder="请选择结束时间">
             </div>
-            <span v-show="errors.has('endTimeInp')" class="word-danger">{{ errors.first('endTimeInp') ? "结束时间不能为空" : "" }}</span>
+            <!-- <span v-show="errors.has('endTimeInp')" class="word-danger">{{ errors.first('endTimeInp') ? "结束时间不能为空" : "" }}</span> -->
           </div>
           <div class="ss-bar-line">
             <div class="input-group ss-bar-button">
@@ -214,9 +214,9 @@ export default {
         layers: [
           new ol.layer.Image({
             source: new ol.source.ImageWMS({
-              url: 'http://192.168.2.112:8080/geoserver/map/wms',
+              url: 'http://localhost:8080/geoserver/wms',
               params: {
-                'LAYERS': 'map:minegroup',
+                'LAYERS': 'myditu',
                 'VERSION': '1.1.0'
               },
               serverType: 'geoserver'
@@ -404,7 +404,7 @@ export default {
     doReplaySearch () {
       let self = this;
 
-      this.$validator.validateAll().then(() => {
+      this.$validator.validateAll().then((result) => {
         self.loadStaffList();
         self.loadStaffMap();
       }).catch(() => {
