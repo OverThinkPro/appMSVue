@@ -212,22 +212,23 @@ export default {
       self.mapCache.replayMap = new ol.Map({
         target: 'map',
         layers: [
-          new ol.layer.Image({
-            source: new ol.source.ImageWMS({
-              url: 'http://localhost:8080/geoserver/wms',
-              params: {
-                'LAYERS': 'myditu',
-                'VERSION': '1.1.0'
-              },
-              serverType: 'geoserver'
-            })
-          })
+          // new ol.layer.Image({
+          //   source: new ol.source.ImageWMS({
+          //     url: 'http://localhost:8080/geoserver/wms',
+          //     params: {
+          //       'LAYERS': 'myditu',
+          //       'VERSION': '1.1.0'
+          //     },
+          //     serverType: 'geoserver'
+          //   })
+          // })
         ],
         view: new ol.View({
-          center: [-7352981.95804323, 4148924.9077592203],
-          zoom: 15,
+          // center: [-7352981.95804323, 4148924.9077592203],
+          center: [-7352980.04648007, 4148932.82139267],
+          zoom: 22.2,
           minZoom: 3,
-          maxZoom: 20,
+          // maxZoom: 20,
           rotation: Math.PI/35
         })
       });

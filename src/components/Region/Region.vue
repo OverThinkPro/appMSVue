@@ -360,7 +360,7 @@ export default {
       // 视图
       self.mapCache.regionView = new ol.View({
         center: [-7352981.95804323, 4148924.9077592203],
-        zoom: 15,
+        zoom: 20,
         minZoom: 3,
         maxZoom: 20,
         rotation: Math.PI/35
@@ -390,14 +390,14 @@ export default {
         target: 'map',
         layers: [
           new ol.layer.Image({
-            source: new ol.source.ImageWMS({
-              url: 'http://localhost:8080/geoserver/wms',
-              params: {
-                'LAYERS': 'myditu',
-                'VERSION': '1.1.0'
-              },
-              serverType: 'geoserver'
-            })
+            // source: new ol.source.ImageWMS({
+            //   url: 'http://localhost:8080/geoserver/wms',
+            //   params: {
+            //     'LAYERS': 'myditu',
+            //     'VERSION': '1.1.0'
+            //   },
+            //   serverType: 'geoserver'
+            // })
           })
         ],
         view: self.mapCache.regionView

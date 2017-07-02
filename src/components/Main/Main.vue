@@ -33,6 +33,9 @@
                <div id="popup-content"></div>
              </div>
           </div>
+          <div id="scale-line">
+
+          </div>
         </div>
       </div>
       <div class="main-right fl content-box">
@@ -776,30 +779,40 @@ export default {
         let self = this,
             taiyuan = ol.proj.fromLonLat([112.53, 37.87]);
 
+        //实例化比例尺控件
+        var scaleLineControl = new ol.control.ScaleLine({
+            units:"metric",                      //设置比例尺单位，有degrees、imperial、us、nautical或metric
+            className: 'custom-scale-line',      //设置比例尺的样式
+            target: document.getElementById('scale-line') //显示比例尺的目标容器
+        });
   			self.mapCache.realMap = new ol.Map({
   				target: 'map',
   				layers: [
   					// new ol.layer.Tile({
   					// 	source: new ol.source.OSM()
   					// }),
-            new ol.layer.Image({
-              source: new ol.source.ImageWMS({
-                url: 'http://localhost:8080/geoserver/wms',
-                params: {
-                  'LAYERS': 'myditu',
-                  'VERSION': '1.1.0'
-                },
-                serverType: 'geoserver'
-              })
-            })
+            // new ol.layer.Image({
+            //   source: new ol.source.ImageWMS({
+            //     url: 'http://localhost:8080/geoserver/wms',
+            //     params: {
+            //       'LAYERS': 'myditu',
+            //       'VERSION': '1.1.0'
+            //     },
+            //     serverType: 'geoserver'
+            //   })
+            // })
   				],
   				view: new ol.View({
-  					center: [-7352981.95804323, 4148924.9077592203],
-  					zoom: 14,
+  					// center: [-7352991.95804323, 4148924.9077592203],
+            center: [-7352980.04648007, 4148932.82139267],
+  					zoom: 22.2,
   					minZoom: 2,
-  					maxZoom: 20,
+  					// maxZoom: 20,
             rotation: Math.PI/35
-  				})
+  				}),
+          //加载控件到地图容器
+          //加载比例尺控件
+          controls:ol.control.defaults().extend([scaleLineControl])
   			});
         // self.mapCache.realMap.on('click', function (evt) {
         //   var point = evt.coordinate; //鼠标单击点坐标
@@ -980,7 +993,7 @@ export default {
 
       self.startRealStaffLayer = setInterval(function() {
         self.loadMapStaffLayer();
-      }, 3000);
+      }, 2000);
     },
     loadMapStaffLayer () {
       let self = this;
@@ -1018,8 +1031,7 @@ export default {
             properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name, "jobId": staff.job_id, "jobIconUrl": staff.job_icon_url};
 
         // 装载员工pointFeature
-        // geometry.coordinates[0] += index * 100000 * Math.random();
-        // geometry.coordinates[0] += index * 1000 * Math.random();
+        // geometry.coordinates[0] *= 1.00015;
         featureList.push(self.createFeature(geometry, properties));
       });
 

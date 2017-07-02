@@ -719,9 +719,9 @@ export default {
         self.mapCache.readerPoint.flag = false;
         self.mapCache.markView = new ol.View({
           center: [-7352981.95804323, 4148924.9077592203],
-          zoom: 13,
+          zoom: 20,
           minZoom: 3,
-          maxZoom: 20,
+          // maxZoom: 20,
           rotation: Math.PI/35
         });
         $("#markMap .ol-viewport").remove();
