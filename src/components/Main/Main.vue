@@ -929,10 +929,19 @@ export default {
       containerDiv.className = 'popup-container';
 
       let att = featureInfo.att;
-      containerDiv.innerText = '员工编号: ' + att.staffId + " 员工姓名: " + att.staffName + " 部门名称: " + att.unitName;
+      let table = "<table class='table table-hover table-bordered'><tr><td>员工编号</td><td>" + att.staffId + "</td></tr>"
+          + "<tr><td>员工姓名</td><td>" + att.staffName + "</td>"
+          + "</tr><tr><td>部门名称</td><td>" + att.unitName + "</td>"
+          + "</tr></table>";
+      let t_info = $(table);
+      // containerDiv.innerText = '员工编号: ' + att.staffId + " 员工姓名: " + att.staffName + " 部门名称: " + att.unitName;
+      $(containerDiv).append(t_info);
 
       this.mapCache.popupInfo.content.innerHTML = '';
       this.mapCache.popupInfo.content.appendChild(containerDiv);
+      setTimeout(function() {
+        $("#popup-closer").trigger('click');
+      }, 3000);
     },
     setInnerText (element, text) {
         if (typeof element.textContent == "string") {
@@ -1024,11 +1033,15 @@ export default {
     },
     doMapStaffLayer (staffPointList) {
       let self = this;
+
+      /* 清除所有tooltip */
+      $(".ol-overlay-container:not(:last)").remove();
+
       // 构造Features集合
       let featureList = new Array();
       staffPointList.forEach(function(staff, index) {
         let geometry = JSON.parse(staff.point),
-            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name, "jobId": staff.job_id, "jobIconUrl": staff.job_icon_url};
+            properties = {"type": "Point", "id": staff.staff_id, "name": staff.staff_name, "staffInfoId": staff.staff_info_id, "unitId": staff.unit_id, "unitName": staff.unit_name, "jobId": staff.job_id, "jobIconUrl": staff.job_icon_url, "distance": staff.distance, "coordinate": geometry.coordinates};
 
         // 装载员工pointFeature
         // geometry.coordinates[0] *= 1.00015;
@@ -1055,12 +1068,32 @@ export default {
               scale: 0.1
             })
         }));
+        self.createMeasureTooltip(feature.get('distance'), feature.get('coordinate'));
       });
 
       // 设置地图视图中心
       // let newPoint = JSON.parse(staffPointList[0].point);
       // let coordinates = newPoint.coordinates;
       // self.mapCache.realMap.getView().setCenter(coordinates);
+    },
+    createMeasureTooltip(output, coordinate) {
+      let self = this;
+      let measureTooltipElement, measureTooltip;
+
+      measureTooltipElement = document.createElement('div');
+      // measureTooltipElement.className = 'tooltip tooltip-measure';
+      /* Begin 设置人与分站实时距离提示框 */
+      measureTooltipElement.innerHTML = output + "m";
+      // measureTooltipElement.style="border-top: 6px solid rgba(0, 0, 0, 0.5);border-right: 6px solid transparent;border-left: 6px solid transparent;content: '';position: absolute;bottom: -6px;margin-left: -7px;left: 50%;";
+      // measureTooltipElement.style="position:relative;background:rgba(0, 0, 0, 0.5);border-radius:4px;color:white;padding:4px 8px;opacity:0.7;white-space:nowrap;";
+      measureTooltip = new ol.Overlay({
+          element: measureTooltipElement,
+          offset: [0, -15],
+          positioning: 'bottom-center'
+      });
+      measureTooltip.setPosition(coordinate);
+      /* End 设置人与分站实时距离提示框 */
+      self.mapCache.realMap.addOverlay(measureTooltip);
     },
     loadMapStaffHighLight (unitId) {
       let self = this,

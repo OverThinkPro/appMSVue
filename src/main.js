@@ -27,8 +27,8 @@ Validator.updateDictionary(dictionary);
 Vue.use(VeeValidate, config);
 
 // axios.defaults.baseURL = 'http://192.168.2.112:8080/appMSJava/api/v1/main/';
-axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
-// axios.defaults.baseURL = '/main/';
+// axios.defaults.baseURL = 'http://localhost:8080/appMSJava/api/v1/main/';
+axios.defaults.baseURL = '/main/';
 // axios.defaults.baseURL = '/appMSJava/api/v1/main/';
 
 Vue.config.productionTip = false;
