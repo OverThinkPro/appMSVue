@@ -66,7 +66,12 @@
               </div>
             </div>
             <div class="map-box">
-              <div id="map"></div>
+              <div id="map">
+
+              </div>
+              <div id="scale-line">
+
+              </div>
             </div>
           </div>
           <div role="tabpanel" class="tab-pane" id="region_list_tab">
@@ -359,10 +364,9 @@ export default {
        */
       // 视图
       self.mapCache.regionView = new ol.View({
-        center: [-7352981.95804323, 4148924.9077592203],
-        zoom: 20,
-        minZoom: 3,
-        maxZoom: 20,
+        center: [-7352980.04648007, 4148932.82139267],
+        zoom: 22.2,
+        minZoom: 2,
         rotation: Math.PI/35
       });
       // 普通区域样式
@@ -372,7 +376,7 @@ export default {
         }),
         stroke: new ol.style.Stroke({
           color: '#319FD3',
-          width: 4
+          width: 2
         })
       });
       // 高亮区域样式
@@ -382,8 +386,15 @@ export default {
         }),
         stroke: new ol.style.Stroke({
           color: 'red',
-          width: 4
+          width: 2
         })
+      });
+
+      //实例化比例尺控件
+      var scaleLineControl = new ol.control.ScaleLine({
+          units:"metric",                      //设置比例尺单位，有degrees、imperial、us、nautical或metric
+          className: 'custom-scale-line',      //设置比例尺的样式
+          target: document.getElementById('scale-line') //显示比例尺的目标容器
       });
       // 地图
       self.mapCache.regionMap = new ol.Map({
@@ -400,7 +411,10 @@ export default {
             // })
           })
         ],
-        view: self.mapCache.regionView
+        view: self.mapCache.regionView,
+        //加载控件到地图容器
+        //加载比例尺控件
+        controls:ol.control.defaults().extend([scaleLineControl])
       });
       // 添加移除事件
       self.addRemovePolygonEvent(self.mapCache.regionMap);

@@ -69,6 +69,9 @@
               <div id="map">
 
               </div>
+              <div id="scale-line">
+
+              </div>
             </div>
           </div>
           <div id="staff_list_tab" class="tab-pane" role="tabpanel">
@@ -209,6 +212,12 @@ export default {
     loadMap () {
       let self = this;
 
+      //实例化比例尺控件
+      var scaleLineControl = new ol.control.ScaleLine({
+          units:"metric",                      //设置比例尺单位，有degrees、imperial、us、nautical或metric
+          className: 'custom-scale-line',      //设置比例尺的样式
+          target: document.getElementById('scale-line') //显示比例尺的目标容器
+      });
       self.mapCache.replayMap = new ol.Map({
         target: 'map',
         layers: [
@@ -227,10 +236,13 @@ export default {
           // center: [-7352981.95804323, 4148924.9077592203],
           center: [-7352980.04648007, 4148932.82139267],
           zoom: 22.2,
-          minZoom: 3,
+          minZoom: 2,
           // maxZoom: 20,
           rotation: Math.PI/35
-        })
+        }),
+        //加载控件到地图容器
+        //加载比例尺控件
+        controls:ol.control.defaults().extend([scaleLineControl])
       });
 
       // 添加人员、分站、区域图层
@@ -253,7 +265,7 @@ export default {
         }),
         stroke: new ol.style.Stroke({
           color: '#319FD3',
-          width: 4
+          width: 2
         })
       });
       self.mapCache.regionLayer = new ol.layer.Vector({

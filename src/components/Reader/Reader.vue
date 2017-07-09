@@ -473,6 +473,9 @@
               <div class="table-box-right fl">
                 <div id="markMapBox" class="map-box">
                   <div id="markMap"></div>
+                  <div id="scale-line">
+
+                  </div>
                 </div>
               </div>
               <div class="table-box-left fr">
@@ -520,6 +523,9 @@
               <div class="table-box-right fl">
                 <div id="moveMapBox" class="map-box">
                   <div id="moveMap"></div>
+                  <div id="scale-line2">
+
+                  </div>
                 </div>
               </div>
               <div class="table-box-left fr">
@@ -574,6 +580,9 @@
             <div class="modal-table-box">
               <div id="moveMapBox" class="map-box">
                 <div id="showMap"></div>
+                <div id="scale-line3">
+
+                </div>
               </div>
             </div>
           </div>
@@ -718,13 +727,21 @@ export default {
       $("#mark_reader_modal").on('shown.bs.modal', function() {
         self.mapCache.readerPoint.flag = false;
         self.mapCache.markView = new ol.View({
-          center: [-7352981.95804323, 4148924.9077592203],
+          center: [-7352980.04648007, 4148932.82139267],
           zoom: 20,
-          minZoom: 3,
+          minZoom: 2,
           // maxZoom: 20,
           rotation: Math.PI/35
         });
         $("#markMap .ol-viewport").remove();
+
+        $("#scale-line .custom-scale-line").remove();
+        //实例化比例尺控件
+        var scaleLineControl = new ol.control.ScaleLine({
+            units:"metric",                      //设置比例尺单位，有degrees、imperial、us、nautical或metric
+            className: 'custom-scale-line',      //设置比例尺的样式
+            target: document.getElementById('scale-line') //显示比例尺的目标容器
+        });
         self.mapCache.markMap = new ol.Map({
           target: 'markMap',
           layers: [
@@ -739,7 +756,10 @@ export default {
               })
             })
           ],
-          view: self.mapCache.markView
+          view: self.mapCache.markView,
+          //加载控件到地图容器
+          //加载比例尺控件
+          controls:ol.control.defaults().extend([scaleLineControl])
         });
         self.addRadioEventToMap();
         self.loadRegionMapLayer(self.mapCache.markMap);
@@ -751,13 +771,19 @@ export default {
         $("#updateMoveReaderToggle").prop('disabled', true);
         self.mapCache.readerPoint.flag = false;
         self.mapCache.moveView = new ol.View({
-          center: [-7352981.95804323, 4148924.9077592203],
-          zoom: 13,
-          minZoom: 3,
-          maxZoom: 20,
+          center: [-7352980.04648007, 4148932.82139267],
+          zoom: 20,
+          minZoom: 2,
           rotation: Math.PI/35
         });
         $("#moveMap .ol-viewport").remove();
+        $("#scale-line2 .custom-scale-line").remove();
+        //实例化比例尺控件
+        var scaleLineControl2 = new ol.control.ScaleLine({
+            units:"metric",                      //设置比例尺单位，有degrees、imperial、us、nautical或metric
+            className: 'custom-scale-line',      //设置比例尺的样式
+            target: document.getElementById('scale-line2') //显示比例尺的目标容器
+        });
         self.mapCache.moveMap = new ol.Map({
           target: 'moveMap',
           layers: [
@@ -772,7 +798,10 @@ export default {
               })
             })
           ],
-          view: self.mapCache.moveView
+          view: self.mapCache.moveView,
+          //加载控件到地图容器
+          //加载比例尺控件
+          controls:ol.control.defaults().extend([scaleLineControl2])
         });
         self.loadRegionMapLayer(self.mapCache.moveMap);
         self.loadMoveReaderMapLayer(self.mapCache.moveMap, self.reader.readerId, true);
@@ -781,13 +810,19 @@ export default {
       $("#show_reader_modal").on('shown.bs.modal', function() {
         self.mapCache.readerPoint.flag = false;
         self.mapCache.showView = new ol.View({
-          center: [-7352981.95804323, 4148924.9077592203],
-          zoom: 13,
-          minZoom: 3,
-          maxZoom: 20,
+          center: [-7352980.04648007, 4148932.82139267],
+          zoom: 20,
+          minZoom: 2,
           rotation: Math.PI/35
         });
         $("#showMap .ol-viewport").remove();
+        $("#scale-line3 .custom-scale-line").remove();
+        //实例化比例尺控件
+        var scaleLineControl3 = new ol.control.ScaleLine({
+            units:"metric",                      //设置比例尺单位，有degrees、imperial、us、nautical或metric
+            className: 'custom-scale-line',      //设置比例尺的样式
+            target: document.getElementById('scale-line3') //显示比例尺的目标容器
+        });
         self.mapCache.showMap = new ol.Map({
           target: 'showMap',
           layers: [
@@ -802,7 +837,10 @@ export default {
               })
             })
           ],
-          view: self.mapCache.showView
+          view: self.mapCache.showView,
+          //加载控件到地图容器
+          //加载比例尺控件
+          controls:ol.control.defaults().extend([scaleLineControl3])
         });
         self.loadRegionMapLayer(self.mapCache.showMap);
         self.loadMoveReaderMapLayer(self.mapCache.showMap, self.reader.readerId);
@@ -841,7 +879,7 @@ export default {
                       }),
                       stroke: new ol.style.Stroke({
                         color: '#319FD3',
-                        width: 4
+                        width: 2
                       })
                     })
                   });
@@ -1454,10 +1492,15 @@ export default {
 .table-box-left, .table-box-right {zoom: 1;}
 .table-box-left {width: 23%; height: 550px; margin-left: 2%;}
 .table-box-right {width: 75%;}
-.map-box, #markMap, #moveMap, #showMap {
+.map-box {
   margin: 0;
   min-height: 555px;
   max-height: 555px;
+}
+#markMap, #moveMap, #showMap {
+  margin: 0;
+  min-height: 530px;
+  max-height: 530px;
 }
 
 .document {

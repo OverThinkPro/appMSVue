@@ -865,7 +865,7 @@ export default {
           }),
           stroke: new ol.style.Stroke({
             color: '#319FD3',
-            width: 4
+            width: 2
           })
         });
         self.mapCache.regionLayer = new ol.layer.Vector({
@@ -1222,7 +1222,9 @@ export default {
       // $("input[data-cbinput]:checkbox").prop('checked', 'checked');
 
       for (let i = 0; i < realAlarmList.length; i++) {
-        alarmQueue[realAlarmList[i].alarm_type_id] = realAlarmList[i].alarm_file;
+        if (realAlarmList[i].total != 0) {
+          alarmQueue[realAlarmList[i].alarm_type_id] = realAlarmList[i].alarm_file;
+        }
       }
 
       let cbinput = $("input[data-cbinput]:checkbox");
